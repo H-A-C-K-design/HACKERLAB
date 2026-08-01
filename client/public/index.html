@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CyberForge Academy | Live CTF Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<link rel="stylesheet" href="styles.css"/>
+<!-- reCAPTCHA v3 -->
+<script src="https://www.google.com/recaptcha/api.js?render=YOUR_RECAPTCHA_SITE_KEY"></script>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<div id="app"></div>
+
+<!-- Firebase Client SDK -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getAuth, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA0CaC7QdtI7rGhxUCxub5xtL7afxCCMoQ",
+    authDomain: "cyber-8af08.firebaseapp.com",
+    projectId: "cyber-8af08",
+    storageBucket: "cyber-8af08.appspot.com",
+    messagingSenderId: "36094138464",
+    appId: "1:36094138464:web:92a38a98524c821080cb05"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const googleProvider = new GoogleAuthProvider();
+
+  // Expose globally for app.js
+  window.firebaseAuth = auth;
+  window.googleProvider = googleProvider;
+  window.signInWithPopup = signInWithPopup;
+  window.firebaseReady = true;
+  window.dispatchEvent(new Event('firebaseReady'));
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
+<script src="app.js"></script>
+<script>
+/* ─── Animated grid / particle canvas ─── */
+const C = document.getElementById('bg-canvas');
+const X = C.getContext('2d');
+C.style.cssText = 'position:fixed;top:0;left:0;z-index:0;pointer-events:none';
+
+function resize() { C.width = innerWidth; C.height = innerHeight; }
+resize(); window.addEventListener('resize', resize);
+
+const dots = Array.from({length:80}, () => ({
+  x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+  vx:(Math.random()-.5)*.3, vy:(Math.random()-.5)*.3,
+  r: Math.random()*1.5+.5
+}));
+
+function drawFrame() {
+  X.clearRect(0,0,C.width,C.height);
+  dots.forEach(d => {
+    d.x += d.vx; d.y += d.vy;
+    if(d.x<0) d.x=C.width; if(d.x>C.width) d.x=0;
+    if(d.y<0) d.y=C.height; if(d.y>C.height) d.y=0;
+    X.beginPath(); X.arc(d.x,d.y,d.r,0,Math.PI*2);
+    X.fillStyle='rgba(124,58,237,.1)'; X.fill();
+  });
+  dots.forEach((a,i) => dots.slice(i+1).forEach(b => {
+    const dx=a.x-b.x, dy=a.y-b.y, dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist<120) {
+      X.beginPath(); X.moveTo(a.x,a.y); X.lineTo(b.x,b.y);
+      X.strokeStyle=`rgba(124,58,237,${.06*(1-dist/120)})`;
+      X.lineWidth=.6; X.stroke();
+    }
+  }));
+  requestAnimationFrame(drawFrame);
+}
+drawFrame();
+</script>
+</body>
+</html>

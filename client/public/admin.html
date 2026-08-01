@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>404 - Not Found</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+  /* Shows 404 by default — gate page swaps this out */
+  :root {
+    --bg:#050a0f; --card:#0a1520; --card2:#0d1b2a;
+    --green:#00ff41; --cyan:#00d4ff; --red:#ff0040;
+    --orange:#ff6600; --purple:#8b00ff;
+    --text:#e0f0ff; --muted:#5a7a9a; --border:#1a3a5a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh}
+  #gate-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:1rem}
+  #admin-app{display:none}
+
+  /* 404 look */
+  .notfound{text-align:center}
+  .notfound h1{font-size:8rem;font-family:'Orbitron',monospace;color:#1a2a3a;line-height:1}
+  .notfound p{color:var(--muted);font-size:1.1rem;margin-top:1rem}
+
+  /* Gate form */
+  .gate-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.5rem;width:100%;max-width:400px;position:relative;overflow:hidden}
+  .gate-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--orange),var(--purple))}
+  .gate-title{font-family:'Orbitron',monospace;font-size:1.2rem;font-weight:700;text-align:center;margin-bottom:0.3rem;color:var(--red)}
+  .gate-sub{text-align:center;color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem}
+  .g-input{width:100%;background:rgba(10,20,35,0.8);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:0.95rem;outline:none;transition:border-color 0.3s}
+  .g-input:focus{border-color:var(--red);box-shadow:0 0 15px rgba(255,0,64,0.2)}
+  .g-btn{width:100%;margin-top:1rem;padding:0.75rem;background:linear-gradient(135deg,#990022,#660011);border:none;border-radius:8px;color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;letter-spacing:1px;cursor:pointer;text-transform:uppercase;transition:all 0.3s}
+  .g-btn:hover{background:linear-gradient(135deg,#cc0033,#990022);box-shadow:0 0 20px rgba(255,0,64,0.4)}
+  .g-err{color:#ff6080;font-size:0.85rem;text-align:center;margin-top:0.75rem;min-height:1.2rem}
+  .attempts-left{font-size:0.75rem;color:#3a2a2a;text-align:center;margin-top:0.5rem}
+
+  /* ===== ADMIN APP STYLES ===== */
+  .a-navbar{display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:62px;background:rgba(5,10,15,0.97);border-bottom:1px solid #2a0a0a;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px)}
+  .a-logo{font-family:'Orbitron',monospace;font-size:1.2rem;font-weight:900;color:var(--red);letter-spacing:2px}
+  .a-logo span{color:var(--orange)}
+  .a-user{display:flex;align-items:center;gap:1rem;font-size:0.9rem;color:var(--muted)}
+  .a-badge{background:rgba(255,0,64,0.15);border:1px solid var(--red);padding:0.25rem 0.75rem;border-radius:20px;color:var(--red);font-size:0.8rem;font-weight:700}
+  .a-layout{display:flex;min-height:calc(100vh - 62px)}
+  .a-sidebar{width:220px;background:rgba(5,8,12,0.95);border-right:1px solid #1a0a0a;padding:1rem 0;flex-shrink:0;position:sticky;top:62px;height:calc(100vh - 62px);overflow-y:auto}
+  .a-nav-item{display:flex;align-items:center;gap:0.75rem;padding:0.7rem 1.25rem;cursor:pointer;color:var(--muted);font-weight:600;font-size:0.9rem;border-left:3px solid transparent;transition:all 0.25s}
+  .a-nav-item:hover{color:var(--text);background:rgba(255,0,64,0.05);border-left-color:var(--red)}
+  .a-nav-item.active{color:var(--red);background:rgba(255,0,64,0.1);border-left-color:var(--red)}
+  .a-nav-item i{width:18px;text-align:center;font-size:0.9rem}
+  .a-content{flex:1;padding:2rem;overflow-y:auto}
+  .a-section-title{font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:700;margin-bottom:0.3rem}
+  .a-section-sub{color:var(--muted);font-size:0.9rem;margin-bottom:1.5rem}
+  .a-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
+  .a-stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;text-align:center;border-top:3px solid}
+  .a-stat.red{border-top-color:var(--red)} .a-stat.orange{border-top-color:var(--orange)}
+  .a-stat.cyan{border-top-color:var(--cyan)} .a-stat.purple{border-top-color:var(--purple)}
+  .a-stat .num{font-family:'Orbitron',monospace;font-size:2rem;font-weight:900}
+  .a-stat.red .num{color:var(--red)} .a-stat.orange .num{color:var(--orange)}
+  .a-stat.cyan .num{color:var(--cyan)} .a-stat.purple .num{color:var(--purple)}
+  .a-stat .lbl{color:var(--muted);font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;margin-top:0.2rem}
+  .a-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin-bottom:1.5rem}
+  .a-card-title{font-weight:700;font-size:1rem;margin-bottom:1rem;color:var(--cyan);display:flex;align-items:center;gap:0.5rem}
+  .a-table{width:100%;border-collapse:collapse;font-size:0.88rem}
+  .a-table th{padding:0.6rem 0.75rem;text-align:left;color:var(--muted);border-bottom:1px solid var(--border);font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;font-weight:600}
+  .a-table td{padding:0.65rem 0.75rem;border-bottom:1px solid rgba(26,58,90,0.4);vertical-align:middle}
+  .a-table tr:hover td{background:rgba(255,0,64,0.03)}
+  .a-table tr:last-child td{border-bottom:none}
+  .badge-role{padding:0.2rem 0.5rem;border-radius:4px;font-size:0.72rem;font-weight:700;text-transform:uppercase}
+  .badge-admin{background:rgba(255,0,64,0.2);color:var(--red);border:1px solid rgba(255,0,64,0.4)}
+  .badge-student{background:rgba(0,212,255,0.15);color:var(--cyan);border:1px solid rgba(0,212,255,0.3)}
+  .badge-instructor{background:rgba(255,102,0,0.2);color:var(--orange);border:1px solid rgba(255,102,0,0.4)}
+  .diff-easy{background:rgba(0,255,65,0.15);color:#00ff41;border:1px solid rgba(0,255,65,0.3);padding:0.15rem 0.45rem;border-radius:4px;font-size:0.72rem;font-weight:700}
+  .diff-medium{background:rgba(255,102,0,0.15);color:var(--orange);border:1px solid rgba(255,102,0,0.3);padding:0.15rem 0.45rem;border-radius:4px;font-size:0.72rem;font-weight:700}
+  .diff-hard{background:rgba(255,0,64,0.15);color:var(--red);border:1px solid rgba(255,0,64,0.3);padding:0.15rem 0.45rem;border-radius:4px;font-size:0.72rem;font-weight:700}
+  .diff-insane{background:rgba(139,0,255,0.15);color:#c080ff;border:1px solid rgba(139,0,255,0.3);padding:0.15rem 0.45rem;border-radius:4px;font-size:0.72rem;font-weight:700}
+  .a-btn{padding:0.35rem 0.8rem;border:none;border-radius:6px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:0.5px;transition:all 0.2s}
+  .a-btn-red{background:rgba(255,0,64,0.2);color:var(--red);border:1px solid rgba(255,0,64,0.4)} .a-btn-red:hover{background:rgba(255,0,64,0.35)}
+  .a-btn-cyan{background:rgba(0,212,255,0.15);color:var(--cyan);border:1px solid rgba(0,212,255,0.3)} .a-btn-cyan:hover{background:rgba(0,212,255,0.3)}
+  .a-btn-green{background:rgba(0,255,65,0.15);color:#00ff41;border:1px solid rgba(0,255,65,0.3)} .a-btn-green:hover{background:rgba(0,255,65,0.3)}
+  .a-btn-orange{background:rgba(255,102,0,0.15);color:var(--orange);border:1px solid rgba(255,102,0,0.3)} .a-btn-orange:hover{background:rgba(255,102,0,0.3)}
+  .a-form{display:grid;gap:0.9rem}
+  .a-form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.9rem}
+  .a-label{display:block;font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.8px}
+  .a-input,.a-select,.a-textarea{width:100%;background:rgba(5,12,20,0.9);border:1px solid var(--border);border-radius:7px;padding:0.6rem 0.85rem;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.25s}
+  .a-input:focus,.a-select:focus,.a-textarea:focus{border-color:var(--red);box-shadow:0 0 10px rgba(255,0,64,0.15)}
+  .a-textarea{resize:vertical;min-height:80px;font-family:'Share Tech Mono',monospace;font-size:0.82rem}
+  .a-select option{background:#0a1520}
+  .loading-row{text-align:center;padding:2rem;color:var(--muted)}
+  .empty-msg{text-align:center;padding:2rem;color:var(--muted);font-size:0.9rem}
+  .toast{position:fixed;bottom:2rem;right:2rem;padding:0.75rem 1.25rem;border-radius:8px;font-weight:700;font-size:0.9rem;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none}
+  .toast.show{opacity:1} .toast.success{background:#003300;border:1px solid #00aa33;color:#00ff41}
+  .toast.error{background:#220000;border:1px solid var(--red);color:#ff8080}
+  .announce-box{background:rgba(255,102,0,0.08);border:1px solid rgba(255,102,0,0.3);border-radius:10px;padding:1.25rem;margin-bottom:1rem}
+  .logout-btn{background:none;border:1px solid #2a1010;color:var(--muted);padding:0.35rem 0.85rem;border-radius:6px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:0.85rem;transition:all 0.2s}
+  .logout-btn:hover{border-color:var(--red);color:var(--red)}
+  @media(max-width:768px){.a-sidebar{display:none}.a-form-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ===== GATE SCREEN (default visible, shows 404) ===== -->
+<div id="gate-screen">
+  <div class="notfound" id="notfound-view">
+    <h1>404</h1>
+    <p>The page you are looking for does not exist.</p>
+    <p style="margin-top:0.5rem;font-size:0.85rem;color:#2a3a4a">
+      <a href="index.html" style="color:#1a4a6a;text-decoration:none">← Return to homepage</a>
+    </p>
+  </div>
+</div>
+
+<!-- ===== ADMIN APP (hidden until authenticated) ===== -->
+<div id="admin-app">
+  <nav class="a-navbar">
+    <div class="a-logo">CYBER<span>FORGE</span> <span style="font-size:0.65rem;color:#660011;letter-spacing:3px">ADMIN</span></div>
+    <div class="a-user">
+      <span id="a-username" style="color:var(--red);font-weight:700"></span>
+      <span class="a-badge"><i class="fas fa-shield-alt"></i> ADMINISTRATOR</span>
+      <button class="logout-btn" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </nav>
+  <div class="a-layout">
+    <aside class="a-sidebar">
+      <div class="a-nav-item active" onclick="showSection('dashboard')" id="nav-dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</div>
+      <div class="a-nav-item" onclick="showSection('users')" id="nav-users"><i class="fas fa-users"></i> Users</div>
+      <div class="a-nav-item" onclick="showSection('challenges')" id="nav-challenges"><i class="fas fa-flag"></i> Challenges</div>
+      <div class="a-nav-item" onclick="showSection('labs')" id="nav-labs"><i class="fas fa-flask"></i> Labs</div>
+      <div class="a-nav-item" onclick="showSection('tasks')" id="nav-tasks"><i class="fas fa-code"></i> Tasks</div>
+      <div class="a-nav-item" onclick="showSection('announce')" id="nav-announce"><i class="fas fa-bullhorn"></i> Announce</div>
+      <div style="padding:1rem 1.25rem;margin-top:1rem;border-top:1px solid #1a0a0a">
+        <div style="font-size:0.7rem;color:#2a1a1a;text-transform:uppercase;letter-spacing:1px">Secret URL Token</div>
+        <div id="token-display" style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:#3a2a2a;margin-top:0.3rem;word-break:break-all"></div>
+      </div>
+    </aside>
+    <main class="a-content" id="a-main">
+      <div class="loading-row"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'http://localhost:5000/api';
+let adminToken = null;
+let currentSection = 'dashboard';
+
+// ── GATE LOGIC ────────────────────────────────────────────
+// Secret URL: admin.html?access=cf_admin_x9k2m7p4q8r1s6t3
+// Typing just /admin or admin.html shows 404
+(async function init() {
+  const params = new URLSearchParams(window.location.search);
+  const accessToken = params.get('access');
+
+  if (!accessToken) {
+    // No token in URL → stay on 404 page
+    document.title = '404 - Not Found';
+    return;
+  }
+
+  // Verify token with server
+  try {
+    const res = await fetch(`${API}/admin-access/verify?token=${encodeURIComponent(accessToken)}`);
+    const data = await res.json();
+    if (!data.success) {
+      document.title = '404 - Not Found';
+      return;
+    }
+  } catch(e) {
+    // Server unreachable — still show 404 to be safe
+    document.title = '404 - Not Found';
+    return;
+  }
+
+  // Token valid — check if already logged in as admin
+  const savedToken = sessionStorage.getItem('admin_jwt');
+  if (savedToken) {
+    const ok = await verifyAdminJWT(savedToken);
+    if (ok) { adminToken = savedToken; showAdminApp(); return; }
+  }
+
+  // Show login gate (not 404 — token was valid)
+  showLoginGate(accessToken);
+})();
+
+function showLoginGate(accessToken) {
+  document.getElementById('notfound-view').style.display = 'none';
+  document.title = 'Admin Login';
+
+  const gateBox = document.createElement('div');
+  gateBox.className = 'gate-box';
+  gateBox.innerHTML = `
+    <div class="gate-title"><i class="fas fa-user-shield"></i> Admin Access</div>
+    <div class="gate-sub">Restricted area. Authorized personnel only.</div>
+    <div id="gate-err" class="g-err"></div>
+    <div style="margin-bottom:0.75rem">
+      <label style="display:block;font-size:0.75rem;color:var(--muted);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:1px">Admin Email</label>
+      <input class="g-input" id="gate-email" type="email" placeholder="admin@cyberforge.io" autocomplete="off"/>
+    </div>
+    <div>
+      <label style="display:block;font-size:0.75rem;color:var(--muted);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:1px">Password</label>
+      <input class="g-input" id="gate-pass" type="password" placeholder="••••••••"/>
+    </div>
+    <button class="g-btn" id="gate-btn" onclick="gateLogin('${accessToken}')"><i class="fas fa-lock-open"></i> Authenticate</button>
+    <div class="attempts-left" id="attempts-left">⚠️ Wrong password locks access for 5 minutes</div>
+  `;
+  document.getElementById('gate-screen').appendChild(gateBox);
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') gateLogin(accessToken);
+  });
+}
+
+let attempts = 0;
+let lockUntil = 0;
+
+async function gateLogin(accessToken) {
+  if (Date.now() < lockUntil) {
+    const secs = Math.ceil((lockUntil - Date.now()) / 1000);
+    document.getElementById('gate-err').textContent = `Too many attempts. Wait ${secs}s.`;
+    return;
+  }
+
+  const email = document.getElementById('gate-email')?.value;
+  const pass  = document.getElementById('gate-pass')?.value;
+  if (!email || !pass) { document.getElementById('gate-err').textContent = 'Fill in all fields.'; return; }
+
+  const btn = document.getElementById('gate-btn');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+  btn.disabled = true;
+
+  try {
+    const res  = await fetch(`${API}/auth/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, password:pass}) });
+    const data = await res.json();
+
+    if (!data.success || data.user?.role !== 'admin') {
+      attempts++;
+      if (attempts >= 3) { lockUntil = Date.now() + 5 * 60 * 1000; attempts = 0; }
+      const left = 3 - attempts;
+      document.getElementById('gate-err').textContent = data.user?.role !== 'admin'
+        ? 'Access denied — admin account required.'
+        : `Invalid credentials. ${left > 0 ? left + ' attempts left.' : 'Locked for 5 min.'}`;
+      btn.innerHTML = '<i class="fas fa-lock-open"></i> Authenticate';
+      btn.disabled = false;
+      return;
+    }
+
+    adminToken = data.token;
+    sessionStorage.setItem('admin_jwt', adminToken);
+    attempts = 0;
+    showAdminApp(data.user);
+  } catch (e) {
+    document.getElementById('gate-err').textContent = 'Connection error. Is the server running?';
+    btn.innerHTML = '<i class="fas fa-lock-open"></i> Authenticate';
+    btn.disabled = false;
+  }
+}
+
+async function verifyAdminJWT(token) {
+  try {
+    const res = await fetch(`${API}/auth/me`, { headers:{ Authorization:`Bearer ${token}` } });
+    const data = await res.json();
+    return data.success && data.user?.role === 'admin';
+  } catch { return false; }
+}
+
+function showAdminApp(user) {
+  document.getElementById('gate-screen').style.display = 'none';
+  document.getElementById('admin-app').style.display = 'block';
+  document.title = 'CyberForge Admin Panel';
+
+  const stored = user || JSON.parse(atob(adminToken.split('.')[1]));
+  document.getElementById('a-username').textContent = user?.username || 'Admin';
+
+  const params = new URLSearchParams(window.location.search);
+  document.getElementById('token-display').textContent = params.get('access') || '';
+
+  showSection('dashboard');
+}
+
+function adminLogout() {
+  sessionStorage.removeItem('admin_jwt');
+  adminToken = null;
+  window.location.href = 'index.html';
+}
+
+// ── NAVIGATION ────────────────────────────────────────────
+function showSection(name) {
+  currentSection = name;
+  document.querySelectorAll('.a-nav-item').forEach(el => el.classList.remove('active'));
+  const nav = document.getElementById('nav-' + name);
+  if (nav) nav.classList.add('active');
+
+  const sections = { dashboard: loadDashboard, users: loadUsers, challenges: loadChallenges, labs: loadLabs, tasks: loadTasks, announce: loadAnnounce };
+  if (sections[name]) sections[name]();
+}
+
+async function aApi(endpoint, method='GET', body=null) {
+  const opts = { method, headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${adminToken}` } };
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const res = await fetch(API + endpoint, opts);
+    return await res.json();
+  } catch { return { success:false, message:'Network error' }; }
+}
+
+function toast(msg, type='success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = `toast ${type} show`;
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+</script>
+
+<script>
+// ── DASHBOARD ─────────────────────────────────────────────
+async function loadDashboard() {
+  document.getElementById('a-main').innerHTML = `<div class="loading-row"><i class="fas fa-spinner fa-spin"></i> Loading...</div>`;
+  const data = await aApi('/admin/stats');
+  if (!data.success) { document.getElementById('a-main').innerHTML = `<div class="empty-msg">${data.message}</div>`; return; }
+
+  const { stats, recentUsers, topUsers } = data;
+  document.getElementById('a-main').innerHTML = `
+    <div class="a-section-title">📊 Dashboard</div>
+    <div class="a-section-sub">Platform overview and quick stats</div>
+
+    <div class="a-grid">
+      <div class="a-stat red"><div class="num">${stats.totalUsers}</div><div class="lbl"><i class="fas fa-users"></i> Total Users</div></div>
+      <div class="a-stat orange"><div class="num">${stats.totalChallenges}</div><div class="lbl"><i class="fas fa-flag"></i> Challenges</div></div>
+      <div class="a-stat cyan"><div class="num">${stats.totalLabs}</div><div class="lbl"><i class="fas fa-flask"></i> Labs</div></div>
+      <div class="a-stat purple"><div class="num">${stats.totalTasks}</div><div class="lbl"><i class="fas fa-code"></i> Tasks</div></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;flex-wrap:wrap">
+      <div class="a-card">
+        <div class="a-card-title"><i class="fas fa-user-plus"></i> Recent Registrations</div>
+        <table class="a-table">
+          <thead><tr><th>Username</th><th>Role</th><th>XP</th><th>Joined</th></tr></thead>
+          <tbody>${recentUsers.map(u=>`
+            <tr>
+              <td style="font-weight:700;color:var(--text)">${u.username}</td>
+              <td><span class="badge-role badge-${u.role}">${u.role}</span></td>
+              <td style="font-family:'Share Tech Mono',monospace;color:var(--cyan)">${u.xp}</td>
+              <td style="color:var(--muted);font-size:0.8rem">${new Date(u.createdAt).toLocaleDateString()}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+      <div class="a-card">
+        <div class="a-card-title"><i class="fas fa-trophy"></i> Top Players by XP</div>
+        <table class="a-table">
+          <thead><tr><th>#</th><th>Username</th><th>XP</th><th>Rank</th></tr></thead>
+          <tbody>${topUsers.map((u,i)=>`
+            <tr>
+              <td style="font-family:'Share Tech Mono',monospace;color:${i===0?'gold':i===1?'silver':i===2?'#cd7f32':'var(--muted)'}">
+                ${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}
+              </td>
+              <td style="font-weight:700">${u.username}</td>
+              <td style="font-family:'Share Tech Mono',monospace;color:var(--cyan)">${u.xp.toLocaleString()}</td>
+              <td style="color:var(--muted);font-size:0.82rem">${u.rank}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="a-card" style="margin-top:1.5rem">
+      <div class="a-card-title"><i class="fas fa-bolt"></i> Quick Actions</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.75rem">
+        <button class="a-btn a-btn-orange" onclick="showSection('challenges')"><i class="fas fa-plus"></i> Add Challenge</button>
+        <button class="a-btn a-btn-cyan" onclick="showSection('labs')"><i class="fas fa-plus"></i> Add Lab</button>
+        <button class="a-btn a-btn-green" onclick="showSection('users')"><i class="fas fa-users"></i> Manage Users</button>
+        <button class="a-btn a-btn-red" onclick="showSection('announce')"><i class="fas fa-bullhorn"></i> Broadcast Message</button>
+      </div>
+    </div>`;
+}
+
+// ── USERS ─────────────────────────────────────────────────
+async function loadUsers() {
+  document.getElementById('a-main').innerHTML = `<div class="loading-row"><i class="fas fa-spinner fa-spin"></i> Loading users...</div>`;
+  const data = await aApi('/admin/users');
+  if (!data.success) { document.getElementById('a-main').innerHTML = `<div class="empty-msg">${data.message}</div>`; return; }
+
+  document.getElementById('a-main').innerHTML = `
+    <div class="a-section-title">👥 User Management</div>
+    <div class="a-section-sub">${data.users.length} registered users</div>
+    <div style="margin-bottom:1rem"><input id="user-search" class="a-input" style="max-width:350px" placeholder="🔍 Search by username or email..." oninput="filterUserTable(this.value)"/></div>
+    <div class="a-card" style="padding:0;overflow:hidden">
+      <table class="a-table" id="users-table">
+        <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>XP</th><th>Level</th><th>Rank</th><th>Joined</th><th>Actions</th></tr></thead>
+        <tbody id="users-tbody">
+          ${data.users.map(u=>`
+            <tr id="user-row-${u._id}">
+              <td style="font-weight:700">${u.username}</td>
+              <td style="color:var(--muted);font-size:0.85rem">${u.email}</td>
+              <td><span class="badge-role badge-${u.role}">${u.role}</span></td>
+              <td style="font-family:'Share Tech Mono',monospace;color:var(--cyan)">${u.xp}</td>
+              <td>Lv.${u.level}</td>
+              <td style="font-size:0.82rem;color:#8080c0">${u.rank}</td>
+              <td style="color:var(--muted);font-size:0.8rem">${new Date(u.createdAt).toLocaleDateString()}</td>
+              <td style="display:flex;gap:0.4rem;flex-wrap:wrap">
+                <button class="a-btn a-btn-cyan" onclick="editUserModal('${u._id}','${u.username}','${u.role}',${u.xp})"><i class="fas fa-edit"></i></button>
+                <button class="a-btn a-btn-red" onclick="deleteUser('${u._id}','${u.username}')"><i class="fas fa-trash"></i></button>
+              </td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div id="user-modal"></div>`;
+}
+
+function filterUserTable(q) {
+  const rows = document.querySelectorAll('#users-tbody tr');
+  rows.forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+
+function editUserModal(id, username, role, xp) {
+  document.getElementById('user-modal').innerHTML = `
+    <div style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;display:flex;align-items:center;justify-content:center;padding:1rem" onclick="closeUserModal(event)">
+      <div style="background:var(--card2,#0d1b2a);border:1px solid #2a0a0a;border-radius:14px;padding:2rem;width:100%;max-width:420px" onclick="event.stopPropagation()">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+          <div style="font-family:'Orbitron',monospace;font-size:1rem;color:var(--red)">Edit User: ${username}</div>
+          <button onclick="closeUserModal()" style="background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer">✕</button>
+        </div>
+        <div class="a-form">
+          <div><label class="a-label">Role</label>
+            <select class="a-select" id="edit-role">
+              <option value="student" ${role==='student'?'selected':''}>Student</option>
+              <option value="instructor" ${role==='instructor'?'selected':''}>Instructor</option>
+              <option value="admin" ${role==='admin'?'selected':''}>Admin</option>
+            </select>
+          </div>
+          <div><label class="a-label">XP Points</label>
+            <input class="a-input" id="edit-xp" type="number" value="${xp}" min="0"/>
+          </div>
+        </div>
+        <div id="edit-user-msg" style="margin-top:0.75rem;font-size:0.85rem;min-height:1.2rem"></div>
+        <div style="display:flex;gap:0.75rem;margin-top:1.25rem">
+          <button class="a-btn a-btn-green" style="flex:1;padding:0.6rem" onclick="saveUser('${id}')"><i class="fas fa-save"></i> Save Changes</button>
+          <button class="a-btn a-btn-red" style="padding:0.6rem 1rem" onclick="closeUserModal()">Cancel</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function closeUserModal(e) {
+  if (!e || e.target === e.currentTarget) {
+    const m = document.getElementById('user-modal'); if(m) m.innerHTML='';
+  }
+}
+
+async function saveUser(id) {
+  const role = document.getElementById('edit-role').value;
+  const xp   = parseInt(document.getElementById('edit-xp').value);
+  const msg  = document.getElementById('edit-user-msg');
+  msg.innerHTML = '<span style="color:var(--muted)"><i class="fas fa-spinner fa-spin"></i> Saving...</span>';
+  const data = await aApi('/admin/users/'+id, 'PUT', { role, xp });
+  if (data.success) { toast('User updated!'); closeUserModal(); loadUsers(); }
+  else msg.innerHTML = `<span style="color:var(--red)">${data.message}</span>`;
+}
+
+async function deleteUser(id, username) {
+  if (!confirm(`Delete user "${username}"? This cannot be undone.`)) return;
+  const data = await aApi('/admin/users/'+id, 'DELETE');
+  if (data.success) { toast('User deleted'); document.getElementById('user-row-'+id)?.remove(); }
+  else toast(data.message, 'error');
+}
+</script>
+
+<script>
+// ── CHALLENGES ────────────────────────────────────────────
+async function loadChallenges() {
+  document.getElementById('a-main').innerHTML = `<div class="loading-row"><i class="fas fa-spinner fa-spin"></i> Loading...</div>`;
+  const data = await aApi('/admin/challenges');
+  if (!data.success) { document.getElementById('a-main').innerHTML = `<div class="empty-msg">${data.message}</div>`; return; }
+
+  document.getElementById('a-main').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1rem">
+      <div><div class="a-section-title">🚩 Challenge Management</div>
+        <div class="a-section-sub">${data.challenges.length} challenges total</div></div>
+      <button class="a-btn a-btn-green" style="padding:0.6rem 1.2rem;font-size:0.9rem" onclick="showAddChallenge()"><i class="fas fa-plus"></i> Add Challenge</button>
+    </div>
+    <div id="add-challenge-form" style="display:none" class="a-card">
+      <div class="a-card-title"><i class="fas fa-plus-circle"></i> New Challenge</div>
+      <div class="a-form">
+        <div class="a-form-row">
+          <div><label class="a-label">Title</label><input class="a-input" id="ch-title" placeholder="Challenge title"/></div>
+          <div><label class="a-label">Points</label><input class="a-input" id="ch-points" type="number" placeholder="100" min="1"/></div>
+        </div>
+        <div class="a-form-row">
+          <div><label class="a-label">Category</label>
+            <select class="a-select" id="ch-cat">
+              <option value="web">Web</option><option value="cryptography">Cryptography</option>
+              <option value="forensics">Forensics</option><option value="reverse-engineering">Reverse Engineering</option>
+              <option value="pwn">Pwn</option><option value="osint">OSINT</option>
+              <option value="network">Network</option><option value="steganography">Steganography</option><option value="misc">Misc</option>
+            </select>
+          </div>
+          <div><label class="a-label">Difficulty</label>
+            <select class="a-select" id="ch-diff">
+              <option value="easy">Easy</option><option value="medium">Medium</option>
+              <option value="hard">Hard</option><option value="insane">Insane</option>
+            </select>
+          </div>
+        </div>
+        <div><label class="a-label">Description</label><textarea class="a-textarea" id="ch-desc" placeholder="Describe the challenge..."></textarea></div>
+        <div><label class="a-label">Flag (exact string)</label><input class="a-input" id="ch-flag" placeholder="CyberForge{your_flag_here}"/></div>
+        <div><label class="a-label">Tags (comma separated)</label><input class="a-input" id="ch-tags" placeholder="web, sqli, beginner"/></div>
+        <div id="ch-msg" style="font-size:0.85rem;min-height:1.2rem"></div>
+        <div style="display:flex;gap:0.75rem">
+          <button class="a-btn a-btn-green" style="padding:0.6rem 1.2rem" onclick="submitChallenge()"><i class="fas fa-save"></i> Create Challenge</button>
+          <button class="a-btn a-btn-red" onclick="document.getElementById('add-challenge-form').style.display='none'">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <div class="a-card" style="padding:0;overflow:hidden">
+      <table class="a-table">
+        <thead><tr><th>Title</th><th>Category</th><th>Difficulty</th><th>Points</th><th>Solves</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>${data.challenges.map(c=>`
+          <tr id="ch-row-${c._id}">
+            <td style="font-weight:700;max-width:200px">${c.title}</td>
+            <td><span style="font-size:0.8rem;color:var(--cyan)">${c.category}</span></td>
+            <td><span class="diff-${c.difficulty}">${c.difficulty}</span></td>
+            <td style="font-family:'Share Tech Mono',monospace;color:var(--cyan)">${c.points}</td>
+            <td style="color:var(--muted)">${c.solveCount||0}</td>
+            <td><span style="color:${c.isActive?'#00ff41':'#ff0040'};font-size:0.8rem">${c.isActive?'Active':'Hidden'}</span></td>
+            <td><button class="a-btn a-btn-red" onclick="deleteChallenge('${c._id}','${c.title.replace(/'/g,"\\'")}')"><i class="fas fa-trash"></i> Delete</button></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function showAddChallenge() {
+  const f = document.getElementById('add-challenge-form');
+  if (f) f.style.display = f.style.display === 'none' ? '' : 'none';
+}
+
+async function submitChallenge() {
+  const body = {
+    title: document.getElementById('ch-title').value.trim(),
+    description: document.getElementById('ch-desc').value.trim(),
+    category: document.getElementById('ch-cat').value,
+    difficulty: document.getElementById('ch-diff').value,
+    points: parseInt(document.getElementById('ch-points').value),
+    flag: document.getElementById('ch-flag').value.trim(),
+    tags: document.getElementById('ch-tags').value.split(',').map(t=>t.trim()).filter(Boolean)
+  };
+  const msg = document.getElementById('ch-msg');
+  if (!body.title || !body.description || !body.flag || !body.points) {
+    msg.innerHTML = '<span style="color:var(--red)">Fill in all required fields.</span>'; return;
+  }
+  msg.innerHTML = '<span style="color:var(--muted)"><i class="fas fa-spinner fa-spin"></i> Creating...</span>';
+  const data = await aApi('/admin/challenges', 'POST', body);
+  if (data.success) { toast('Challenge created!'); loadChallenges(); }
+  else msg.innerHTML = `<span style="color:var(--red)">${data.message}</span>`;
+}
+
+async function deleteChallenge(id, title) {
+  if (!confirm(`Delete challenge "${title}"?`)) return;
+  const data = await aApi('/admin/challenges/'+id, 'DELETE');
+  if (data.success) { toast('Challenge deleted'); document.getElementById('ch-row-'+id)?.remove(); }
+  else toast(data.message, 'error');
+}
+
+// ── LABS ──────────────────────────────────────────────────
+async function loadLabs() {
+  document.getElementById('a-main').innerHTML = `<div class="loading-row"><i class="fas fa-spinner fa-spin"></i> Loading...</div>`;
+  const data = await aApi('/admin/labs');
+  if (!data.success) { document.getElementById('a-main').innerHTML = `<div class="empty-msg">${data.message}</div>`; return; }
+
+  document.getElementById('a-main').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1rem">
+      <div><div class="a-section-title">🧪 Lab Management</div>
+        <div class="a-section-sub">${data.labs.length} labs total</div></div>
+      <button class="a-btn a-btn-green" style="padding:0.6rem 1.2rem;font-size:0.9rem" onclick="showAddLab()"><i class="fas fa-plus"></i> Add Lab</button>
+    </div>
+    <div id="add-lab-form" style="display:none" class="a-card">
+      <div class="a-card-title"><i class="fas fa-plus-circle"></i> New Lab</div>
+      <div class="a-form">
+        <div class="a-form-row">
+          <div><label class="a-label">Title</label><input class="a-input" id="lab-title" placeholder="Lab title"/></div>
+          <div><label class="a-label">XP Reward</label><input class="a-input" id="lab-xp" type="number" placeholder="200" min="1"/></div>
+        </div>
+        <div class="a-form-row">
+          <div><label class="a-label">Category</label>
+            <select class="a-select" id="lab-cat">
+              <option value="kali-basics">Kali Basics</option><option value="network-scan">Network Scan</option>
+              <option value="web-hacking">Web Hacking</option><option value="password-cracking">Password Cracking</option>
+              <option value="malware-analysis">Malware Analysis</option><option value="forensics">Forensics</option>
+              <option value="exploitation">Exploitation</option>
+            </select>
+          </div>
+          <div><label class="a-label">Difficulty</label>
+            <select class="a-select" id="lab-diff">
+              <option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option>
+            </select>
+          </div>
+        </div>
+        <div class="a-form-row">
+          <div><label class="a-label">Duration</label><input class="a-input" id="lab-dur" placeholder="60 mins"/></div>
+          <div><label class="a-label">Tools (comma sep)</label><input class="a-input" id="lab-tools" placeholder="nmap, wireshark"/></div>
+        </div>
+        <div><label class="a-label">Description</label><textarea class="a-textarea" id="lab-desc" placeholder="Describe the lab..."></textarea></div>
+        <div id="lab-msg" style="font-size:0.85rem;min-height:1.2rem"></div>
+        <div style="display:flex;gap:0.75rem">
+          <button class="a-btn a-btn-green" style="padding:0.6rem 1.2rem" onclick="submitLab()"><i class="fas fa-save"></i> Create Lab</button>
+          <button class="a-btn a-btn-red" onclick="document.getElementById('add-lab-form').style.display='none'">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <div class="a-card" style="padding:0;overflow:hidden">
+      <table class="a-table">
+        <thead><tr><th>Title</th><th>Category</th><th>Difficulty</th><th>Duration</th><th>XP</th><th>Completions</th><th>Actions</th></tr></thead>
+        <tbody>${data.labs.map(l=>`
+          <tr id="lab-row-${l._id}">
+            <td style="font-weight:700">${l.title}</td>
+            <td style="font-size:0.82rem;color:var(--cyan)">${l.category}</td>
+            <td><span class="diff-${l.difficulty==='beginner'?'easy':l.difficulty==='intermediate'?'medium':'hard'}">${l.difficulty}</span></td>
+            <td style="color:var(--muted)">${l.duration}</td>
+            <td style="font-family:'Share Tech Mono',monospace;color:#00ff41">+${l.xpReward}</td>
+            <td style="color:var(--muted)">${l.completedBy?.length||0}</td>
+            <td><button class="a-btn a-btn-red" onclick="deleteLab('${l._id}','${l.title.replace(/'/g,"\\'")}')"><i class="fas fa-trash"></i> Delete</button></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function showAddLab() {
+  const f = document.getElementById('add-lab-form');
+  if (f) f.style.display = f.style.display === 'none' ? '' : 'none';
+}
+
+async function submitLab() {
+  const body = {
+    title: document.getElementById('lab-title').value.trim(),
+    description: document.getElementById('lab-desc').value.trim(),
+    category: document.getElementById('lab-cat').value,
+    difficulty: document.getElementById('lab-diff').value,
+    duration: document.getElementById('lab-dur').value.trim(),
+    xpReward: parseInt(document.getElementById('lab-xp').value) || 100,
+    tools: document.getElementById('lab-tools').value.split(',').map(t=>t.trim()).filter(Boolean),
+    objectives: [], steps: []
+  };
+  const msg = document.getElementById('lab-msg');
+  if (!body.title || !body.description) { msg.innerHTML = '<span style="color:var(--red)">Title and description required.</span>'; return; }
+  msg.innerHTML = '<span style="color:var(--muted)"><i class="fas fa-spinner fa-spin"></i> Creating...</span>';
+  const data = await aApi('/admin/labs', 'POST', body);
+  if (data.success) { toast('Lab created!'); loadLabs(); }
+  else msg.innerHTML = `<span style="color:var(--red)">${data.message}</span>`;
+}
+
+async function deleteLab(id, title) {
+  if (!confirm(`Delete lab "${title}"?`)) return;
+  const data = await aApi('/admin/labs/'+id, 'DELETE');
+  if (data.success) { toast('Lab deleted'); document.getElementById('lab-row-'+id)?.remove(); }
+  else toast(data.message, 'error');
+}
+
+// ── TASKS ─────────────────────────────────────────────────
+async function loadTasks() {
+  document.getElementById('a-main').innerHTML = `<div class="loading-row"><i class="fas fa-spinner fa-spin"></i> Loading...</div>`;
+  const data = await aApi('/admin/tasks');
+  if (!data.success) { document.getElementById('a-main').innerHTML = `<div class="empty-msg">${data.message}</div>`; return; }
+
+  document.getElementById('a-main').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1rem">
+      <div><div class="a-section-title">💻 Task Management</div>
+        <div class="a-section-sub">${data.tasks.length} coding tasks</div></div>
+      <button class="a-btn a-btn-green" style="padding:0.6rem 1.2rem;font-size:0.9rem" onclick="showAddTask()"><i class="fas fa-plus"></i> Add Task</button>
+    </div>
+    <div id="add-task-form" style="display:none" class="a-card">
+      <div class="a-card-title"><i class="fas fa-plus-circle"></i> New Coding Task</div>
+      <div class="a-form">
+        <div class="a-form-row">
+          <div><label class="a-label">Title</label><input class="a-input" id="task-title" placeholder="Task title"/></div>
+          <div><label class="a-label">Points</label><input class="a-input" id="task-pts" type="number" placeholder="100"/></div>
+        </div>
+        <div class="a-form-row">
+          <div><label class="a-label">Type/Language</label>
+            <select class="a-select" id="task-type">
+              <option value="python">Python</option><option value="bash">Bash</option>
+              <option value="javascript">JavaScript</option><option value="c">C</option>
+              <option value="sql-injection">SQL Injection</option><option value="xss">XSS</option>
+            </select>
+          </div>
+          <div><label class="a-label">Difficulty</label>
+            <select class="a-select" id="task-diff">
+              <option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option>
+            </select>
+          </div>
+        </div>
+        <div><label class="a-label">Description</label><textarea class="a-textarea" id="task-desc" placeholder="Task description..."></textarea></div>
+        <div><label class="a-label">Starter Code</label><textarea class="a-textarea" id="task-starter" style="min-height:100px" placeholder="# Starter code for students..."></textarea></div>
+        <div><label class="a-label">Solution (reference answer)</label><textarea class="a-textarea" id="task-sol" style="min-height:100px" placeholder="# Solution code..."></textarea></div>
+        <div id="task-msg" style="font-size:0.85rem;min-height:1.2rem"></div>
+        <div style="display:flex;gap:0.75rem">
+          <button class="a-btn a-btn-green" style="padding:0.6rem 1.2rem" onclick="submitTask()"><i class="fas fa-save"></i> Create Task</button>
+          <button class="a-btn a-btn-red" onclick="document.getElementById('add-task-form').style.display='none'">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <div class="a-card" style="padding:0;overflow:hidden">
+      <table class="a-table">
+        <thead><tr><th>Title</th><th>Type</th><th>Difficulty</th><th>Points</th><th>Completions</th><th>Actions</th></tr></thead>
+        <tbody>${data.tasks.map(t=>`
+          <tr id="task-row-${t._id}">
+            <td style="font-weight:700">${t.title}</td>
+            <td><span style="font-size:0.8rem;color:var(--purple,#c080ff)">${t.type}</span></td>
+            <td><span class="diff-${t.difficulty}">${t.difficulty}</span></td>
+            <td style="font-family:'Share Tech Mono',monospace;color:var(--cyan)">${t.points}</td>
+            <td style="color:var(--muted)">${t.completedBy?.length||0}</td>
+            <td><button class="a-btn a-btn-red" onclick="deleteTask('${t._id}','${t.title.replace(/'/g,"\\'")}')"><i class="fas fa-trash"></i> Delete</button></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function showAddTask() {
+  const f = document.getElementById('add-task-form');
+  if (f) f.style.display = f.style.display === 'none' ? '' : 'none';
+}
+
+async function submitTask() {
+  const body = {
+    title: document.getElementById('task-title').value.trim(),
+    description: document.getElementById('task-desc').value.trim(),
+    type: document.getElementById('task-type').value,
+    difficulty: document.getElementById('task-diff').value,
+    points: parseInt(document.getElementById('task-pts').value) || 100,
+    starterCode: document.getElementById('task-starter').value,
+    solution: document.getElementById('task-sol').value,
+    testCases: []
+  };
+  const msg = document.getElementById('task-msg');
+  if (!body.title || !body.description || !body.solution) { msg.innerHTML = '<span style="color:var(--red)">Title, description, and solution required.</span>'; return; }
+  msg.innerHTML = '<span style="color:var(--muted)"><i class="fas fa-spinner fa-spin"></i> Creating...</span>';
+  const data = await aApi('/admin/tasks', 'POST', body);
+  if (data.success) { toast('Task created!'); loadTasks(); }
+  else msg.innerHTML = `<span style="color:var(--red)">${data.message}</span>`;
+}
+
+async function deleteTask(id, title) {
+  if (!confirm(`Delete task "${title}"?`)) return;
+  const data = await aApi('/admin/tasks/'+id, 'DELETE');
+  if (data.success) { toast('Task deleted'); document.getElementById('task-row-'+id)?.remove(); }
+  else toast(data.message, 'error');
+}
+
+// ── ANNOUNCEMENTS ─────────────────────────────────────────
+async function loadAnnounce() {
+  document.getElementById('a-main').innerHTML = `<div class="loading-row"><i class="fas fa-spinner fa-spin"></i> Loading...</div>`;
+  const data = await aApi('/admin/announcement');
+
+  document.getElementById('a-main').innerHTML = `
+    <div class="a-section-title">📢 Announcements</div>
+    <div class="a-section-sub">Broadcast messages to all students</div>
+
+    ${data.announcement ? `
+    <div class="announce-box">
+      <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:1px">
+        <i class="fas fa-clock"></i> Current announcement — posted by ${data.announcement.postedBy} at ${new Date(data.announcement.postedAt).toLocaleString()}
+      </div>
+      <div style="color:var(--orange);font-size:1rem">${data.announcement.message}</div>
+    </div>` : `<div class="announce-box" style="color:var(--muted)"><i class="fas fa-info-circle"></i> No active announcement.</div>`}
+
+    <div class="a-card">
+      <div class="a-card-title"><i class="fas fa-bullhorn"></i> Post New Announcement</div>
+      <div class="a-form">
+        <div><label class="a-label">Message</label>
+          <textarea class="a-textarea" id="ann-msg" style="min-height:80px" placeholder="Type your announcement to all students..."></textarea>
+        </div>
+        <div id="ann-status" style="font-size:0.85rem;min-height:1.2rem"></div>
+        <button class="a-btn a-btn-orange" style="padding:0.65rem 1.5rem;font-size:0.9rem" onclick="postAnnouncement()"><i class="fas fa-paper-plane"></i> Broadcast</button>
+      </div>
+    </div>`;
+}
+
+async function postAnnouncement() {
+  const message = document.getElementById('ann-msg').value.trim();
+  const status  = document.getElementById('ann-status');
+  if (!message) { status.innerHTML = '<span style="color:var(--red)">Message cannot be empty.</span>'; return; }
+  status.innerHTML = '<span style="color:var(--muted)"><i class="fas fa-spinner fa-spin"></i> Sending...</span>';
+  const data = await aApi('/admin/announce', 'POST', { message });
+  if (data.success) { toast('Announcement sent!'); loadAnnounce(); }
+  else status.innerHTML = `<span style="color:var(--red)">${data.message}</span>`;
+}
+</script>
+</body>
+</html>
