@@ -100,7 +100,7 @@ function renderSidebar() {
   return `<div class="sidebar">${items.map(i => `<div class="sidebar-item ${state.page===i.page?'active':''}" onclick="navigate('${i.page}')"><i class="fas ${i.icon}"></i> ${i.label}</div>`).join('')}
     <div style="padding:1.5rem; margin-top:auto; border-top:1px solid var(--border); margin-top:2rem;">
       <div style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:0.5rem;">Logged in as</div>
-      <div style="color:var(--purple); font-weight:700;">${state.user?state.user.username:'Unknown'}</div>
+      <div style="color:var(--purple); font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px;" title="${state.user?state.user.username:''}">${state.user ? (state.user.username && !state.user.username.includes('@') ? state.user.username : (state.user.username||'').split('@')[0]) : 'Unknown'}</div>
       <div style="font-size:0.8rem; color:var(--text-dim); margin-top:0.25rem;">Level ${state.user?state.user.level||1:1}</div>
     </div>
   </div>`;
@@ -201,7 +201,6 @@ function renderHomePage(modal) {
         <button class="home-nav-link" onclick="showAuthModal('login')">TERMINAL</button>
       </div>
       <div class="home-nav-right">
-        <span class="home-operator">Operator: <span>guest_user</span></span>
         <button class="home-nav-btn-outline" onclick="showAuthModal('login')">Sign In</button>
         <button class="home-nav-btn-fill"    onclick="showAuthModal('register')">Get Started →</button>
       </div>
