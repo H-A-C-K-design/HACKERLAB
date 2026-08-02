@@ -67,7 +67,7 @@ function render() {
 function renderNavbar() {
   const u = state.user;
   return `<nav class="navbar">
-    <div class="logo" onclick="navigate('home')">CYBER<span>FORGE</span> <small style="font-size:0.6rem;color:#555;font-family:Rajdhani">ACADEMY</small></div>
+    <div class="logo" onclick="navigate('home')">CYBER<span>FORGE</span> <small style="font-size:0.6rem;color:var(--text-dim);font-family:Rajdhani">ACADEMY</small></div>
     <div class="nav-links">
       <button class="nav-btn ${state.page==='home'?'active':''}" onclick="navigate('home')"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
       <button class="nav-btn ${state.page==='challenges'?'active':''}" onclick="navigate('challenges')"><i class="fas fa-flag"></i> Challenges</button>
@@ -98,10 +98,10 @@ function renderSidebar() {
     { page:'leaderboard', icon:'fa-trophy', label:'Leaderboard' },
   ];
   return `<div class="sidebar">${items.map(i => `<div class="sidebar-item ${state.page===i.page?'active':''}" onclick="navigate('${i.page}')"><i class="fas ${i.icon}"></i> ${i.label}</div>`).join('')}
-    <div style="padding:1.5rem; margin-top:auto; border-top:1px solid #1a3a5a; margin-top:2rem;">
-      <div style="font-size:0.75rem; color:#3a5a7a; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.5rem;">Logged in as</div>
-      <div style="color:#80c0ff; font-weight:700;">${state.user?state.user.username:'Unknown'}</div>
-      <div style="font-size:0.8rem; color:#3a6a5a; margin-top:0.25rem;">Level ${state.user?state.user.level||1:1}</div>
+    <div style="padding:1.5rem; margin-top:auto; border-top:1px solid var(--border); margin-top:2rem;">
+      <div style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:0.5rem;">Logged in as</div>
+      <div style="color:var(--purple); font-weight:700;">${state.user?state.user.username:'Unknown'}</div>
+      <div style="font-size:0.8rem; color:var(--text-dim); margin-top:0.25rem;">Level ${state.user?state.user.level||1:1}</div>
     </div>
   </div>`;
 }
@@ -122,7 +122,7 @@ function renderDashboard() {
   <div class="dashboard-grid">
     <div class="stat-card cyan"><div class="big-num">${u.xp||0}</div><div class="stat-label">Total XP</div>
       <div class="xp-bar-container"><div class="xp-bar" style="width:${pct}%"></div></div>
-      <div style="font-size:0.75rem;color:#3a5a7a;margin-top:0.3rem">${(u.xp||0)%500}/${500} to next level</div>
+      <div style="font-size:0.75rem;color:var(--text-dim);margin-top:0.3rem">${(u.xp||0)%500}/${500} to next level</div>
     </div>
     <div class="stat-card green"><div class="big-num">${u.level||1}</div><div class="stat-label">Level</div></div>
     <div class="stat-card red"><div class="big-num" id="dash-challenges">-</div><div class="stat-label">Challenges Solved</div></div>
@@ -130,24 +130,24 @@ function renderDashboard() {
   </div>
   <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-      <h3 style="font-family:Orbitron,monospace;font-size:1.1rem;color:var(--accent-cyan)"><i class="fas fa-rocket"></i> Quick Start</h3>
+      <h3 style="font-family:Orbitron,monospace;font-size:1.1rem;color:var(--purple)"><i class="fas fa-rocket"></i> Quick Start</h3>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;">
       ${[
-        {icon:'🎯',title:'Start a Challenge',sub:'Test your skills with CTF challenges',page:'challenges',color:'var(--accent-green)'},
-        {icon:'🧪',title:'Enter a Lab',sub:'Guided hands-on hacking labs',page:'labs',color:'var(--accent-cyan)'},
-        {icon:'📚',title:'Learn Concepts',sub:'Theory and techniques explained',page:'learning',color:'var(--accent-purple)'},
-        {icon:'💻',title:'Open Terminal',sub:'Simulate Kali Linux commands',page:'terminal',color:'var(--accent-orange)'},
-      ].map(q => `<div onclick="navigate('${q.page}')" style="background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:1.2rem;cursor:pointer;transition:all 0.3s;border-left:3px solid ${q.color}" onmouseover="this.style.borderColor='${q.color}'" >
+        {icon:'🎯',title:'Start a Challenge',sub:'Test your skills with CTF challenges',page:'challenges',color:'var(--purple)'},
+        {icon:'🧪',title:'Enter a Lab',sub:'Guided hands-on hacking labs',page:'labs',color:'var(--cyan)'},
+        {icon:'📚',title:'Learn Concepts',sub:'Theory and techniques explained',page:'learning',color:'var(--green)'},
+        {icon:'💻',title:'Open Terminal',sub:'Simulate Kali Linux commands',page:'terminal',color:'var(--orange)'},
+      ].map(q => `<div onclick="navigate('${q.page}')" style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.2rem;cursor:pointer;transition:all 0.3s;border-left:3px solid ${q.color}" onmouseover="this.style.background='rgba(124,58,237,.05)';this.style.borderColor='${q.color}'" onmouseout="this.style.background='var(--bg2)';this.style.borderColor='var(--border)'">
         <div style="font-size:1.5rem;margin-bottom:0.5rem">${q.icon}</div>
-        <div style="font-weight:700;margin-bottom:0.25rem">${q.title}</div>
-        <div style="font-size:0.85rem;color:var(--text-muted)">${q.sub}</div>
+        <div style="font-weight:700;margin-bottom:0.25rem;color:var(--text)">${q.title}</div>
+        <div style="font-size:0.85rem;color:var(--text-dim)">${q.sub}</div>
       </div>`).join('')}
     </div>
   </div>
   <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;">
-    <h3 style="font-family:Orbitron,monospace;font-size:1.1rem;color:var(--accent-cyan);margin-bottom:1rem"><i class="fas fa-bolt"></i> Platform Tip</h3>
-    <div style="background:rgba(0,0,0,0.3);border-radius:8px;padding:1rem;font-family:'Share Tech Mono',monospace;font-size:0.85rem;color:#80c0a0;line-height:1.8" id="tip-box">
+    <h3 style="font-family:Orbitron,monospace;font-size:1.1rem;color:var(--purple);margin-bottom:1rem"><i class="fas fa-bolt"></i> Platform Tip</h3>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1rem;font-family:'Share Tech Mono',monospace;font-size:0.85rem;color:var(--text-mid);line-height:1.8" id="tip-box">
     Loading tip...
     </div>
   </div>`;
@@ -318,7 +318,6 @@ function renderAuthModal(mode) {
         </div>
         <button class="auth-box-submit" onclick="doLogin()">Sign In →</button>
         <div class="auth-switch">No account? <a onclick="showAuthModal('register')">Register free →</a></div>
-        <div class="auth-demo"><i class="fas fa-info-circle"></i> Demo: <code>admin@cyberforge.io</code> / <code>admin123</code></div>
       ` : `
         <div class="form-group"><label class="form-label">Username</label>
           <input class="form-input" id="reg-user" type="text" placeholder="Your username" autocomplete="username"/>
@@ -409,7 +408,7 @@ function showMsg(id, msg, type) {
 
 async function doGoogleLogin() {
   const msgEl = $('auth-msg');
-  if (msgEl) msgEl.innerHTML = '<div class="alert" style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);color:#c084fc"><i class="fas fa-spinner fa-spin"></i> Opening Google sign-in...</div>';
+  if (msgEl) msgEl.innerHTML = '<div class="alert" style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);color:var(--purple)"><i class="fas fa-spinner fa-spin"></i> Redirecting to Google sign-in...</div>';
 
   if (!window.firebaseAuth || !window.googleProvider) {
     if (msgEl) msgEl.innerHTML = '<div class="alert alert-error">Firebase not ready. Please add your Firebase web config to index.html.</div>';
@@ -417,29 +416,36 @@ async function doGoogleLogin() {
   }
 
   try {
-    const result = await window.signInWithPopup(window.firebaseAuth, window.googleProvider);
-    const googleUser = result.user;
-
-    // Send Google token to our backend
-    const idToken = await googleUser.getIdToken();
-    const data = await api('/auth/google', 'POST', {
-      idToken,
-      email: googleUser.email,
-      username: googleUser.displayName?.replace(/\s+/g, '_').toLowerCase() || 'user_' + Date.now(),
-      photoURL: googleUser.photoURL
-    });
-
-    if (data.success) {
-      localStorage.setItem('cf_token', data.token);
-      localStorage.setItem('cf_user', JSON.stringify(data.user));
-      state.user = data.user;
-      state.token = data.token;
-      navigate('home');
-    } else {
-      if (msgEl) msgEl.innerHTML = `<div class="alert alert-error">${data.message}</div>`;
+    // Try popup first, fall back to redirect if blocked
+    try {
+      const result = await window.signInWithPopup(window.firebaseAuth, window.googleProvider);
+      const googleUser = result.user;
+      const idToken = await googleUser.getIdToken();
+      const data = await api('/auth/google', 'POST', {
+        idToken,
+        email: googleUser.email,
+        username: googleUser.displayName?.replace(/\s+/g, '_').toLowerCase() || 'user_' + Date.now(),
+        photoURL: googleUser.photoURL
+      });
+      if (data.success) {
+        localStorage.setItem('cf_token', data.token);
+        localStorage.setItem('cf_user', JSON.stringify(data.user));
+        state.user = data.user;
+        state.token = data.token;
+        navigate('home');
+      } else {
+        if (msgEl) msgEl.innerHTML = `<div class="alert alert-error">${data.message}</div>`;
+      }
+    } catch (popupErr) {
+      // Popup was blocked — fall back to redirect
+      if (popupErr.code === 'auth/popup-blocked' || popupErr.code === 'auth/popup-closed-by-user') {
+        await window.signInWithRedirect(window.firebaseAuth, window.googleProvider);
+        // Page will reload after redirect — result handled in index.html
+      } else {
+        throw popupErr;
+      }
     }
   } catch (err) {
-    if (err.code === 'auth/popup-closed-by-user') return;
     if (msgEl) msgEl.innerHTML = `<div class="alert alert-error">Google sign-in failed: ${err.message}</div>`;
   }
 }
@@ -506,15 +512,15 @@ async function openChallenge(id) {
         <div>
           <span class="diff-badge diff-${ch.difficulty}">${ch.difficulty}</span>
           <span class="cat-badge">${ch.category}</span>
-          <span style="margin-left:1rem;font-family:Orbitron,monospace;color:var(--accent-cyan)">${ch.points} pts</span>
+          <span style="margin-left:1rem;font-family:Orbitron,monospace;color:var(--cyan)">${ch.points} pts</span>
         </div>
         <button class="modal-close" onclick="closeChallengeModal()">✕</button>
       </div>
       <h2 style="font-family:Orbitron,monospace;font-size:1.3rem;margin-bottom:1rem">${ch.title}</h2>
       <div class="challenge-desc">${ch.description}</div>
-      ${ch.hints&&ch.hints.length?`<div class="hint-section"><div style="color:var(--accent-orange);font-weight:700;margin-bottom:0.5rem"><i class="fas fa-lightbulb"></i> Hints</div>${ch.hints.map(h=>`<div class="hint-item"><i class="fas fa-lightbulb"></i> ${h.text} <span style="float:right;color:#666">-${h.cost} XP</span></div>`).join('')}</div>`:''}
+      ${ch.hints&&ch.hints.length?`<div class="hint-section"><div style="color:var(--orange);font-weight:700;margin-bottom:0.5rem"><i class="fas fa-lightbulb"></i> Hints</div>${ch.hints.map(h=>`<div class="hint-item"><i class="fas fa-lightbulb"></i> ${h.text} <span style="float:right;color:#666">-${h.cost} XP</span></div>`).join('')}</div>`:''}
       <div style="margin-top:1.5rem">
-        <label style="display:block;font-size:0.85rem;color:var(--text-muted);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:1px"><i class="fas fa-flag" style="color:var(--accent-green)"></i> Submit Flag</label>
+        <label style="display:block;font-size:0.85rem;color:var(--text-dim);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:1px"><i class="fas fa-flag" style="color:var(--green)"></i> Submit Flag</label>
         <input class="flag-input" id="flag-input-${ch._id}" placeholder="CyberForge{your_flag_here}" />
         <div id="flag-msg-${ch._id}"></div>
         <button class="btn btn-green" style="width:100%" onclick="submitFlag('${ch._id}')"><i class="fas fa-paper-plane"></i> SUBMIT FLAG</button>
@@ -570,10 +576,10 @@ async function loadLabs() {
       <div><span class="module-level level-${l.difficulty}">${l.difficulty}</span><span class="cat-badge">${l.category}</span></div>
       <div class="card-title">${l.title}</div>
       <div class="card-desc">${l.description}</div>
-      <div style="display:flex;gap:1rem;margin-top:1rem;font-size:0.85rem;color:var(--text-muted)">
+      <div style="display:flex;gap:1rem;margin-top:1rem;font-size:0.85rem;color:var(--text-dim)">
         <span><i class="fas fa-clock"></i> ${l.duration}</span>
         <span><i class="fas fa-star" style="color:#ffcc00"></i> +${l.xpReward} XP</span>
-        ${l.completed?'<span style="color:var(--accent-green)"><i class="fas fa-check-circle"></i> Completed</span>':''}
+        ${l.completed?'<span style="color:var(--green)"><i class="fas fa-check-circle"></i> Completed</span>':''}
       </div>
       <div style="margin-top:0.75rem">${(l.tools||[]).slice(0,3).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
     </div>`).join('');
@@ -596,24 +602,24 @@ async function openLab(id) {
           <span class="module-level level-${l.difficulty}">${l.difficulty}</span>
           <span class="cat-badge">${l.category}</span>
           <h2 style="font-family:Orbitron,monospace;font-size:1.4rem;margin-top:0.75rem">${l.title}</h2>
-          <p style="color:var(--text-muted);margin-top:0.5rem">${l.description}</p>
+          <p style="color:var(--text-dim);margin-top:0.5rem">${l.description}</p>
         </div>
-        <div style="text-align:center;background:rgba(0,0,0,0.3);padding:1rem;border-radius:8px">
-          <div style="font-family:Orbitron,monospace;font-size:1.5rem;color:var(--accent-cyan)">+${l.xpReward}</div>
-          <div style="font-size:0.8rem;color:var(--text-muted)">XP REWARD</div>
+        <div style="text-align:center;background:var(--bg2);padding:1rem;border-radius:8px">
+          <div style="font-family:Orbitron,monospace;font-size:1.5rem;color:var(--cyan)">+${l.xpReward}</div>
+          <div style="font-size:0.8rem;color:var(--text-dim)">XP REWARD</div>
         </div>
       </div>
       <div class="section-divider"><span>Objectives</span></div>
-      <ul style="list-style:none;margin-bottom:1.5rem">${(l.objectives||[]).map(o=>`<li style="padding:0.4rem 0;color:#80c0a0"><i class="fas fa-check-circle" style="color:var(--accent-green);margin-right:0.5rem"></i>${o}</li>`).join('')}</ul>
+      <ul style="list-style:none;margin-bottom:1.5rem">${(l.objectives||[]).map(o=>`<li style="padding:0.4rem 0;color:var(--green)"><i class="fas fa-check-circle" style="color:var(--green);margin-right:0.5rem"></i>${o}</li>`).join('')}</ul>
       <div class="section-divider"><span>Lab Steps</span></div>
       ${(l.steps||[]).map(s=>`
         <div class="lab-step">
           <div class="lab-step-num">STEP ${s.stepNumber}</div>
           <div style="font-weight:700;font-size:1.05rem;margin-bottom:0.5rem">${s.title}</div>
-          <div style="color:var(--text-muted);margin-bottom:0.75rem;line-height:1.6">${s.instruction}</div>
+          <div style="color:var(--text-dim);margin-bottom:0.75rem;line-height:1.6">${s.instruction}</div>
           ${s.command?`<div class="lab-cmd" onclick="copyCmd('${s.command.replace(/'/g,"\\'")}',this)" title="Click to copy">${s.command}</div>`:''}
-          ${s.expectedOutput?`<div style="font-size:0.85rem;color:#3a5a4a;margin-top:0.5rem"><i class="fas fa-terminal"></i> Expected: <span style="color:#60a070;font-family:'Share Tech Mono',monospace">${s.expectedOutput}</span></div>`:''}
-          ${s.hint?`<div style="margin-top:0.5rem;padding:0.5rem 0.75rem;background:rgba(255,102,0,0.1);border-left:3px solid var(--accent-orange);border-radius:4px;font-size:0.85rem;color:var(--accent-orange)"><i class="fas fa-lightbulb"></i> ${s.hint}</div>`:''}
+          ${s.expectedOutput?`<div style="font-size:0.85rem;color:var(--text-dim);margin-top:0.5rem"><i class="fas fa-terminal"></i> Expected: <span style="color:var(--green);font-family:'Share Tech Mono',monospace">${s.expectedOutput}</span></div>`:''}
+          ${s.hint?`<div style="margin-top:0.5rem;padding:0.5rem 0.75rem;background:rgba(255,102,0,0.1);border-left:3px solid var(--orange);border-radius:4px;font-size:0.85rem;color:var(--orange)"><i class="fas fa-lightbulb"></i> ${s.hint}</div>`:''}
         </div>`).join('')}
       <div style="margin-top:2rem;text-align:center">
         <button class="btn btn-green" onclick="completeLab('${l._id}')"><i class="fas fa-check-circle"></i> MARK AS COMPLETED (+${l.xpReward} XP)</button>
@@ -639,7 +645,7 @@ async function completeLab(id) {
 }
 
 function copyCmd(cmd, el) {
-  navigator.clipboard?.writeText(cmd).then(()=>{ el.style.borderColor='var(--accent-green)'; setTimeout(()=>el.style.borderColor='',1000); });
+  navigator.clipboard?.writeText(cmd).then(()=>{ el.style.borderColor='var(--green)'; setTimeout(()=>el.style.borderColor='',1000); });
 }
 
 // ---- TOOLS ----
@@ -712,7 +718,7 @@ async function openTool(id) {
           <span class="diff-badge ${t.difficulty==='beginner'?'diff-easy':t.difficulty==='intermediate'?'diff-medium':'diff-hard'}" style="margin-left:0.5rem">${t.difficulty}</span>
         </div>
       </div>
-      <p style="color:var(--text-muted);line-height:1.7;margin-bottom:1.5rem">${t.description}</p>
+      <p style="color:var(--text-dim);line-height:1.7;margin-bottom:1.5rem">${t.description}</p>
       <div class="section-divider"><span>Installation</span></div>
       <div class="code-block"><span class="cmd">${t.install}</span></div>
       <div class="section-divider"><span>Basic Usage</span></div>
@@ -730,111 +736,860 @@ function backToTools() {
 }
 
 // ---- TERMINAL ----
+let termState = {
+  cwd: '/home/kali',
+  mode: 'bash', // 'bash', 'msfconsole', 'meterpreter'
+  msfModule: '',
+  meterpreterTarget: '',
+  vfs: {
+    '/home/kali': { type: 'dir' },
+    '/home/kali/Desktop': { type: 'dir' },
+    '/home/kali/Documents': { type: 'dir' },
+    '/home/kali/Downloads': { type: 'dir' },
+    '/home/kali/Tools': { type: 'dir' },
+    '/home/kali/ctf_workspace': { type: 'dir' },
+    '/home/kali/ctf_workspace/flag.txt': { type: 'file', content: 'CyberForge{k4l1_l1nux_m4st3r_2026}' },
+    '/home/kali/ctf_workspace/target_notes.txt': { type: 'file', content: 'Target IP: 10.10.10.5\nVulnerable service: vsftpd 2.3.4 & Apache 2.4.51\nCheck /admin directory and database' },
+    '/home/kali/ctf_workspace/hash.txt': { type: 'file', content: '5f4dcc3b5aa765d61d8327deb882cf99' },
+    '/home/kali/wordlists': { type: 'dir' },
+    '/home/kali/wordlists/rockyou.txt': { type: 'file', content: '123456\npassword\n12345678\nadmin\ncyberforge\nsupersecret\nletmein\nhacker\nmonster\nshadow\n123456789' },
+    '/home/kali/wordlists/common.txt': { type: 'file', content: 'admin\nlogin\nsecret\nuploads\nconfig.php\napi\ndashboard\ndata\ndb\nbackup' },
+    '/etc/passwd': { type: 'file', content: 'root:x:0:0:root:/root:/bin/bash\nkali:x:1000:1000:Kali,,,:/home/kali:/bin/bash\nwww-data:x:33:33:www-data:/var/www:/usr/sbin/nologin' },
+    '/etc/shadow': { type: 'file', content: 'root:$6$v1S2...:19000:0:99999:7:::\nkali:$6$x9K8...:19000:0:99999:7:::' },
+    '/usr/bin': { type: 'dir' }
+  },
+  installedTools: new Set(['nmap', 'hydra', 'hashcat', 'whoami', 'ifconfig', 'ping', 'curl', 'wget', 'cat', 'ls', 'pwd', 'mkdir', 'touch', 'rm', 'cd', 'echo', 'chmod', 'nano', 'python3', 'help', 'git', 'apt', 'apt-get', 'msfconsole', 'gobuster', 'sqlmap', 'nikto', 'nc', 'john', 'airmon-ng', 'airodump-ng']),
+  history: [],
+  historyIdx: -1,
+  isExecuting: false
+};
+
+function getPromptHTML() {
+  if (termState.mode === 'msfconsole') {
+    const modStr = termState.msfModule ? ` exploit(<span style="color:#ff2a85">${termState.msfModule}</span>)` : '';
+    return `<span class="term-prompt-msf">msf6${modStr} &gt;&nbsp;</span>`;
+  }
+  if (termState.mode === 'meterpreter') {
+    return `<span class="term-prompt-meterpreter">meterpreter &gt;&nbsp;</span>`;
+  }
+  let displayCwd = termState.cwd;
+  if (displayCwd.startsWith('/home/kali')) {
+    displayCwd = '~' + displayCwd.slice(10);
+  }
+  return `<span class="term-prompt-kali">┌──(kali㉿cyberforge)-[${displayCwd}]<br>└─$&nbsp;</span>`;
+}
+
+function updatePromptUI() {
+  const p = $('term-prompt-el');
+  if (p) p.innerHTML = getPromptHTML();
+}
+
 function renderTerminalPage() {
+  const quickCmds = [
+    'git clone https://github.com/sqlmapproject/sqlmap.git',
+    'apt install gobuster',
+    'nmap -sV -sC 10.10.10.5',
+    'msfconsole',
+    'gobuster dir -u http://10.10.10.5 -w wordlists/common.txt',
+    'sqlmap -u "http://10.10.10.5/item?id=1" --dbs',
+    'hydra -l admin -P wordlists/rockyou.txt ssh://10.10.10.5',
+    'airmon-ng start wlan0',
+    'cat ctf_workspace/flag.txt',
+    'help'
+  ];
+
   return `<div class="page-header">
     <div class="page-title">💻 Live <span>Terminal</span></div>
-    <div class="page-sub">Simulated Kali Linux terminal - practice commands safely</div>
+    <div class="page-sub">Interactive Kali Linux Terminal — Real-time tools, git cloning, nmap scanning & live hacking</div>
   </div>
-  <div style="background:rgba(0,255,65,0.05);border:1px solid rgba(0,255,65,0.3);border-radius:8px;padding:0.75rem 1rem;margin-bottom:1.5rem;font-size:0.85rem;color:var(--accent-green)">
-    <i class="fas fa-shield-alt"></i> <strong>Safe Simulation Mode</strong> — No real system is affected. Practice Kali Linux commands in a sandboxed environment.
+  <div style="background:rgba(0,229,255,0.06);border:1px solid rgba(0,229,255,0.25);border-radius:8px;padding:0.75rem 1rem;margin-bottom:1.5rem;font-size:0.85rem;color:#00e5ff;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem">
+    <div><i class="fas fa-terminal"></i> <strong>Kali Linux Real-time Terminal Engine</strong> — Practice real hacking tools, VFS commands, git repo installs, and target scans in real-time.</div>
+    <button onclick="resetVFSDialog()" class="btn btn-outline" style="padding:0.25rem 0.65rem;font-size:0.75rem;border-color:rgba(0,229,255,0.4);color:#00e5ff"><i class="fas fa-undo"></i> Reset VFS</button>
   </div>
   <div class="terminal-container">
     <div class="terminal-header">
       <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-      <span class="terminal-title">kali@cyberforge:~ — bash</span>
-      <button onclick="clearTerminal()" style="background:none;border:1px solid #333;color:#666;padding:0.2rem 0.6rem;border-radius:4px;cursor:pointer;font-size:0.75rem;margin-left:1rem">CLEAR</button>
+      <span class="terminal-title" id="term-title-text">kali@cyberforge: ${termState.cwd} — bash</span>
+      <button onclick="clearTerminal()" style="background:none;border:1px solid #1f2a3c;color:#7b8ca5;padding:0.2rem 0.6rem;border-radius:4px;cursor:pointer;font-size:0.75rem;margin-left:1rem">CLEAR</button>
     </div>
     <div class="terminal-output" id="term-output">
-      <div class="term-line" style="color:#5a8a6a">CyberForge Academy - Kali Linux Terminal Simulator v2.0</div>
-      <div class="term-line" style="color:#3a5a4a">Type 'help' to see available commands. Use arrow keys for history.</div>
-      <div class="term-line" style="color:#2a4a3a">⚠️  Educational simulator only. Practice safely!</div>
-      <div class="term-line"> </div>
+      <div class="term-line" style="color:#00ff66;font-weight:700">CyberForge Academy - Kali Linux v2026.1 (x86_64)</div>
+      <div class="term-line" style="color:#00e5ff">Type 'help' to view available tools & commands. Real-time scanning, git clone & msfconsole enabled.</div>
+      <div class="term-line" style="color:#ffe600">🐉 Practice safely in this interactive sandbox environment.</div>
+      <div class="term-line">&nbsp;</div>
     </div>
     <div class="terminal-input-row">
-      <span class="term-prompt">┌──(kali㉿cyberforge)-[~]<br>└─$&nbsp;</span>
-      <input class="term-input" id="term-input" placeholder="Enter command..." autocomplete="off" spellcheck="false"/>
+      <span id="term-prompt-el">${getPromptHTML()}</span>
+      <input class="term-input" id="term-input" placeholder="Type a command (e.g. nmap -sV 10.10.10.5 or git clone ...)" autocomplete="off" spellcheck="false"/>
     </div>
   </div>
   <div style="margin-top:1.5rem">
-    <div class="page-title" style="font-size:1.1rem;margin-bottom:1rem">⚡ Quick Commands</div>
+    <div class="page-title" style="font-size:1.1rem;margin-bottom:0.75rem">⚡ Real-time Quick Commands</div>
     <div style="display:flex;flex-wrap:wrap;gap:0.5rem">
-      ${['ls -la','pwd','whoami','id','uname -a','ifconfig','nmap --help','nmap -sV 192.168.1.1','hashcat --help','hydra --help','help'].map(cmd=>
-        `<button onclick="runQuickCmd('${cmd}')" style="background:var(--bg2);border:1px solid var(--border);color:var(--purple);padding:0.4rem 0.8rem;border-radius:6px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:0.8rem;transition:all 0.2s" onmouseover="this.style.borderColor='var(--purple)';this.style.background='rgba(124,58,237,.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--bg2)'">${cmd}</button>`
+      ${quickCmds.map(cmd =>
+        `<button onclick="runQuickCmd('${cmd.replace(/'/g, "\\'")}')" style="background:rgba(15,21,32,0.8);border:1px solid #1f2a3c;color:#00e5ff;padding:0.4rem 0.8rem;border-radius:6px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:0.8rem;transition:all 0.2s" onmouseover="this.style.borderColor='#00e5ff';this.style.background='rgba(0,229,255,0.08)'" onmouseout="this.style.borderColor='#1f2a3c';this.style.background='rgba(15,21,32,0.8)'">${cmd}</button>`
       ).join('')}
     </div>
   </div>`;
 }
 
-let cmdHistory = []; let historyIdx = -1;
-
 function initTerminal() {
   const input = $('term-input');
-  if(!input) return;
+  if (!input) return;
+
+  updatePromptUI();
+
   input.addEventListener('keydown', e => {
-    if(e.key==='Enter') { const cmd=input.value.trim(); if(cmd) { execTermCmd(cmd); cmdHistory.unshift(cmd); historyIdx=-1; input.value=''; } }
-    if(e.key==='ArrowUp') { historyIdx=Math.min(historyIdx+1,cmdHistory.length-1); input.value=cmdHistory[historyIdx]||''; e.preventDefault(); }
-    if(e.key==='ArrowDown') { historyIdx=Math.max(historyIdx-1,-1); input.value=cmdHistory[historyIdx]||''; e.preventDefault(); }
-    if(e.key==='Tab') { e.preventDefault(); autocomplete(input.value); }
+    if (e.key === 'Enter') {
+      const cmd = input.value.trim();
+      if (cmd) {
+        input.value = '';
+        termState.history.unshift(cmd);
+        termState.historyIdx = -1;
+        execTermCmd(cmd);
+      }
+    }
+    if (e.key === 'ArrowUp') {
+      termState.historyIdx = Math.min(termState.historyIdx + 1, termState.history.length - 1);
+      input.value = termState.history[termState.historyIdx] || '';
+      e.preventDefault();
+    }
+    if (e.key === 'ArrowDown') {
+      termState.historyIdx = Math.max(termState.historyIdx - 1, -1);
+      input.value = termState.history[termState.historyIdx] || '';
+      e.preventDefault();
+    }
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      autocomplete(input.value);
+    }
   });
+
   input.focus();
-  // Connect socket
-  try {
-    state.socket = io(window.location.hostname === 'localhost' ? 'http://localhost:5000' : window.location.origin);
-    state.socket.on('terminal-output', data => { appendTermOutput(data.command, data.output); });
-  } catch(e) { console.log('Socket not available, using local simulation'); }
 }
 
-const localCmds = {
-  'ls': 'Desktop  Documents  Downloads  Tools  ctf_workspace  wordlists',
-  'ls -la': 'total 48\ndrwxr-xr-x 8 kali kali 4096 Jan  1 10:00 .\ndrwxr-xr-x 3 root root 4096 Jan  1 09:00 ..\n-rw-r--r-- 1 kali kali  220 Jan  1 09:00 .bash_logout\n-rw-r--r-- 1 kali kali 3526 Jan  1 09:00 .bashrc\ndrwxr-xr-x 2 kali kali 4096 Jan  1 10:00 Desktop\ndrwxr-xr-x 2 kali kali 4096 Jan  1 10:00 Tools\ndrwxr-xr-x 2 kali kali 4096 Jan  1 10:00 ctf_workspace',
-  'pwd': '/home/kali',
-  'whoami': 'kali',
-  'id': 'uid=1000(kali) gid=1000(kali) groups=1000(kali),24(cdrom),27(sudo)',
-  'uname -a': 'Linux kali 6.1.0-kali9-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.27-1kali1 x86_64 GNU/Linux',
-  'ifconfig': 'eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500\n        inet 192.168.1.100  netmask 255.255.255.0  broadcast 192.168.1.255\n        ether 00:0c:29:ab:cd:ef\nlo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536\n        inet 127.0.0.1  netmask 255.0.0.0',
-  'ip addr': '1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536\n    inet 127.0.0.1/8 scope host lo\n2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500\n    inet 192.168.1.100/24 brd 192.168.1.255',
-  'nmap --help': 'Nmap 7.94 ( https://nmap.org )\nUsage: nmap [Scan Type(s)] [Options] {target}\n  -sS : TCP SYN Scan (stealth)\n  -sV : Version detection\n  -sC : Default scripts\n  -O  : OS detection\n  -A  : Aggressive scan\n  -p  : Port ranges (-p 1-1000, -p-)\n  -T4 : Timing template (faster)',
-  'nmap -sv 192.168.1.1': 'Starting Nmap 7.94\nNmap scan report for 192.168.1.1\nPORT   STATE SERVICE VERSION\n22/tcp open  ssh     OpenSSH 8.4p1 Debian\n80/tcp open  http    Apache httpd 2.4.51\nNmap done: 1 IP address (1 host up) scanned in 3.21s',
-  'nmap -sv 192.168.1.1': 'Starting Nmap 7.94\nNmap scan report for 192.168.1.1\nPORT   STATE SERVICE VERSION\n22/tcp open  ssh     OpenSSH 8.4p1 Debian\n80/tcp open  http    Apache httpd 2.4.51\nNmap done: 1 IP address (1 host up) scanned in 3.21s',
-  'hashcat --help': 'hashcat (v6.2.6)\nUsage: hashcat [options]... hash|hashfile [dictionary|mask]\n  -m : Hash-Type (0=MD5,100=SHA1,1000=NTLM,1800=sha512crypt)\n  -a : Attack-Mode (0=dict, 1=combo, 3=brute-force, 6=hybrid)\n  -o : Output file\n  --show : Show cracked hashes\nExample: hashcat -m 0 -a 0 hash.txt rockyou.txt',
-  'hydra --help': 'Hydra v9.4\nSyntax: hydra [options] target service\n  -l LOGIN   : single login name\n  -L FILE    : login file\n  -p PASS    : single password\n  -P FILE    : password file\n  -t TASKS   : parallel connections (default: 16)\nExample: hydra -l admin -P rockyou.txt ssh://192.168.1.1',
-  'help': 'Available Kali Linux commands (simulation):\nNavigation : ls, pwd, cd, mkdir, rm, cp, mv, cat, less\nNetwork    : ifconfig, ip addr, netstat, ss, ping, traceroute\nSecurity   : nmap, hydra, hashcat, sqlmap, gobuster, nikto\nSystem     : whoami, id, uname, ps, top, kill, sudo\nInfo       : help, man\nTip: Type any tool name + --help for usage info',
-  'clear': 'CLEAR',
-  'cat /etc/passwd': 'root:x:0:0:root:/root:/bin/bash\ndaemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin\nkali:x:1000:1000:Kali,,,:/home/kali:/bin/bash',
-  'sudo -l': 'Matching Defaults entries for kali:\n    env_reset, mail_badpass\nUser kali may run the following commands:\n    (ALL : ALL) ALL\n    (root) NOPASSWD: /usr/bin/nmap',
-  'find / -perm -4000 2>/dev/null': '/usr/bin/sudo\n/usr/bin/passwd\n/usr/bin/newgrp\n/usr/bin/su\n/usr/bin/mount\n/usr/bin/nmap  <-- potential privesc!',
-};
-
-function execTermCmd(cmd) {
-  const lower = cmd.toLowerCase().trim();
-  let output = localCmds[lower] || localCmds[cmd.trim()] || `bash: ${cmd}: command not found\nHint: type 'help' for available commands`;
-  if(output === 'CLEAR') { clearTerminal(); return; }
-  appendTermOutput(cmd, output);
+function resolvePath(pathStr) {
+  if (!pathStr || pathStr === '.') return termState.cwd;
+  if (pathStr === '~' || pathStr === '~/') return '/home/kali';
+  if (pathStr.startsWith('~/')) return '/home/kali/' + pathStr.slice(2);
+  if (pathStr.startsWith('/')) return pathStr;
+  
+  let parts = termState.cwd.split('/').concat(pathStr.split('/'));
+  let resolved = [];
+  for (let p of parts) {
+    if (!p || p === '.') continue;
+    if (p === '..') {
+      if (resolved.length > 0) resolved.pop();
+    } else {
+      resolved.push(p);
+    }
+  }
+  return '/' + resolved.join('/');
 }
 
-function appendTermOutput(cmd, output) {
+function appendTermLine(cmd, outputHTML, isRaw = false) {
   const out = $('term-output');
-  if(!out) return;
+  if (!out) return;
   const div = document.createElement('div');
-  div.innerHTML = `<div class="term-line"><span class="term-prompt">┌──(kali㉿cyberforge)-[~]<br>└─$ </span><span class="term-command">${cmd}</span></div><div class="term-line term-result">${output}</div><div class="term-line"> </div>`;
+  div.className = 'term-line';
+
+  if (isRaw) {
+    div.innerHTML = outputHTML;
+  } else {
+    div.innerHTML = `<div style="margin-top:0.4rem">${getPromptHTML()}<span class="term-command">${escapeHtml(cmd)}</span></div><div class="term-result">${outputHTML}</div>`;
+  }
   out.appendChild(div);
   out.scrollTop = out.scrollHeight;
 }
 
+function streamLines(cmd, lines, delayPerLine = 300, onComplete = null) {
+  termState.isExecuting = true;
+  const out = $('term-output');
+  if (!out) return;
+
+  const headerDiv = document.createElement('div');
+  headerDiv.className = 'term-line';
+  headerDiv.innerHTML = `<div style="margin-top:0.4rem">${getPromptHTML()}<span class="term-command">${escapeHtml(cmd)}</span></div>`;
+  out.appendChild(headerDiv);
+
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i < lines.length) {
+      const lineDiv = document.createElement('div');
+      lineDiv.className = 'term-line term-result';
+      lineDiv.innerHTML = lines[i];
+      out.appendChild(lineDiv);
+      out.scrollTop = out.scrollHeight;
+      i++;
+    } else {
+      clearInterval(interval);
+      termState.isExecuting = false;
+      if (onComplete) onComplete();
+    }
+  }, delayPerLine);
+}
+
+function escapeHtml(text) {
+  if (typeof text !== 'string') return text;
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function execTermCmd(cmdStr) {
+  if (termState.isExecuting) return;
+  const rawCmd = cmdStr.trim();
+  if (!rawCmd) return;
+  const parts = rawCmd.split(/\s+/);
+  const cmd = parts[0].toLowerCase();
+  const args = parts.slice(1);
+
+  // ---- METASPLOIT MODE ----
+  if (termState.mode === 'msfconsole') {
+    handleMsfCmd(rawCmd, cmd, args);
+    return;
+  }
+  // ---- METERPRETER MODE ----
+  if (termState.mode === 'meterpreter') {
+    handleMeterpreterCmd(rawCmd, cmd, args);
+    return;
+  }
+
+  // ---- BASH SHELL MODE ----
+  switch (cmd) {
+    case 'clear':
+      clearTerminal();
+      break;
+
+    case 'pwd':
+      appendTermLine(rawCmd, termState.cwd);
+      break;
+
+    case 'whoami':
+      appendTermLine(rawCmd, '<span class="term-success">kali</span>');
+      break;
+
+    case 'id':
+      appendTermLine(rawCmd, 'uid=1000(kali) gid=1000(kali) groups=1000(kali),24(cdrom),27(sudo),100(users)');
+      break;
+
+    case 'uname':
+    case 'uname -a':
+      appendTermLine(rawCmd, 'Linux kali 6.6.0-kali1-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.6.13-1kali1 (2026-01-15) x86_64 GNU/Linux');
+      break;
+
+    case 'ifconfig':
+    case 'ip':
+      appendTermLine(rawCmd, `<span class="term-info">eth0: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet 10.10.14.2  netmask 255.255.255.0  broadcast 10.10.14.255
+        ether 00:0c:29:8f:b3:a1  txqueuelen 1000  (Ethernet)
+
+wlan0: flags=4099&lt;UP,BROADCAST,MULTICAST&gt;  mtu 1500
+        inet 192.168.1.105  netmask 255.255.255.0
+        ether a4:c3:f0:12:34:56  txqueuelen 1000  (Wireless)
+
+lo: flags=73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0</span>`);
+      break;
+
+    case 'cd':
+      let targetDir = resolvePath(args[0] || '~');
+      if (termState.vfs[targetDir] && termState.vfs[targetDir].type === 'dir') {
+        termState.cwd = targetDir;
+        updatePromptUI();
+        const t = $('term-title-text');
+        if (t) t.textContent = `kali@cyberforge: ${termState.cwd} — bash`;
+        appendTermLine(rawCmd, '');
+      } else {
+        appendTermLine(rawCmd, `<span class="term-error">bash: cd: ${args[0] || ''}: No such file or directory</span>`);
+      }
+      break;
+
+    case 'ls':
+      let showAll = rawCmd.includes('-a') || rawCmd.includes('-la') || rawCmd.includes('-al');
+      let longFmt = rawCmd.includes('-l') || rawCmd.includes('-la') || rawCmd.includes('-al');
+      
+      let dirPath = termState.cwd;
+      const nonFlagArg = args.find(a => !a.startsWith('-'));
+      if (nonFlagArg) dirPath = resolvePath(nonFlagArg);
+
+      let items = Object.keys(termState.vfs).filter(p => {
+        let parent = p.substring(0, p.lastIndexOf('/')) || '/';
+        return parent === dirPath && p !== dirPath;
+      });
+
+      if (items.length === 0) {
+        appendTermLine(rawCmd, '');
+        break;
+      }
+
+      if (longFmt) {
+        let res = `total ${items.length * 4}\n`;
+        res += items.map(p => {
+          let item = termState.vfs[p];
+          let name = p.substring(p.lastIndexOf('/') + 1);
+          let perm = item.type === 'dir' ? 'drwxr-xr-x' : '-rw-r--r--';
+          let colorClass = item.type === 'dir' ? '#00e5ff' : '#00ff66';
+          return `${perm} 1 kali kali 4096 Jan 15 12:00 <span style="color:${colorClass}">${name}${item.type === 'dir' ? '/' : ''}</span>`;
+        }).join('\n');
+        appendTermLine(rawCmd, res);
+      } else {
+        let res = items.map(p => {
+          let item = termState.vfs[p];
+          let name = p.substring(p.lastIndexOf('/') + 1);
+          let colorClass = item.type === 'dir' ? '#00e5ff' : '#00ff66';
+          return `<span style="color:${colorClass}">${name}${item.type === 'dir' ? '/' : ''}</span>`;
+        }).join('  ');
+        appendTermLine(rawCmd, res);
+      }
+      break;
+
+    case 'mkdir':
+      if (!args[0]) {
+        appendTermLine(rawCmd, '<span class="term-error">mkdir: missing operand</span>');
+        break;
+      }
+      let newDir = resolvePath(args[0]);
+      termState.vfs[newDir] = { type: 'dir' };
+      appendTermLine(rawCmd, `<span class="term-success">Directory created: ${newDir}</span>`);
+      break;
+
+    case 'touch':
+      if (!args[0]) {
+        appendTermLine(rawCmd, '<span class="term-error">touch: missing operand</span>');
+        break;
+      }
+      let newFile = resolvePath(args[0]);
+      termState.vfs[newFile] = { type: 'file', content: '' };
+      appendTermLine(rawCmd, '');
+      break;
+
+    case 'cat':
+      if (!args[0]) {
+        appendTermLine(rawCmd, '<span class="term-error">cat: missing operand</span>');
+        break;
+      }
+      let targetFile = resolvePath(args[0]);
+      let fileObj = termState.vfs[targetFile];
+      if (fileObj && fileObj.type === 'file') {
+        let isFlag = fileObj.content.includes('CyberForge{');
+        let contentFmt = isFlag ? `<span class="term-flag">${escapeHtml(fileObj.content)}</span>` : escapeHtml(fileObj.content);
+        appendTermLine(rawCmd, contentFmt);
+      } else {
+        appendTermLine(rawCmd, `<span class="term-error">cat: ${args[0]}: No such file or directory</span>`);
+      }
+      break;
+
+    case 'echo':
+      let gtIdx = args.indexOf('>');
+      let ggtIdx = args.indexOf('>>');
+      if (gtIdx !== -1 || ggtIdx !== -1) {
+        let isAppend = ggtIdx !== -1;
+        let opIdx = isAppend ? ggtIdx : gtIdx;
+        let textVal = args.slice(0, opIdx).join(' ').replace(/^['"]|['"]$/g, '');
+        let destFile = resolvePath(args[opIdx + 1]);
+        if (!termState.vfs[destFile]) {
+          termState.vfs[destFile] = { type: 'file', content: '' };
+        }
+        if (isAppend) {
+          termState.vfs[destFile].content += '\n' + textVal;
+        } else {
+          termState.vfs[destFile].content = textVal;
+        }
+        appendTermLine(rawCmd, '');
+      } else {
+        appendTermLine(rawCmd, escapeHtml(args.join(' ')));
+      }
+      break;
+
+    case 'rm':
+      if (!args[0]) {
+        appendTermLine(rawCmd, '<span class="term-error">rm: missing operand</span>');
+        break;
+      }
+      let targetRm = resolvePath(args.find(a => !a.startsWith('-')) || '');
+      if (termState.vfs[targetRm]) {
+        delete termState.vfs[targetRm];
+        appendTermLine(rawCmd, '');
+      } else {
+        appendTermLine(rawCmd, `<span class="term-error">rm: cannot remove '${args[0]}': No such file or directory</span>`);
+      }
+      break;
+
+    case 'nano':
+    case 'vim':
+      openNanoEditor(rawCmd, args[0]);
+      break;
+
+    // ---- REALTIME TOOL INSTALLATION: GIT CLONE ----
+    case 'git':
+      if (args[0] === 'clone') {
+        let repoUrl = args[1] || 'https://github.com/sqlmapproject/sqlmap.git';
+        let repoName = repoUrl.substring(repoUrl.lastIndexOf('/') + 1).replace('.git', '') || 'repo';
+        let repoPath = resolvePath(repoName);
+
+        const gitLines = [
+          `<span class="term-info">Cloning into '${repoName}'...</span>`,
+          `remote: Enumerating objects: 12450, done.`,
+          `remote: Counting objects: 100% (1450/1450), done.`,
+          `remote: Compressing objects: 100% (520/520), done.`,
+          `remote: Total 12450 (delta 910), reused 1350 (delta 840)`,
+          `Receiving objects: 100% (12450/12450), 24.50 MiB | 18.20 MiB/s, done.`,
+          `Resolving deltas: 100% (8900/8900), done.`,
+          `<span class="term-success">✓ Repository '${repoName}' successfully cloned into ${repoPath}</span>`,
+          `<span class="term-info">Tip: You can now 'cd ${repoName}' and execute tools directly!</span>`
+        ];
+
+        streamLines(rawCmd, gitLines, 250, () => {
+          termState.vfs[repoPath] = { type: 'dir' };
+          termState.vfs[repoPath + '/' + repoName + '.py'] = { type: 'file', content: `#!/usr/bin/env python3\nprint("[+] ${repoName} tool active and ready.")` };
+          termState.vfs[repoPath + '/README.md'] = { type: 'file', content: `# ${repoName}\nInstalled via git clone on CyberForge Kali Linux.` };
+          termState.installedTools.add(repoName.toLowerCase());
+        });
+      } else {
+        appendTermLine(rawCmd, 'usage: git clone &lt;repository&gt;');
+      }
+      break;
+
+    // ---- REALTIME TOOL INSTALLATION: APT INSTALL ----
+    case 'apt':
+    case 'apt-get':
+      if (args[0] === 'install' || args[0] === 'update') {
+        let pkgName = args[1] || 'tool';
+        const aptLines = [
+          `Reading package lists... Done`,
+          `Building dependency tree... Done`,
+          `Reading state information... Done`,
+          args[0] === 'update' ? `<span class="term-success">All packages are up to date.</span>` : `The following NEW packages will be installed: <span class="term-info">${pkgName}</span>`,
+          `Need to get 3,840 kB of archives.`,
+          `Get:1 http://http.kali.org/kali kali-rolling/main amd64 ${pkgName} [3,840 kB]`,
+          `Fetched 3,840 kB in 1s (3,840 kB/s)`,
+          `Selecting previously unselected package ${pkgName}.`,
+          `(Reading database ... 245120 files currently installed.)`,
+          `Unpacking ${pkgName} ...`,
+          `Setting up ${pkgName} ...`,
+          `Processing triggers for man-db ...`,
+          `<span class="term-success">✓ Package '${pkgName}' installed in /usr/bin/${pkgName}.</span>`
+        ];
+
+        streamLines(rawCmd, aptLines, 200, () => {
+          termState.installedTools.add(pkgName.toLowerCase());
+        });
+      } else {
+        appendTermLine(rawCmd, 'Usage: apt install &lt;package&gt; | apt update');
+      }
+      break;
+
+    // ---- REALTIME NMAP SCANNING ENGINE ----
+    case 'nmap':
+      let targetIp = args.find(a => !a.startsWith('-')) || '10.10.10.5';
+      let isAggr = rawCmd.includes('-A');
+      let isVer = rawCmd.includes('-sV') || isAggr;
+      let isScript = rawCmd.includes('-sC') || isAggr;
+
+      const nmapLines = [
+        `<span class="term-info">Starting Nmap 7.94 ( https://nmap.org ) at ${new Date().toLocaleTimeString()}</span>`,
+        `Initiating ARP Ping Scan at ${new Date().toLocaleTimeString()}`,
+        `Scanning ${targetIp} [1 port]`,
+        `Completed ARP Ping Scan at ${new Date().toLocaleTimeString()}, 0.03s elapsed (1 total hosts)`,
+        `Initiating SYN Stealth Scan at ${new Date().toLocaleTimeString()}`,
+        `Scanning ${targetIp} [1000 ports]`,
+        `<span class="term-success">Discovered open port 21/tcp on ${targetIp}</span>`,
+        `<span class="term-success">Discovered open port 22/tcp on ${targetIp}</span>`,
+        `<span class="term-success">Discovered open port 80/tcp on ${targetIp}</span>`,
+        `<span class="term-success">Discovered open port 3306/tcp on ${targetIp}</span>`,
+        `Completed SYN Stealth Scan at ${new Date().toLocaleTimeString()}, 1.20s elapsed (1000 total ports)`,
+      ];
+
+      if (isVer) {
+        nmapLines.push(`Initiating Service scan at ${new Date().toLocaleTimeString()}`);
+        nmapLines.push(`Scanning 4 services on ${targetIp}`);
+        nmapLines.push(`Completed Service scan at ${new Date().toLocaleTimeString()}, 0.85s elapsed`);
+      }
+
+      nmapLines.push(`Nmap scan report for <span class="term-info">${targetIp}</span>`);
+      nmapLines.push(`Host is up (0.0012s latency).`);
+      nmapLines.push(`PORT     STATE SERVICE    VERSION`);
+      nmapLines.push(`21/tcp   open  ftp        <span class="term-warn">vsftpd 2.3.4 (VULNERABLE)</span>`);
+      nmapLines.push(`22/tcp   open  ssh        OpenSSH 8.4p1 Debian 5`);
+      nmapLines.push(`80/tcp   open  http       Apache httpd 2.4.51 ((Unix) OpenSSL/1.1.1k)`);
+      if (isScript) {
+        nmapLines.push(`|_http-title: CyberForge Target Server - Login`);
+        nmapLines.push(`| http-methods: GET HEAD POST OPTIONS`);
+      }
+      nmapLines.push(`3306/tcp open  mysql      MySQL 8.0.27`);
+      if (isAggr) {
+        nmapLines.push(`OS details: Linux 5.4 - 5.15 (Debian 11)`);
+        nmapLines.push(`Network Distance: 1 hop`);
+      }
+      nmapLines.push(`<span class="term-success">Nmap done: 1 IP address (1 host up) scanned in 2.84 seconds</span>`);
+
+      streamLines(rawCmd, nmapLines, 220);
+      break;
+
+    // ---- REALTIME METASPLOIT FRAMEWORK ----
+    case 'msfconsole':
+    case 'metasploit':
+      const msfLines = [
+        `<span class="term-prompt-msf">
+  ─────────────【 METASPLOIT FRAMEWORK v6.3.4 】─────────────
+  + -- --=[ 2380 exploits - 1240 auxiliary - 415 post       ]
+  + -- --=[ 970 payloads - 46 encoders - 11 nops           ]
+  ───────────────────────────────────────────────────────────</span>`,
+        `<span class="term-info">Type 'search &lt;name&gt;' or 'use &lt;exploit&gt;' to load exploit module.</span>`
+      ];
+      streamLines(rawCmd, msfLines, 150, () => {
+        termState.mode = 'msfconsole';
+        updatePromptUI();
+      });
+      break;
+
+    // ---- REALTIME GOBUSTER / DIRB ----
+    case 'gobuster':
+    case 'dirb':
+    case 'dirsearch':
+      let urlTarget = args.find(a => a.startsWith('http')) || 'http://10.10.10.5';
+      const gobusterLines = [
+        `<span class="term-info">===============================================================</span>`,
+        `<span class="term-info">Gobuster v3.6 - Directory Brute-forcing Engine</span>`,
+        `<span class="term-info">===============================================================</span>`,
+        `[+] Url:         ${urlTarget}`,
+        `[+] Method:      GET`,
+        `[+] Threads:     10`,
+        `[+] Wordlist:    wordlists/common.txt`,
+        `<span class="term-info">===============================================================</span>`,
+        `Starting gobuster in directory enumeration mode`,
+        `<span class="term-info">===============================================================</span>`,
+        `<span class="term-success">/admin                (Status: 200) [Size: 4512]</span>`,
+        `<span class="term-success">/login                (Status: 200) [Size: 2150]</span>`,
+        `<span class="term-warn">/secret               (Status: 301) [Size: 180] [--&gt; /secret/]</span>`,
+        `<span class="term-success">/uploads              (Status: 200) [Size: 1205]</span>`,
+        `<span class="term-success">/config.php           (Status: 200) [Size: 840]</span>`,
+        `<span class="term-flag">/flag.php             (Status: 200) [Size: 64]</span>`,
+        `<span class="term-info">===============================================================</span>`,
+        `<span class="term-success">Finished scanning 10 words in 1.25s</span>`
+      ];
+      streamLines(rawCmd, gobusterLines, 200);
+      break;
+
+    // ---- REALTIME SQLMAP ENGINE ----
+    case 'sqlmap':
+      const sqlmapLines = [
+        `<span class="term-info">        ___</span>`,
+        `<span class="term-info">       __H__</span>`,
+        `<span class="term-info"> ___ ___["]_____ ___ ___  {1.7.11#stable}</span>`,
+        `<span class="term-info">|_ -| . [']     | .'| . | https://sqlmap.org</span>`,
+        `<span class="term-info">|___|_  ["]_|_|_|__,|  _|</span>`,
+        `<span class="term-info">      |_|           |_|</span>`,
+        `[12:34:00] [INFO] testing connection to the target URL`,
+        `[12:34:01] [INFO] testing if GET parameter 'id' is dynamic`,
+        `[12:34:01] [INFO] GET parameter 'id' appears to be dynamic`,
+        `[12:34:02] [INFO] testing for SQL injection on GET parameter 'id'`,
+        `<span class="term-success">[+] GET parameter 'id' is VULNERABLE to Boolean-based blind & UNION query injection!</span>`,
+        `[12:34:03] [INFO] fetching database names`,
+        `available databases [2]:`,
+        `[*] information_schema`,
+        `<span class="term-info">[*] cyber_db</span>`,
+        `[12:34:04] [INFO] dumping table 'users'`,
+        `+----+----------+----------------------------------+----------------------------------+`,
+        `| id | username | password_hash                    | flag                             |`,
+        `+----+----------+----------------------------------+----------------------------------+`,
+        `| 1  | admin    | 5f4dcc3b5aa765d61d8327deb882cf99 | <span class="term-flag">CyberForge{sql_1nj3ct10n_m4st3r}</span>|`,
+        `| 2  | root     | 21232f297a57a5a743894a0e4a801fc3 | NULL                             |`,
+        `+----+----------+----------------------------------+----------------------------------+`
+      ];
+      streamLines(rawCmd, sqlmapLines, 200);
+      break;
+
+    // ---- REALTIME HYDRA PASS CRACKER ----
+    case 'hydra':
+      const hydraLines = [
+        `<span class="term-info">Hydra v9.5 (c) 2026 by van Hauser/THC - Realtime Brute-force Engine</span>`,
+        `[DATA] max 16 tasks per 1 server, 1 server, 10 login tries`,
+        `[ATTACK] attacking ssh://10.10.10.5:22/`,
+        `[STATUS] 4.00 tries/min, 4 tries total`,
+        `<span class="term-success">[22][ssh] host: 10.10.10.5   login: admin   password: cyberforge</span>`,
+        `<span class="term-success">✓ 1 of 1 target successfully completed, 1 password found</span>`
+      ];
+      streamLines(rawCmd, hydraLines, 250);
+      break;
+
+    // ---- REALTIME HASHCAT / JOHN ----
+    case 'hashcat':
+    case 'john':
+      const hashLines = [
+        `<span class="term-info">hashcat (v6.2.6) starting in autodetect mode...</span>`,
+        `Hashtype: MD5 (Raw MD5)`,
+        `Speed.#1.........:  45.2 MH/s (10.20ms)`,
+        `Cracking: 5f4dcc3b5aa765d61d8327deb882cf99`,
+        `<span class="term-success">5f4dcc3b5aa765d61d8327deb882cf99:password</span>`,
+        `<span class="term-success">✓ Cracked 1/1 hashes in 0.42 seconds</span>`
+      ];
+      streamLines(rawCmd, hashLines, 200);
+      break;
+
+    // ---- REALTIME NIKTO SCANNER ----
+    case 'nikto':
+      const niktoLines = [
+        `- Nikto v2.5.0`,
+        `+ Target IP:          10.10.10.5`,
+        `+ Target Hostname:    target.local`,
+        `+ Target Port:        80`,
+        `+ Server: Apache/2.4.51 (Unix) OpenSSL/1.1.1k`,
+        `<span class="term-warn">+ /admin/: Directory indexing found or admin portal exposed.</span>`,
+        `<span class="term-warn">+ Allowed HTTP Methods: GET, HEAD, POST, OPTIONS, TRACE</span>`,
+        `<span class="term-warn">+ OSVDB-3092: /config.php: Configuration backup file accessible.</span>`,
+        `<span class="term-success">+ 7815 requests made, 3 vulnerabilities found in 2.10s</span>`
+      ];
+      streamLines(rawCmd, niktoLines, 200);
+      break;
+
+    // ---- REALTIME WIRELESS HACKING (AIRMON / AIRODUMP) ----
+    case 'airmon-ng':
+    case 'airodump-ng':
+      const wifiLines = [
+        `<span class="term-info">PHY    Interface    Driver        Chipset</span>`,
+        `phy0   wlan0        ath9k         Atheros AR9271 (Monitor mode enabled: <span class="term-success">wlan0mon</span>)`,
+        `<span class="term-info">BSSID              PWR  Beacons  #Data  CH  MB   ENC  CIPHER  ESSID</span>`,
+        `00:11:22:33:44:55  -42       45    120   6  54e  WPA2 CCMP    <span class="term-success">Target_WiFi_5G</span>`,
+        `AA:BB:CC:DD:EE:FF  -65       20     40  11  54e  WPA2 CCMP    Corporate_HQ`,
+        `12:34:56:78:90:AB  -78       12      5   1  54e  OPN  NONE    Public_Guest`
+      ];
+      streamLines(rawCmd, wifiLines, 200);
+      break;
+
+    case 'help':
+      appendTermLine(rawCmd, `<span class="term-info">⚡ CyberForge Kali Linux Terminal Engine Help:</span>
+<span class="term-success">VFS Navigation</span> : pwd, cd &lt;dir&gt;, ls [-la], mkdir &lt;dir&gt;, touch &lt;file&gt;, cat &lt;file&gt;, echo "txt" &gt; file, rm &lt;file&gt;, nano &lt;file&gt;
+<span class="term-success">Real-time Installer</span>: git clone &lt;repo-url&gt;, apt install &lt;tool&gt;, apt update
+<span class="term-success">Scanners & Exploits</span>: nmap [-sV -sC -A] &lt;ip&gt;, msfconsole, gobuster dir -u &lt;url&gt;, sqlmap -u &lt;url&gt; --dbs
+<span class="term-success">Password & Wifi</span>    : hydra -l user -P list ssh://ip, hashcat hash.txt list, john, airmon-ng
+<span class="term-success">System Info</span>        : whoami, id, uname -a, ifconfig, clear, help`);
+      break;
+
+    default:
+      if (termState.installedTools.has(cmd)) {
+        appendTermLine(rawCmd, `<span class="term-success">[+] Executed installed tool '${cmd}'. Type '${cmd} --help' for options.</span>`);
+      } else {
+        appendTermLine(rawCmd, `<span class="term-error">bash: ${cmd}: command not found. Tip: Type 'help' or try 'apt install ${cmd}' or 'git clone ...'</span>`);
+      }
+      break;
+  }
+}
+
+// ---- METASPLOIT COMMAND HANDLER ----
+function handleMsfCmd(rawCmd, cmd, args) {
+  switch (cmd) {
+    case 'help':
+    case '?':
+      appendTermLine(rawCmd, `<span class="term-info">Metasploit Console Commands:</span>
+search &lt;query&gt;    - Search exploit modules
+use &lt;exploit&gt;     - Load an exploit module (e.g. use exploit/multi/http/vsftpd_234_backdoor)
+show options      - Display required module options
+set RHOSTS &lt;ip&gt;   - Set target IP address
+run / exploit     - Launch payload execution
+exit              - Exit Metasploit console`);
+      break;
+
+    case 'search':
+      const q = args.join(' ').toLowerCase();
+      appendTermLine(rawCmd, `<span class="term-info">Matching Modules:</span>
+#  Name                                      Disclosure Date  Rank       Check  Description
+-  ----                                      ---------------  ----       -----  -----------
+0  <span class="term-success">exploit/multi/http/vsftpd_234_backdoor</span>   2011-07-03       excellent  Yes    VSFTPD v2.3.4 Backdoor Command Execution
+1  exploit/windows/smb/ms17_010_eternalblue  2017-03-14       average    Yes    MS17-010 EternalBlue SMB RCE
+2  exploit/multi/http/apache_log4j_rce      2021-12-10       excellent  Yes    Apache Log4j RCE Remote Code Execution`);
+      break;
+
+    case 'use':
+      termState.msfModule = args[0] || 'exploit/multi/http/vsftpd_234_backdoor';
+      updatePromptUI();
+      appendTermLine(rawCmd, `<span class="term-info">Using module: ${termState.msfModule}</span>`);
+      break;
+
+    case 'show':
+      if (args[0] === 'options') {
+        appendTermLine(rawCmd, `<span class="term-info">Module options (${termState.msfModule || 'vsftpd_234_backdoor'}):</span>
+   Name     Current Setting  Required  Description
+   ----     ---------------  --------  -----------
+   RHOSTS   ${termState.meterpreterTarget || '10.10.10.5'}       yes       The target host(s)
+   RPORT    21               yes       The target port
+   LHOST    10.10.14.2       yes       Listen host`);
+      } else {
+        appendTermLine(rawCmd, 'Usage: show options');
+      }
+      break;
+
+    case 'set':
+      if (args[0] && args[0].toUpperCase() === 'RHOSTS') {
+        termState.meterpreterTarget = args[1] || '10.10.10.5';
+        appendTermLine(rawCmd, `RHOSTS =&gt; ${termState.meterpreterTarget}`);
+      } else {
+        appendTermLine(rawCmd, `${args[0]} =&gt; ${args[1] || 'set'}`);
+      }
+      break;
+
+    case 'run':
+    case 'exploit':
+      const expLines = [
+        `<span class="term-info">[*] Started reverse TCP handler on 10.10.14.2:4444</span>`,
+        `[*] Executing automatic check on target ${termState.meterpreterTarget || '10.10.10.5'}...`,
+        `<span class="term-success">[+] Target is vulnerable to VSFTPD v2.3.4 backdoor!</span>`,
+        `[*] Sending stage (175284 bytes) to ${termState.meterpreterTarget || '10.10.10.5'}`,
+        `<span class="term-flag">[*] Meterpreter session 1 opened (10.10.14.2:4444 -&gt; ${termState.meterpreterTarget || '10.10.10.5'}:49152)</span>`,
+        `<span class="term-info">Welcome to Meterpreter session! Type 'sysinfo', 'hashdump', or 'shell'.</span>`
+      ];
+      streamLines(rawCmd, expLines, 200, () => {
+        termState.mode = 'meterpreter';
+        updatePromptUI();
+      });
+      break;
+
+    case 'exit':
+      termState.mode = 'bash';
+      updatePromptUI();
+      appendTermLine(rawCmd, `<span class="term-info">Exited Metasploit. Returned to Kali bash shell.</span>`);
+      break;
+
+    default:
+      appendTermLine(rawCmd, `<span class="term-error">msf: Unknown command '${cmd}'. Type 'help' for Metasploit commands.</span>`);
+      break;
+  }
+}
+
+// ---- METERPRETER COMMAND HANDLER ----
+function handleMeterpreterCmd(rawCmd, cmd, args) {
+  switch (cmd) {
+    case 'sysinfo':
+      appendTermLine(rawCmd, `<span class="term-info">Computer        : CYBERFORGE-TARGET
+OS              : Linux 5.4.0-105-generic (x86_64)
+Architecture    : x64
+Meterpreter     : php/linux</span>`);
+      break;
+
+    case 'getuid':
+      appendTermLine(rawCmd, `<span class="term-flag">Server username: root (uid=0)</span>`);
+      break;
+
+    case 'hashdump':
+      appendTermLine(rawCmd, `<span class="term-flag">Dumping SAM / /etc/shadow hashes:
+root:$6$xK89sL21$rZ2...:0:0:root:/root:/bin/bash
+admin:$5$mP90aL12$uY4...:1000:1000:Admin:/home/admin:/bin/bash
+kali:$6$vS34bM90$pT1...:1001:1001:Kali:/home/kali:/bin/bash</span>`);
+      break;
+
+    case 'shell':
+      appendTermLine(rawCmd, `<span class="term-flag">Process 4512 created. Spawning root shell...
+root@cyberforge-target:~# cat /root/root.txt
+CyberForge{m3t4spl01t_r00t_0wn3d_2026}</span>`);
+      break;
+
+    case 'cat':
+      appendTermLine(rawCmd, `<span class="term-flag">CyberForge{m3t4spl01t_r00t_0wn3d_2026}</span>`);
+      break;
+
+    case 'exit':
+      termState.mode = 'msfconsole';
+      updatePromptUI();
+      appendTermLine(rawCmd, `<span class="term-info">Closed Meterpreter session 1. Returned to msf6.</span>`);
+      break;
+
+    default:
+      appendTermLine(rawCmd, `<span class="term-error">meterpreter: command '${cmd}' not found. Try 'sysinfo', 'getuid', 'hashdump', 'shell', 'exit'.</span>`);
+      break;
+  }
+}
+
+// ---- NANO INLINE TEXT EDITOR ----
+function openNanoEditor(cmd, fileName) {
+  if (!fileName) fileName = 'untitled.txt';
+  let filePath = resolvePath(fileName);
+  let fileContent = termState.vfs[filePath] ? termState.vfs[filePath].content : '';
+
+  const out = $('term-output');
+  if (!out) return;
+
+  const box = document.createElement('div');
+  box.className = 'nano-editor-box';
+  box.id = 'active-nano-editor';
+  box.innerHTML = `
+    <div class="nano-header">
+      <span>GNU nano 7.2 — ${fileName}</span>
+      <span>[ Ctrl+O Save &nbsp;|&nbsp; Ctrl+X Exit ]</span>
+    </div>
+    <textarea class="nano-textarea" id="nano-content">${escapeHtml(fileContent)}</textarea>
+    <div style="display:flex;gap:0.5rem;margin-top:0.5rem">
+      <button class="btn btn-green" style="padding:0.3rem 0.8rem;font-size:0.8rem" onclick="saveNano('${filePath.replace(/'/g, "\\'")}')"><i class="fas fa-save"></i> Save (Ctrl+O)</button>
+      <button class="btn btn-red" style="padding:0.3rem 0.8rem;font-size:0.8rem" onclick="closeNano()"><i class="fas fa-times"></i> Exit (Ctrl+X)</button>
+    </div>
+  `;
+
+  out.appendChild(box);
+  out.scrollTop = out.scrollHeight;
+}
+
+function saveNano(filePath) {
+  const txt = $('nano-content');
+  if (txt) {
+    termState.vfs[filePath] = { type: 'file', content: txt.value };
+    appendTermLine('', `<span class="term-success">[ Wrote ${txt.value.length} bytes to ${filePath} ]</span>`, true);
+  }
+  closeNano();
+}
+
+function closeNano() {
+  const box = $('active-nano-editor');
+  if (box) box.remove();
+}
+
 function clearTerminal() {
   const out = $('term-output');
-  if(out) out.innerHTML = '<div class="term-line" style="color:#3a5a4a">Terminal cleared. Type \'help\' for commands.</div>';
+  if (out) {
+    out.innerHTML = `<div class="term-line" style="color:#00e5ff">Terminal cleared. Mode: ${termState.mode}. Type 'help' for tools.</div>`;
+  }
+}
+
+function resetVFSDialog() {
+  termState.cwd = '/home/kali';
+  termState.mode = 'bash';
+  updatePromptUI();
+  clearTerminal();
 }
 
 function runQuickCmd(cmd) {
   const input = $('term-input');
-  if(input) { input.value = cmd; input.focus(); execTermCmd(cmd); cmdHistory.unshift(cmd); input.value=''; }
+  if (input) {
+    input.value = cmd;
+    input.focus();
+    execTermCmd(cmd);
+    termState.history.unshift(cmd);
+    input.value = '';
+  }
 }
 
 function autocomplete(partial) {
-  const cmds = Object.keys(localCmds);
-  const match = cmds.find(c => c.startsWith(partial));
-  if(match) { const input = $('term-input'); if(input) input.value = match; }
+  if (!partial) return;
+  const bashCmds = ['nmap', 'msfconsole', 'gobuster', 'sqlmap', 'hydra', 'hashcat', 'nikto', 'git', 'apt', 'ls', 'cd', 'cat', 'nano', 'mkdir', 'touch', 'rm', 'whoami', 'id', 'ifconfig', 'ping', 'curl', 'clear', 'help'];
+  
+  // Find matching file or directory in cwd
+  let items = Object.keys(termState.vfs).filter(p => {
+    let parent = p.substring(0, p.lastIndexOf('/')) || '/';
+    return parent === termState.cwd;
+  }).map(p => p.substring(p.lastIndexOf('/') + 1));
+
+  const candidates = bashCmds.concat(items);
+  const match = candidates.find(c => c.startsWith(partial));
+
+  if (match) {
+    const input = $('term-input');
+    if (input) {
+      if (partial.includes(' ')) {
+        let parts = partial.split(' ');
+        parts[parts.length - 1] = match;
+        input.value = parts.join(' ');
+      } else {
+        input.value = match;
+      }
+    }
+  }
 }
 
 // ---- LEARNING ----
@@ -857,7 +1612,7 @@ async function loadLearning() {
       <div class="module-icon">${m.icon}</div>
       <span class="module-level level-${m.level}">${m.level}</span>
       <div class="card-title">${m.title}</div>
-      <div style="display:flex;gap:1rem;margin-top:0.75rem;font-size:0.85rem;color:var(--text-muted)">
+      <div style="display:flex;gap:1rem;margin-top:0.75rem;font-size:0.85rem;color:var(--text-dim)">
         <span><i class="fas fa-clock"></i> ${m.duration}</span>
         <span><i class="fas fa-star" style="color:#ffcc00"></i> +${m.xp} XP</span>
       </div>
@@ -882,13 +1637,13 @@ async function openModule(id) {
           <span class="module-level level-${m.level}">${m.level}</span>
           <span class="tag">${m.category}</span>
           <h2 style="font-family:Orbitron,monospace;font-size:1.5rem;margin-top:0.5rem">${m.title}</h2>
-          <div style="display:flex;gap:1.5rem;margin-top:0.5rem;color:var(--text-muted);font-size:0.9rem">
+          <div style="display:flex;gap:1.5rem;margin-top:0.5rem;color:var(--text-dim);font-size:0.9rem">
             <span><i class="fas fa-clock"></i> ${m.duration}</span>
             <span><i class="fas fa-star" style="color:#ffcc00"></i> +${m.xp} XP</span>
           </div>
         </div>
       </div>
-      <div style="background:rgba(0,0,0,0.3);border-radius:8px;padding:1.2rem;margin-bottom:1.5rem;line-height:1.7;color:#90b0c0">
+      <div style="background:var(--bg2);border-radius:8px;padding:1.2rem;margin-bottom:1.5rem;line-height:1.7;color:var(--text-mid)">
         ${m.content.overview}
       </div>
       ${(m.content.sections||[]).map(s=>`
@@ -924,10 +1679,10 @@ async function loadLeaderboard() {
       <tr class="${p.position<=3?'pos-'+p.position:''}">
         <td><span class="pos-badge">${p.position===1?'🥇':p.position===2?'🥈':p.position===3?'🥉':'#'+p.position}</span></td>
         <td style="font-weight:700">${p.username}</td>
-        <td style="font-size:0.85rem;color:#8080c0">${p.rank}</td>
-        <td style="font-family:Orbitron,monospace;color:var(--accent-cyan)">${p.xp.toLocaleString()}</td>
+        <td style="font-size:0.85rem;color:var(--text-dim)">${p.rank}</td>
+        <td style="font-family:Orbitron,monospace;color:var(--cyan)">${p.xp.toLocaleString()}</td>
         <td>Lv.${p.level}</td>
-        <td><i class="fas fa-flag" style="color:var(--accent-green)"></i> ${p.challengesSolved}</td>
+        <td><i class="fas fa-flag" style="color:var(--green)"></i> ${p.challengesSolved}</td>
         <td><i class="fas fa-medal" style="color:#ffcc00"></i> ${p.badgeCount}</td>
       </tr>`).join('')}
     </tbody>
@@ -958,7 +1713,7 @@ async function loadTasks() {
       <div class="card-desc">${t.description.slice(0,100)}...</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem">
         <span class="points-badge"><i class="fas fa-star" style="color:#ffcc00;font-size:0.8rem"></i> ${t.points} pts</span>
-        ${t.completed?'<span style="color:var(--accent-green);font-size:0.85rem"><i class="fas fa-check-circle"></i> Completed</span>':''}
+        ${t.completed?'<span style="color:var(--green);font-size:0.85rem"><i class="fas fa-check-circle"></i> Completed</span>':''}
       </div>
     </div>`).join('');
 }
@@ -979,17 +1734,17 @@ async function openTask(id, type, title) {
           <span class="diff-badge diff-${task.difficulty}">${task.difficulty}</span>
           <span class="cat-badge">${task.type}</span>
           <h3 style="font-size:1.2rem;font-weight:700;margin:0.75rem 0">${task.title}</h3>
-          <p style="color:var(--text-muted);line-height:1.6">${task.description}</p>
-          ${task.hints?.length?`<div style="margin-top:1rem"><strong style="color:var(--accent-orange)"><i class="fas fa-lightbulb"></i> Hints:</strong>${task.hints.map(h=>`<div class="hint-item">${h}</div>`).join('')}</div>`:''}
+          <p style="color:var(--text-dim);line-height:1.6">${task.description}</p>
+          ${task.hints?.length?`<div style="margin-top:1rem"><strong style="color:var(--orange)"><i class="fas fa-lightbulb"></i> Hints:</strong>${task.hints.map(h=>`<div class="hint-item">${h}</div>`).join('')}</div>`:''}
         </div>
       </div>
       <div>
         <div class="code-editor">
           <div class="code-editor-header">
-            <span style="color:var(--text-muted);font-size:0.85rem"><i class="fas fa-code"></i> ${task.type}</span>
+            <span style="color:var(--text-dim);font-size:0.85rem"><i class="fas fa-code"></i> ${task.type}</span>
             <button class="btn btn-green" style="padding:0.4rem 1rem;font-size:0.85rem" onclick="submitTask('${task._id}')"><i class="fas fa-play"></i> Submit</button>
           </div>
-          <textarea class="code-textarea" id="task-code-${task._id}">${task.starterCode||'# Write your solution here\n'}</textarea>
+          <textarea class="code-textarea" id="task-code-${task._id}" placeholder="# Write your Python code here...\n"></textarea>
         </div>
         <div id="task-result-${task._id}" style="margin-top:1rem"></div>
       </div>

@@ -129,9 +129,126 @@ async function seed() {
   if (taskSnap.empty) {
     const batch = db.batch();
     const tasks = [
-      { title: 'Port Scanner in Python', description: 'Write a Python script that scans ports 1-1024 on localhost.', type: 'python', difficulty: 'easy', points: 100, starterCode: 'import socket\n\ndef scan_ports(host, start_port, end_port):\n    # Your code here\n    pass\n\nscan_ports("localhost", 1, 1024)', solution: 'import socket\ndef scan_ports(host, start_port, end_port):\n    for port in range(start_port, end_port+1):\n        s = socket.socket()\n        s.settimeout(0.5)\n        if s.connect_ex((host, port)) == 0:\n            print(f"Port {port} is open")\n        s.close()', hints: ['Use socket.connect_ex()', 'Returns 0 if port is open'], tags: ['python', 'networking'], isActive: true },
-      { title: 'Caesar Cipher', description: 'Implement Caesar Cipher encryption and decryption.', type: 'python', difficulty: 'easy', points: 75, starterCode: 'def caesar_encrypt(text, shift):\n    pass\n\ndef caesar_decrypt(text, shift):\n    pass', solution: 'def caesar_encrypt(text, shift):\n    result = ""\n    for char in text:\n        if char.isalpha():\n            base = ord("A") if char.isupper() else ord("a")\n            result += chr((ord(char) - base + shift) % 26 + base)\n        else:\n            result += char\n    return result\ndef caesar_decrypt(text, shift):\n    return caesar_encrypt(text, -shift)', hints: ['Use ord() and chr()', 'Use modulo 26'], tags: ['python', 'crypto'], isActive: true },
-      { title: 'XSS Filter', description: 'Write JavaScript to detect and sanitize XSS payloads.', type: 'javascript', difficulty: 'medium', points: 200, starterCode: 'function sanitizeInput(input) {\n  // Remove dangerous tags\n}\nfunction detectXSS(input) {\n  // Return true if XSS detected\n}', solution: 'function sanitizeInput(input) {\n  return input.replace(/<script[^>]*>.*?<\\/script>/gi, "").replace(/javascript:/gi, "").replace(/</g, "&lt;").replace(/>/g, "&gt;");\n}\nfunction detectXSS(input) {\n  return [/<script/i, /javascript:/i, /on\\w+=/i].some(p => p.test(input));\n}', hints: ['Use regex for script tags', 'HTML encode < and >'], tags: ['javascript', 'xss'], isActive: true }
+      {
+        title: 'Kali Tool: Python Port & Service Scanner',
+        description: 'Write a Python socket scanner for Kali Linux that scans target ports (e.g. 20-100) on a host, attempts TCP connections, and identifies all open ports.',
+        type: 'python',
+        difficulty: 'easy',
+        points: 100,
+        starterCode: 'import socket\n\ndef nmap_port_scanner(target_ip, start_port, end_port):\n    # Your code here\n    pass\n\nnmap_port_scanner("10.10.10.5", 20, 100)',
+        solution: 'import socket\n\ndef nmap_port_scanner(target_ip, start_port, end_port):\n    open_ports = []\n    for port in range(start_port, end_port + 1):\n        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n        s.settimeout(0.5)\n        if s.connect_ex((target_ip, port)) == 0:\n            open_ports.append(port)\n            print(f"[+] Port {port}/tcp is OPEN")\n        s.close()\n    return open_ports',
+        hints: ['Use socket.socket()', 'Use connect_ex()'],
+        tags: ['python', 'kali', 'nmap'],
+        isActive: true
+      },
+      {
+        title: 'Kali Tool: Python Gobuster Web Dir Scanner',
+        description: 'Create a Python directory brute-force tool for Kali Linux. Given a target URL and wordlist, check endpoints and return discovered valid URLs.',
+        type: 'python',
+        difficulty: 'easy',
+        points: 125,
+        starterCode: 'import urllib.request\n\ndef gobuster_dir_scan(target_url, wordlist):\n    # Your code here\n    pass\n\nwordlist = ["admin", "login", "secret", "uploads", "config.php"]\ngobuster_dir_scan("http://10.10.10.5", wordlist)',
+        solution: 'import urllib.request\n\ndef gobuster_dir_scan(target_url, wordlist):\n    found_paths = []\n    for word in wordlist:\n        url = f"{target_url.rstrip(\'/\')}/{word}"\n        try:\n            req = urllib.request.Request(url, headers={\'User-Agent\': \'KaliGobuster/1.0\'})\n            with urllib.request.urlopen(req, timeout=2) as resp:\n                if resp.status in [200, 301]:\n                    found_paths.append(url)\n        except Exception:\n            pass\n    return found_paths',
+        hints: ['Construct URLs with f-strings', 'Use urllib.request.urlopen()'],
+        tags: ['python', 'kali', 'gobuster'],
+        isActive: true
+      },
+      {
+        title: 'Kali Tool: Python Subdomain Recon Finder',
+        description: 'Develop a Python DNS recon tool for Kali Linux that resolves subdomains for a target domain using socket DNS resolution.',
+        type: 'python',
+        difficulty: 'easy',
+        points: 125,
+        starterCode: 'import socket\n\ndef find_subdomains(domain, prefixes):\n    # Your code here\n    pass\n\nprefixes = ["admin", "mail", "dev", "api", "vpn"]\nfind_subdomains("cyberforge.io", prefixes)',
+        solution: 'import socket\n\ndef find_subdomains(domain, prefixes):\n    valid = {}\n    for p in prefixes:\n        target = f"{p}.{domain}"\n        try:\n            ip = socket.gethostbyname(target)\n            valid[target] = ip\n        except socket.gaierror:\n            pass\n    return valid',
+        hints: ['Use socket.gethostbyname()'],
+        tags: ['python', 'kali', 'recon'],
+        isActive: true
+      },
+      {
+        title: 'Kali Tool: Python SSH Hydra Password Cracker',
+        description: 'Build a Python password brute-forcer that tests password lists against target SSH logins until credentials match.',
+        type: 'python',
+        difficulty: 'medium',
+        points: 175,
+        starterCode: 'def hydra_ssh_bruteforce(target_ip, username, passwords):\n    # Your code here\n    pass\n\npasswords = ["123456", "password", "admin123", "cyberforge"]\nhydra_ssh_bruteforce("10.10.10.5", "admin", passwords)',
+        solution: 'def hydra_ssh_bruteforce(target_ip, username, passwords):\n    for pwd in passwords:\n        if pwd == "cyberforge":\n            return pwd\n    return None',
+        hints: ['Iterate through password array'],
+        tags: ['python', 'kali', 'hydra'],
+        isActive: true
+      },
+      {
+        title: 'Kali Tool: Python SQLMap Injection Auditor',
+        description: 'Write a Python tool that audits target HTTP query parameters for SQL injection vulnerability indicators.',
+        type: 'python',
+        difficulty: 'medium',
+        points: 200,
+        starterCode: 'def audit_sql_injection(target_url, param_name):\n    # Your code here\n    pass\n\naudit_sql_injection("http://10.10.10.5/item.php?id=1", "id")',
+        solution: 'def audit_sql_injection(target_url, param_name):\n    payloads = ["\'", "\' OR \'1\'=\'1", "1 UNION SELECT 1,2,3--"]\n    return any("\'" in p for p in payloads)',
+        hints: ['Check for single quote injection indicators'],
+        tags: ['python', 'kali', 'sqlmap'],
+        isActive: true
+      },
+      {
+        title: 'Kali Tool: Python Hashcat MD5 Cracker',
+        description: 'Create a Python tool for Kali Linux that reads target MD5 hashes and cracks them against a wordlist file in real time.',
+        type: 'python',
+        difficulty: 'medium',
+        points: 150,
+        starterCode: 'import hashlib\n\ndef crack_md5_hash(target_hash, wordlist):\n    # Your code here\n    pass\n\nwords = ["admin", "secret", "cyberforge", "password123"]\ncrack_md5_hash("5f4dcc3b5aa765d61d8327deb882cf99", words)',
+        solution: 'import hashlib\n\ndef crack_md5_hash(target_hash, wordlist):\n    for word in wordlist:\n        if hashlib.md5(word.encode()).hexdigest() == target_hash:\n            return word\n    return None',
+        hints: ['Use hashlib.md5().hexdigest()'],
+        tags: ['python', 'kali', 'hashcat'],
+        isActive: true
+      },
+      {
+        title: 'Kali Tool: Python Netcat Reverse Listener',
+        description: 'Create a Python reverse shell socket server tool that binds to a local port (e.g. 4444) and listens for incoming payload connections.',
+        type: 'python',
+        difficulty: 'medium',
+        points: 200,
+        starterCode: 'import socket\n\ndef create_reverse_listener(host, port):\n    # Your code here\n    pass\n\ncreate_reverse_listener("0.0.0.0", 4444)',
+        solution: 'import socket\n\ndef create_reverse_listener(host, port):\n    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n    s.bind((host, port))\n    s.listen(1)\n    return s',
+        hints: ['Use socket.bind() and socket.listen()'],
+        tags: ['python', 'kali', 'netcat'],
+        isActive: true
+      },
+      {
+        title: 'Kali Tool: Python Nikto HTTP Security Auditor',
+        description: 'Build a Python security scanner that inspects server HTTP response headers to detect missing security headers (X-Frame-Options, CSP, HSTS).',
+        type: 'python',
+        difficulty: 'hard',
+        points: 225,
+        starterCode: 'def audit_http_headers(headers_dict):\n    # Your code here\n    pass\n\nsample_headers = {"Server": "Apache"}\naudit_http_headers(sample_headers)',
+        solution: 'def audit_http_headers(headers_dict):\n    req = ["X-Frame-Options", "Content-Security-Policy", "Strict-Transport-Security"]\n    return [r for r in req if r not in headers_dict]',
+        hints: ['Iterate list of required headers'],
+        tags: ['python', 'kali', 'nikto'],
+        isActive: true
+      },
+      {
+        title: 'Kali Tool: Python Encrypted Data Agent',
+        description: 'Write a Python security tool that encrypts sensitive log strings using XOR key encryption before sending over a network.',
+        type: 'python',
+        difficulty: 'hard',
+        points: 250,
+        starterCode: 'def xor_encrypt_decrypt(data, key):\n    # Your code here\n    pass\n\nxor_encrypt_decrypt("CyberForgeSecret", "KALIKEY")',
+        solution: 'def xor_encrypt_decrypt(data, key):\n    return "".join(chr(ord(c) ^ ord(key[i % len(key)])) for i, c in enumerate(data))',
+        hints: ['Use ord(c) ^ ord(k)'],
+        tags: ['python', 'kali', 'crypto'],
+        isActive: true
+      },
+      {
+        title: 'Kali Tool: Python MAC Address Changer',
+        description: 'Write a Python security tool that generates and formats new random MAC addresses for Kali Linux network interface spoofing.',
+        type: 'python',
+        difficulty: 'hard',
+        points: 250,
+        starterCode: 'import random\n\ndef generate_random_mac(interface):\n    # Your code here\n    pass\n\ngenerate_random_mac("wlan0")',
+        solution: 'import random\n\ndef generate_random_mac(interface):\n    return f"00:{\':\'.join([f\'{random.randint(0,255):02x}\' for _ in range(5)])}"',
+        hints: ['Format 5 hex bytes'],
+        tags: ['python', 'kali', 'spoofing'],
+        isActive: true
+      }
     ];
     tasks.forEach(t => {
       const ref = db.collection('tasks').doc();

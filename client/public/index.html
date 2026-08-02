@@ -17,7 +17,7 @@
 <!-- Firebase Client SDK -->
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getAuth, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
   const firebaseConfig = {
     apiKey: "AIzaSyA0CaC7QdtI7rGhxUCxub5xtL7afxCCMoQ",
@@ -36,8 +36,34 @@
   window.firebaseAuth = auth;
   window.googleProvider = googleProvider;
   window.signInWithPopup = signInWithPopup;
+  window.signInWithRedirect = signInWithRedirect;
+  window.getRedirectResult = getRedirectResult;
   window.firebaseReady = true;
   window.dispatchEvent(new Event('firebaseReady'));
+
+  // Handle redirect result on page load (after Google redirects back)
+  getRedirectResult(auth).then(result => {
+    if (!result) return;
+    const googleUser = result.user;
+    googleUser.getIdToken().then(idToken => {
+      fetch((window.location.hostname === 'localhost' ? 'http://localhost:5000' : '') + '/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          idToken,
+          email: googleUser.email,
+          username: googleUser.displayName?.replace(/\s+/g, '_').toLowerCase() || 'user_' + Date.now(),
+          photoURL: googleUser.photoURL
+        })
+      }).then(r => r.json()).then(data => {
+        if (data.success) {
+          localStorage.setItem('cf_token', data.token);
+          localStorage.setItem('cf_user', JSON.stringify(data.user));
+          window.location.href = '/';
+        }
+      });
+    });
+  }).catch(() => {});
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>

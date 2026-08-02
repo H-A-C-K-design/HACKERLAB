@@ -71,24 +71,44 @@ io.on('connection', (socket) => {
 
 // Simulated terminal engine
 function simulateTerminal(cmd, context = 'kali') {
+  const c = cmd.toLowerCase().trim();
+  if (c.startsWith('git clone')) {
+    const repo = c.split(' ')[2] || 'repository';
+    return `Cloning into '${repo}'...\nremote: Enumerating objects: 12450, done.\nremote: Counting objects: 100% (1450/1450), done.\nReceiving objects: 100% (12450/12450), 24.50 MiB, done.\nResolving deltas: 100% (8900/8900), done.\n[+] Repository '${repo}' successfully cloned.`;
+  }
+  if (c.startsWith('apt install') || c.startsWith('apt-get install')) {
+    const pkg = c.split(' ')[2] || 'tool';
+    return `Reading package lists... Done\nBuilding dependency tree... Done\nThe following NEW packages will be installed: ${pkg}\nUnpacking ${pkg} ...\nSetting up ${pkg} ...\n[+] Package '${pkg}' installed in /usr/bin/${pkg}.`;
+  }
+  if (c.startsWith('nmap')) {
+    return `Starting Nmap 7.94 at ${new Date().toLocaleTimeString()}\nNmap scan report for 10.10.10.5\nHost is up (0.0012s latency).\nPORT     STATE SERVICE VERSION\n21/tcp   open  ftp     vsftpd 2.3.4 (VULNERABLE)\n22/tcp   open  ssh     OpenSSH 8.4p1 Debian 5\n80/tcp   open  http    Apache httpd 2.4.51\n3306/tcp open  mysql   MySQL 8.0.27\nNmap done: 1 IP address (1 host up) scanned in 2.84 seconds`;
+  }
+  if (c.startsWith('gobuster') || c.startsWith('dirb')) {
+    return `Gobuster v3.6 - Directory Brute-forcing Engine\n[+] Url: http://10.10.10.5\n/admin (Status: 200) [Size: 4512]\n/login (Status: 200) [Size: 2150]\n/secret (Status: 301) [Size: 180]\n/flag.php (Status: 200) [Size: 64]\nFinished scanning in 1.25s`;
+  }
+  if (c.startsWith('sqlmap')) {
+    return `[+] GET parameter 'id' is VULNERABLE to SQL injection!\n[*] Database: cyber_db\n+----+----------+----------------------------------+----------------------------------+\n| id | username | password_hash                    | flag                             |\n+----+----------+----------------------------------+----------------------------------+\n| 1  | admin    | 5f4dcc3b5aa765d61d8327deb882cf99 | CyberForge{sql_1nj3ct10n_m4st3r} |\n+----+----------+----------------------------------+----------------------------------+`;
+  }
+  if (c.startsWith('hydra')) {
+    return `Hydra v9.5 - Realtime Brute-force Engine\n[ATTACK] attacking ssh://10.10.10.5:22/\n[22][ssh] host: 10.10.10.5   login: admin   password: cyberforge\n✓ 1 password found`;
+  }
+  if (c.startsWith('msfconsole') || c.startsWith('metasploit')) {
+    return `─────────────【 METASPLOIT FRAMEWORK v6.3.4 】─────────────\nmsf6 > `;
+  }
+
   const commands = {
     'ls': 'Desktop  Documents  Downloads  Tools  ctf_workspace  wordlists',
     'ls -la': `total 48\ndrwxr-xr-x 8 kali kali 4096 Jan 01 10:00 .\ndrwxr-xr-x 3 root root 4096 Jan 01 09:00 ..\n-rw-r--r-- 1 kali kali  220 Jan 01 09:00 .bash_logout\n-rw-r--r-- 1 kali kali 3526 Jan 01 09:00 .bashrc\ndrwxr-xr-x 2 kali kali 4096 Jan 01 10:00 Desktop\ndrwxr-xr-x 2 kali kali 4096 Jan 01 10:00 Tools`,
     'pwd': '/home/kali',
     'whoami': 'kali',
     'id': 'uid=1000(kali) gid=1000(kali) groups=1000(kali),24(cdrom),25(floppy),27(sudo),29(audio)',
-    'uname -a': 'Linux kali 6.1.0-kali9-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.27-1kali1 (2023-05-12) x86_64 GNU/Linux',
-    'ifconfig': `eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500\n        inet 192.168.1.100  netmask 255.255.255.0  broadcast 192.168.1.255\n        ether 00:0c:29:xx:xx:xx  txqueuelen 1000  (Ethernet)\nlo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536\n        inet 127.0.0.1  netmask 255.0.0.0`,
-    'nmap --help': 'Nmap 7.94 ( https://nmap.org )\nUsage: nmap [Scan Type(s)] [Options] {target specification}\n  -sS/sT/sA/sW/sM: TCP SYN/Connect()/ACK/Window/Maimon scans\n  -sU: UDP Scan\n  -sV: Probe open ports to determine service/version info\n  -O: Enable OS detection\n  -A: Enable OS detection, version detection, script scanning',
-    'nmap -sV 192.168.1.1': `Starting Nmap 7.94\nNmap scan report for 192.168.1.1\nHost is up (0.0010s latency).\nPORT   STATE SERVICE VERSION\n22/tcp open  ssh     OpenSSH 8.4p1\n80/tcp open  http    Apache httpd 2.4.51\n443/tcp open https   nginx 1.21.0\nNmap done: 1 IP address (1 host up) scanned in 3.21 seconds`,
-    'metasploit': '⚠️  Metasploit Framework - Use only on authorized systems!\nmsf6 > ',
-    'hydra --help': 'Hydra v9.4 (c) 2022 by van Hauser/THC\nSyntax: hydra [options] target service\n  -l LOGIN : single login name\n  -L FILE  : login file with several logins\n  -p PASS  : single password\n  -P FILE  : password file\n  -t TASKS : run TASKS number of connects in parallel',
-    'hashcat --help': 'hashcat (v6.2.6) starting in help mode\nUsage: hashcat [options]... hash|hashfile|hccapxfile [dictionary|mask|directory]...\n  -m : Hash type (0=MD5, 100=SHA1, 1800=sha512crypt)\n  -a : Attack mode (0=dict, 1=combo, 3=brute)',
-    'help': 'Available commands: ls, pwd, whoami, id, uname -a, ifconfig, nmap, metasploit, hydra, hashcat, clear\nType any command to simulate Kali Linux terminal',
+    'uname -a': 'Linux kali 6.6.0-kali1-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.6.13-1kali1 (2026-01-15) x86_64 GNU/Linux',
+    'ifconfig': `eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500\n        inet 10.10.14.2  netmask 255.255.255.0  broadcast 10.10.14.255`,
+    'help': 'Available Kali Linux commands:\nNavigation: ls, pwd, cd, mkdir, touch, cat, echo, rm, nano\nInstaller: git clone <url>, apt install <pkg>\nScanners: nmap, gobuster, sqlmap, hydra, hashcat, nikto, msfconsole',
     'clear': 'CLEAR_TERMINAL'
   };
-  return commands[cmd.toLowerCase().trim()] ||
-    `bash: ${cmd}: command not found in simulation mode\nTip: Type 'help' to see available commands`;
+
+  return commands[c] || `bash: ${cmd}: command not found in simulation mode\nTip: Type 'help' to see available commands`;
 }
 
 const PORT = process.env.PORT || 5000;
