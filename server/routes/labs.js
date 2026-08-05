@@ -91,6 +91,104 @@ router.post('/seed/all', async (req, res) => {
 
 const seedLabs = [
   {
+    title: 'Module 1: Introduction to Cybersecurity',
+    description: 'A comprehensive introduction to cybersecurity fundamentals — learn about the CIA Triad, common threats, types of hackers, basic networking, security principles, ethical hacking, and career paths in cybersecurity.',
+    category: 'cybersecurity-fundamentals', difficulty: 'beginner', duration: '120 mins', xpReward: 300,
+    tools: ['Browser', 'Terminal', 'Wireshark'],
+    objectives: [
+      'Understand what cybersecurity is and why it matters',
+      'Learn the CIA Triad (Confidentiality, Integrity, Availability)',
+      'Identify common cyber threats and malware types',
+      'Understand types of hackers and their motivations',
+      'Learn basic networking concepts (IP, DNS, HTTP, TCP/UDP)',
+      'Apply core security principles (Least Privilege, Defense in Depth, Zero Trust)',
+      'Understand ethical hacking fundamentals',
+      'Explore cybersecurity career paths'
+    ],
+    steps: [
+      {
+        stepNumber: 1,
+        title: 'What is Cybersecurity?',
+        instruction: 'Cybersecurity is the practice of protecting systems, networks, applications, and data from unauthorized access, attacks, damage, or theft. It protects personal data, business operations, financial systems, healthcare, governments, and critical infrastructure. Start by checking your own system\'s security posture.',
+        command: 'uname -a && whoami && id',
+        expectedOutput: 'System info, current user, and group memberships',
+        hint: 'Understanding your own system is the first step in cybersecurity awareness'
+      },
+      {
+        stepNumber: 2,
+        title: 'The CIA Triad',
+        instruction: 'The CIA Triad is the foundation of cybersecurity:\n• Confidentiality — Protect data from unauthorized access (encryption, access controls)\n• Integrity — Ensure data remains accurate and unaltered (hashing, checksums)\n• Availability — Ensure systems are accessible when needed (redundancy, backups)\n\nLet\'s verify file integrity using checksums:',
+        command: 'echo "secret data" > test_cia.txt && sha256sum test_cia.txt && echo "tampered" >> test_cia.txt && sha256sum test_cia.txt',
+        expectedOutput: 'Two different hash values — showing integrity was broken',
+        hint: 'When the hash changes, it means the file was modified — integrity violated!'
+      },
+      {
+        stepNumber: 3,
+        title: 'Types of Cybersecurity',
+        instruction: 'Cybersecurity has many domains:\n• Network Security — Protecting network infrastructure\n• Application Security — Securing software applications\n• Cloud Security — Protecting cloud-based resources\n• Endpoint Security — Securing devices (laptops, phones)\n• Information Security — Protecting data at rest and in transit\n• IoT Security — Securing connected devices\n• Operational Security (OPSEC) — Protecting operational processes\n\nLet\'s explore network security by examining open ports:',
+        command: 'netstat -tulpn 2>/dev/null || ss -tulpn',
+        expectedOutput: 'List of listening ports and services',
+        hint: 'Open ports are potential entry points for attackers'
+      },
+      {
+        stepNumber: 4,
+        title: 'Common Threats & Malware',
+        instruction: 'Common cyber threats include:\n• Phishing — Deceptive emails/messages to steal credentials\n• Ransomware — Encrypts files and demands payment\n• Malware — Virus, Worm, Trojan, Spyware, Adware, Rootkit, Botnet\n• DDoS — Floods systems to deny service\n• Social Engineering — Manipulating people to reveal information\n• Insider Threats — Malicious or negligent employees\n• Password Attacks — Brute-force, dictionary, credential stuffing\n\nLet\'s see how password cracking works:',
+        command: 'echo -n "password" | md5sum && echo -n "admin123" | md5sum',
+        expectedOutput: 'MD5 hashes of common passwords',
+        hint: 'Weak passwords can be cracked in seconds using rainbow tables or wordlists'
+      },
+      {
+        stepNumber: 5,
+        title: 'Types of Hackers',
+        instruction: 'Hackers are categorized by intent:\n• White Hat — Ethical hackers who test security with authorization\n• Black Hat — Malicious hackers who exploit vulnerabilities illegally\n• Gray Hat — Hack without permission but without malicious intent\n• Script Kiddie — Uses pre-made tools without understanding them\n• Hacktivist — Hacks for political or social causes\n• Nation-State — Government-sponsored cyber attackers\n• Insider — Employee or contractor with system access\n\nAs ethical hackers, we always get written authorization first!',
+        command: 'echo "I agree to only perform authorized security testing" > ethical_pledge.txt && cat ethical_pledge.txt',
+        expectedOutput: 'Your ethical hacking pledge displayed',
+        hint: 'Always get written permission before testing any system you do not own!'
+      },
+      {
+        stepNumber: 6,
+        title: 'Common Cyber Attacks',
+        instruction: 'Understanding attack techniques helps you defend against them:\n• SQL Injection — Injecting malicious SQL into web forms\n• Cross-Site Scripting (XSS) — Injecting scripts into web pages\n• Man-in-the-Middle (MITM) — Intercepting communications\n• Buffer Overflow — Overwriting memory to execute code\n• DNS Spoofing — Redirecting domain lookups\n\nLet\'s check DNS resolution to understand how DNS works:',
+        command: 'nslookup google.com 2>/dev/null || dig google.com',
+        expectedOutput: 'DNS resolution showing IP address',
+        hint: 'DNS translates domain names to IP addresses — spoofing this can redirect traffic'
+      },
+      {
+        stepNumber: 7,
+        title: 'Basic Networking',
+        instruction: 'Essential networking concepts for cybersecurity:\n• IP Address — Unique identifier for devices on a network\n• DNS — Domain Name System (translates names to IPs)\n• HTTP/HTTPS — Web protocols (HTTPS adds encryption)\n• TCP/UDP — Transport protocols (TCP reliable, UDP fast)\n• Router — Routes traffic between networks\n• Firewall — Filters network traffic based on rules\n• VPN — Encrypted tunnel for secure communication\n\nLet\'s explore your network configuration:',
+        command: 'ifconfig 2>/dev/null || ip addr show',
+        expectedOutput: 'Network interfaces with IP addresses',
+        hint: 'Your IP address identifies you on the network — attackers use this for targeting'
+      },
+      {
+        stepNumber: 8,
+        title: 'Security Principles',
+        instruction: 'Core security principles to follow:\n• Least Privilege — Give minimum access needed\n• Defense in Depth — Multiple layers of security\n• Multi-Factor Authentication (MFA) — Multiple verification methods\n• Encryption — Protect data in transit and at rest\n• Regular Backups — Protect against data loss\n• Zero Trust — Never trust, always verify\n\nLet\'s check file permissions (Least Privilege):',
+        command: 'ls -la /etc/passwd && ls -la /etc/shadow',
+        expectedOutput: 'passwd is world-readable, shadow is restricted',
+        hint: '/etc/shadow stores password hashes and has restricted permissions — Least Privilege in action!'
+      },
+      {
+        stepNumber: 9,
+        title: 'Ethical Hacking Basics',
+        instruction: 'Ethical hacking (penetration testing) is authorized security testing to identify and report vulnerabilities responsibly. The methodology includes:\n1. Reconnaissance — Gather information about the target\n2. Scanning — Identify open ports and services\n3. Enumeration — Discover usernames, shares, services\n4. Exploitation — Attempt to gain access\n5. Post-Exploitation — Assess impact and maintain access\n6. Reporting — Document findings and recommendations\n\nLet\'s do basic reconnaissance:',
+        command: 'nmap -sn 127.0.0.1 && echo "--- Recon complete ---"',
+        expectedOutput: 'Host is up confirmation',
+        hint: 'Reconnaissance is the first phase — always start with passive information gathering'
+      },
+      {
+        stepNumber: 10,
+        title: 'Cybersecurity Careers & Best Practices',
+        instruction: 'Career paths in cybersecurity:\n• SOC Analyst — Monitor security events\n• Penetration Tester — Authorized security testing\n• Security Engineer — Build secure systems\n• DFIR (Digital Forensics & Incident Response) — Investigate breaches\n• Cloud Security Engineer — Secure cloud infrastructure\n• GRC (Governance, Risk, Compliance) — Policy and compliance\n\nBest Practices:\n✅ Use strong, unique passwords\n✅ Enable MFA everywhere\n✅ Keep systems updated\n✅ Regular backups\n✅ Use antivirus software\n✅ Secure browsing habits\n✅ Phishing awareness training',
+        command: 'echo "Module 1 Complete! You now understand cybersecurity fundamentals." && echo "Next: Start hands-on labs with Kali Linux!"',
+        expectedOutput: 'Completion message',
+        hint: 'Continue to Module 2 to start hands-on hacking with Kali Linux!'
+      }
+    ]
+  },
+  {
     title: 'Kali Linux Installation Guide',
     description: 'Complete guide to installing Kali Linux on your laptop - from USB creation to first boot',
     category: 'kali-basics', difficulty: 'beginner', duration: '45 mins', xpReward: 150,
