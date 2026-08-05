@@ -65,6 +65,8 @@ const learningModules = [
   {
     id: 2, title: 'Kali Linux Complete Setup', category: 'kali-linux', level: 'beginner',
     duration: '45 min', xp: 150, icon: '🐉',
+    video: 'https://d4k2eekwuskedyx5.public.blob.vercel-storage.com/KALI%20LINUX%20SETUP.mp4',
+    videoType: 'mp4',
     content: {
       overview: 'Kali Linux is the most popular Linux distribution for penetration testing and ethical hacking. Built on Debian, it comes pre-installed with 600+ security tools.',
       sections: [
