@@ -59,7 +59,6 @@ function render() {
   else if (state.page === 'tools') { app.innerHTML = renderDashboardLayout(renderToolsPage()); attachNavEvents(); loadTools(); }
   else if (state.page === 'terminal') { app.innerHTML = renderDashboardLayout(renderTerminalPage()); attachNavEvents(); initTerminal(); }
   else if (state.page === 'learning') { app.innerHTML = renderDashboardLayout(renderLearningPage()); attachNavEvents(); loadLearning(); }
-  else if (state.page === 'leaderboard') { app.innerHTML = renderDashboardLayout(renderLeaderboardPage()); attachNavEvents(); loadLeaderboard(); }
   else if (state.page === 'tasks') { app.innerHTML = renderDashboardLayout(renderTasksPage()); attachNavEvents(); loadTasks(); }
 }
 
@@ -76,7 +75,6 @@ function renderNavbar() {
       <button class="nav-btn ${state.page==='learning'?'active':''}" onclick="navigate('learning')"><i class="fas fa-book"></i> Learn</button>
       <button class="nav-btn ${state.page==='terminal'?'active':''}" onclick="navigate('terminal')"><i class="fas fa-terminal"></i> Terminal</button>
       <button class="nav-btn ${state.page==='tasks'?'active':''}" onclick="navigate('tasks')"><i class="fas fa-code"></i> Tasks</button>
-      <button class="nav-btn ${state.page==='leaderboard'?'active':''}" onclick="navigate('leaderboard')"><i class="fas fa-trophy"></i> Board</button>
     </div>
     <div class="nav-user">
       <span class="xp-badge"><i class="fas fa-star" style="color:#ffcc00"></i> ${u?u.xp||0:0} XP</span>
@@ -95,7 +93,6 @@ function renderSidebar() {
     { page:'learning', icon:'fa-book-open', label:'Learn Hacking' },
     { page:'terminal', icon:'fa-terminal', label:'Live Terminal' },
     { page:'tasks', icon:'fa-code', label:'Coding Tasks' },
-    { page:'leaderboard', icon:'fa-trophy', label:'Leaderboard' },
   ];
   return `<div class="sidebar">${items.map(i => `<div class="sidebar-item ${state.page===i.page?'active':''}" onclick="navigate('${i.page}')"><i class="fas ${i.icon}"></i> ${i.label}</div>`).join('')}
     <div style="padding:1.5rem; margin-top:auto; border-top:1px solid var(--border); margin-top:2rem;">
@@ -183,7 +180,6 @@ function renderHomePage(modal) {
     {icon:'🧪', title:'Hacking Labs',   desc:'Step-by-step guided labs. Kali basics to advanced exploitation.'},
     {icon:'💻', title:'Live Terminal',  desc:'Simulate Kali Linux in-browser. Practice safely with real commands.'},
     {icon:'📚', title:'Learn & Master', desc:'Structured courses from beginner to advanced. Theory meets practice.'},
-    {icon:'🏆', title:'Leaderboard',    desc:'Compete globally. Rank up from Script Kiddie to Cyber God.'},
     {icon:'⚡', title:'Coding Tasks',   desc:'Python, Bash & JS security tools. XP for every solution.'},
   ];
   return `
@@ -195,7 +191,6 @@ function renderHomePage(modal) {
       <div class="home-nav-links">
         <button class="home-nav-link active">HOME</button>
         <button class="home-nav-link" onclick="showAuthModal('login')">CHALLENGES</button>
-        <button class="home-nav-link" onclick="showAuthModal('login')">LEADERBOARD</button>
         <button class="home-nav-link" onclick="showAuthModal('login')">LABS</button>
         <button class="home-nav-link" onclick="showAuthModal('login')">FEATURES</button>
         <button class="home-nav-link" onclick="showAuthModal('login')">TERMINAL</button>
