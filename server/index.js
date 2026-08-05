@@ -11,6 +11,9 @@ require('dotenv').config();
 // Initialize Firebase
 const { db, auth } = require('./config/firebase');
 
+// Honeypot
+const { router: honeypotRouter, honeypotMiddleware } = require('./routes/honeypot');
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -22,6 +25,10 @@ app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json());
 app.use(morgan('dev'));
+
+// ── Honeypot — must be registered BEFORE static files and SPA catch-all ──
+app.use(honeypotMiddleware);
+app.use('/api/honeypot', honeypotRouter);
 
 // Serve static frontend files
 app.use(express.static(path.join(__dirname, '../client/public')));
@@ -111,5 +118,10 @@ function simulateTerminal(cmd, context = 'kali') {
   return commands[c] || `bash: ${cmd}: command not found in simulation mode\nTip: Type 'help' to see available commands`;
 }
 
+// Export for Vercel serverless; also listen locally
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`🚀 CyberForge Server running on port ${PORT}`));
+if (process.env.VERCEL !== '1') {
+  server.listen(PORT, () => console.log(`🚀 CyberForge Server running on port ${PORT}`));
+}
+
+module.exports = app;

@@ -1645,6 +1645,17 @@ async function openModule(id) {
       <div style="background:var(--bg2);border-radius:8px;padding:1.2rem;margin-bottom:1.5rem;line-height:1.7;color:var(--text-mid)">
         ${m.content.overview}
       </div>
+      ${m.video ? `
+      <div style="margin-bottom:1.5rem">
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem">
+          <i class="fas fa-play-circle" style="color:var(--purple);font-size:1.1rem"></i>
+          <span style="font-family:Orbitron,monospace;font-size:0.9rem;color:var(--purple);text-transform:uppercase;letter-spacing:1px">Course Video</span>
+        </div>
+        <video controls style="width:100%;border-radius:10px;border:1px solid var(--border);background:#000;max-height:480px;outline:none" preload="metadata">
+          <source src="${m.video}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>` : ''}
       ${(m.content.sections||[]).map(s=>`
         <div class="section-item">
           <div class="section-title"><i class="fas fa-chevron-right"></i> ${s.title}</div>

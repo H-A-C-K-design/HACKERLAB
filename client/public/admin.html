@@ -128,6 +128,7 @@
       <div class="a-nav-item" onclick="showSection('labs')" id="nav-labs"><i class="fas fa-flask"></i> Labs</div>
       <div class="a-nav-item" onclick="showSection('tasks')" id="nav-tasks"><i class="fas fa-code"></i> Tasks</div>
       <div class="a-nav-item" onclick="showSection('announce')" id="nav-announce"><i class="fas fa-bullhorn"></i> Announce</div>
+      <div class="a-nav-item" onclick="showSection('honeypot')" id="nav-honeypot"><i class="fas fa-spider"></i> Honeypot Logs</div>
       <div style="padding:1rem 1.25rem;margin-top:1rem;border-top:1px solid #1a0a0a">
         <div style="font-size:0.7rem;color:#2a1a1a;text-transform:uppercase;letter-spacing:1px">Secret URL Token</div>
         <div id="token-display" style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:#3a2a2a;margin-top:0.3rem;word-break:break-all"></div>
@@ -292,7 +293,7 @@ function showSection(name) {
   const nav = document.getElementById('nav-' + name);
   if (nav) nav.classList.add('active');
 
-  const sections = { dashboard: loadDashboard, users: loadUsers, challenges: loadChallenges, labs: loadLabs, tasks: loadTasks, announce: loadAnnounce };
+  const sections = { dashboard: loadDashboard, users: loadUsers, challenges: loadChallenges, labs: loadLabs, tasks: loadTasks, announce: loadAnnounce, honeypot: loadHoneypotLogs };
   if (sections[name]) sections[name]();
 }
 
@@ -788,6 +789,117 @@ async function postAnnouncement() {
   const data = await aApi('/admin/announce', 'POST', { message });
   if (data.success) { toast('Announcement sent!'); loadAnnounce(); }
   else status.innerHTML = `<span style="color:var(--red)">${data.message}</span>`;
+}
+
+// ── HONEYPOT LOGS ─────────────────────────────────────────
+async function loadHoneypotLogs() {
+  document.getElementById('a-main').innerHTML = `<div class="loading-row"><i class="fas fa-spinner fa-spin"></i> Loading honeypot logs...</div>`;
+
+  let data;
+  try {
+    const res = await fetch('/api/honeypot/logs', { headers: { Authorization: `Bearer ${adminToken}` } });
+    data = await res.json();
+  } catch(e) {
+    data = { success: false, message: 'Failed to load logs' };
+  }
+
+  if (!data.success) {
+    document.getElementById('a-main').innerHTML = `<div class="a-section-title">🍯 Honeypot Logs</div><div style="color:var(--red);margin-top:1rem">${data.message}</div>`;
+    return;
+  }
+
+  const logs = data.logs || [];
+
+  // Group by IP for summary
+  const ipMap = {};
+  logs.forEach(l => {
+    const ip = l.ip || 'unknown';
+    if (!ipMap[ip]) ipMap[ip] = { count: 0, paths: new Set(), types: new Set(), lastSeen: '' };
+    ipMap[ip].count++;
+    ipMap[ip].paths.add(l.path);
+    ipMap[ip].types.add(l.type || 'path_probe');
+    if (l.timestamp) ipMap[ip].lastSeen = l.timestamp._seconds
+      ? new Date(l.timestamp._seconds * 1000).toLocaleString()
+      : String(l.timestamp);
+  });
+
+  const topIPs = Object.entries(ipMap)
+    .sort((a, b) => b[1].count - a[1].count)
+    .slice(0, 5);
+
+  document.getElementById('a-main').innerHTML = `
+    <div class="a-section-title" style="color:#ff6600">🍯 Honeypot Logs</div>
+    <div class="a-section-sub">Attackers probing fake vulnerability paths — ${logs.length} hits recorded</div>
+
+    <!-- Summary cards -->
+    <div class="a-grid" style="margin-bottom:1.5rem">
+      <div class="a-stat orange"><div class="num">${logs.length}</div><div style="color:var(--muted);font-size:.8rem;margin-top:.3rem">TOTAL HITS</div></div>
+      <div class="a-stat red"><div class="num">${Object.keys(ipMap).length}</div><div style="color:var(--muted);font-size:.8rem;margin-top:.3rem">UNIQUE IPs</div></div>
+      <div class="a-stat purple"><div class="num">${logs.filter(l=>l.type&&l.type.includes('attempt')).length}</div><div style="color:var(--muted);font-size:.8rem;margin-top:.3rem">LOGIN ATTEMPTS</div></div>
+      <div class="a-stat cyan"><div class="num">${[...new Set(logs.map(l=>l.path))].length}</div><div style="color:var(--muted);font-size:.8rem;margin-top:.3rem">UNIQUE PATHS</div></div>
+    </div>
+
+    <!-- Top attackers -->
+    ${topIPs.length ? `
+    <div class="a-card" style="margin-bottom:1.5rem">
+      <div class="a-card-title" style="color:var(--red)"><i class="fas fa-crosshairs"></i> Top Probing IPs</div>
+      <table style="width:100%;border-collapse:collapse;font-size:0.88rem">
+        <thead><tr style="color:var(--muted);text-transform:uppercase;font-size:.75rem;letter-spacing:.5px">
+          <th style="text-align:left;padding:.5rem .75rem;border-bottom:1px solid #1a3a5a">IP Address</th>
+          <th style="text-align:center;padding:.5rem .75rem;border-bottom:1px solid #1a3a5a">Hits</th>
+          <th style="text-align:left;padding:.5rem .75rem;border-bottom:1px solid #1a3a5a">Types</th>
+          <th style="text-align:left;padding:.5rem .75rem;border-bottom:1px solid #1a3a5a">Last Seen</th>
+        </tr></thead>
+        <tbody>
+          ${topIPs.map(([ip, d]) => `<tr style="border-bottom:1px solid #0d1b2a">
+            <td style="padding:.5rem .75rem;font-family:monospace;color:var(--orange)">${ip}</td>
+            <td style="padding:.5rem .75rem;text-align:center;color:var(--red);font-weight:700">${d.count}</td>
+            <td style="padding:.5rem .75rem;color:var(--cyan);font-size:.8rem">${[...d.types].join(', ')}</td>
+            <td style="padding:.5rem .75rem;color:var(--muted);font-size:.8rem">${d.lastSeen}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>` : ''}
+
+    <!-- Full log table -->
+    <div class="a-card" style="padding:0;overflow:hidden">
+      <div style="padding:1rem 1.25rem;border-bottom:1px solid #1a3a5a;display:flex;justify-content:space-between;align-items:center">
+        <div class="a-card-title" style="margin:0"><i class="fas fa-list"></i> All Honeypot Events</div>
+        <button class="a-btn a-btn-orange" style="padding:.4rem 1rem;font-size:.8rem" onclick="loadHoneypotLogs()"><i class="fas fa-sync"></i> Refresh</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:.83rem">
+          <thead><tr style="color:var(--muted);text-transform:uppercase;font-size:.7rem;letter-spacing:.5px;background:rgba(10,20,35,.8)">
+            <th style="text-align:left;padding:.5rem .75rem">Timestamp</th>
+            <th style="text-align:left;padding:.5rem .75rem">IP</th>
+            <th style="text-align:left;padding:.5rem .75rem">Method</th>
+            <th style="text-align:left;padding:.5rem .75rem">Path Probed</th>
+            <th style="text-align:left;padding:.5rem .75rem">Type</th>
+            <th style="text-align:left;padding:.5rem .75rem">Username</th>
+            <th style="text-align:left;padding:.5rem .75rem">User Agent</th>
+          </tr></thead>
+          <tbody>
+            ${logs.length === 0
+              ? `<tr><td colspan="7" style="padding:2rem;text-align:center;color:var(--muted)">No honeypot hits yet. Attackers haven't found you!</td></tr>`
+              : logs.map(l => {
+                  const ts = l.timestamp && l.timestamp._seconds
+                    ? new Date(l.timestamp._seconds * 1000).toLocaleString()
+                    : (l.timestamp || '—');
+                  const isAttempt = l.type && l.type.includes('attempt');
+                  return `<tr style="border-bottom:1px solid #0d1b2a;${isAttempt ? 'background:rgba(255,0,64,.04)' : ''}">
+                    <td style="padding:.45rem .75rem;color:var(--muted);white-space:nowrap;font-size:.78rem">${ts}</td>
+                    <td style="padding:.45rem .75rem;font-family:monospace;color:var(--orange)">${l.ip||'—'}</td>
+                    <td style="padding:.45rem .75rem"><span style="background:rgba(0,212,255,.1);color:var(--cyan);padding:.1rem .4rem;border-radius:3px;font-size:.75rem">${l.method||'GET'}</span></td>
+                    <td style="padding:.45rem .75rem;font-family:monospace;color:${isAttempt ? 'var(--red)' : 'var(--text)'};max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${l.path||''}">${l.path||'—'}</td>
+                    <td style="padding:.45rem .75rem;font-size:.78rem;color:${isAttempt ? 'var(--red)' : 'var(--muted)'}">${l.type||'path_probe'}</td>
+                    <td style="padding:.45rem .75rem;color:var(--purple);font-family:monospace;font-size:.8rem">${l.username||'—'}</td>
+                    <td style="padding:.45rem .75rem;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.75rem" title="${(l.userAgent||'').replace(/"/g,'')}">${(l.userAgent||'unknown').slice(0,40)}</td>
+                  </tr>`;
+                }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
 }
 </script>
 </body>
