@@ -1,12 +1,56 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
+const fs = require('fs');
+const path = require('path');
+
+// ── Video streaming endpoint ──────────────────────────────
+// Streams videos from the "CYBER VEDIOES" folder on disk.
+// Supports HTTP Range requests so the browser seek bar works.
+router.get('/video/:filename', protect, (req, res) => {
+  const filename = decodeURIComponent(req.params.filename);
+  // Prevent path traversal
+  const safe = path.basename(filename);
+  const videoPath = path.join(__dirname, '../../CYBER VEDIOES', safe);
+
+  if (!fs.existsSync(videoPath)) {
+    return res.status(404).json({ success: false, message: 'Video not found' });
+  }
+
+  const stat = fs.statSync(videoPath);
+  const fileSize = stat.size;
+  const range = req.headers.range;
+
+  if (range) {
+    // Partial content — enables seek
+    const parts = range.replace(/bytes=/, '').split('-');
+    const start = parseInt(parts[0], 10);
+    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+    const chunkSize = end - start + 1;
+    const file = fs.createReadStream(videoPath, { start, end });
+    res.writeHead(206, {
+      'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+      'Accept-Ranges': 'bytes',
+      'Content-Length': chunkSize,
+      'Content-Type': 'video/mp4',
+    });
+    file.pipe(res);
+  } else {
+    // Full file
+    res.writeHead(200, {
+      'Content-Length': fileSize,
+      'Content-Type': 'video/mp4',
+      'Accept-Ranges': 'bytes',
+    });
+    fs.createReadStream(videoPath).pipe(res);
+  }
+});
 
 const learningModules = [
   {
     id: 1, title: 'What is Cybersecurity?', category: 'fundamentals', level: 'beginner',
     duration: '20 min', xp: 50, icon: '🛡️',
-    video: '/INTRODUCTION OF CYBER SECURITY.mp4',
+    video: '/api/learning/video/INTRODUCTION OF CYBER SECURITY.mp4',
     content: {
       overview: 'Cybersecurity is the practice of protecting systems, networks, and programs from digital attacks. These cyberattacks are usually aimed at accessing, changing, or destroying sensitive information.',
       sections: [
