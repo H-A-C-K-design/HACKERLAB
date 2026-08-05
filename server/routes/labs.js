@@ -94,6 +94,8 @@ const seedLabs = [
     title: 'Module 1: Introduction to Cybersecurity',
     description: 'A comprehensive introduction to cybersecurity fundamentals — learn about the CIA Triad, common threats, types of hackers, basic networking, security principles, ethical hacking, and career paths in cybersecurity.',
     category: 'cybersecurity-fundamentals', difficulty: 'beginner', duration: '120 mins', xpReward: 300,
+    downloadFile: '/modules/Module_1_Introduction_to_Cybersecurity.docx',
+    downloadFileName: 'Module_1_Introduction_to_Cybersecurity.docx',
     tools: ['Browser', 'Terminal', 'Wireshark'],
     objectives: [
       'Understand what cybersecurity is and why it matters',

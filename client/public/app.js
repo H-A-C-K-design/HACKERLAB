@@ -566,7 +566,7 @@ async function loadLabs() {
   const labs = data.labs;
   if(!labs||!labs.length) { grid.innerHTML = `<div class="empty-state"><i class="fas fa-flask"></i><p>No labs found. Seed: POST /api/labs/seed/all</p></div>`; return; }
   grid.innerHTML = labs.map(l => `
-    <div class="card lab-card" onclick="openLab('${l._id}')">
+    <div class="card lab-card" onclick="openLab('${l.id||l._id}')">
       <div><span class="module-level level-${l.difficulty}">${l.difficulty}</span><span class="cat-badge">${l.category}</span></div>
       <div class="card-title">${l.title}</div>
       <div class="card-desc">${l.description}</div>
@@ -575,7 +575,10 @@ async function loadLabs() {
         <span><i class="fas fa-star" style="color:#ffcc00"></i> +${l.xpReward} XP</span>
         ${l.completed?'<span style="color:var(--green)"><i class="fas fa-check-circle"></i> Completed</span>':''}
       </div>
-      <div style="margin-top:0.75rem">${(l.tools||[]).slice(0,3).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.75rem">
+        <div>${(l.tools||[]).slice(0,3).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+        ${l.downloadFile?`<button onclick="event.stopPropagation();downloadLabFile('${l.downloadFile}','${l.downloadFileName||'module.docx'}')" class="btn" style="padding:0.35rem 0.75rem;font-size:0.75rem;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:0.4rem;transition:all 0.3s" onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 0 12px rgba(124,58,237,0.4)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='none'"><i class="fas fa-download"></i> Download</button>`:''}
+      </div>
     </div>`).join('');
 }
 
@@ -598,9 +601,16 @@ async function openLab(id) {
           <h2 style="font-family:Orbitron,monospace;font-size:1.4rem;margin-top:0.75rem">${l.title}</h2>
           <p style="color:var(--text-dim);margin-top:0.5rem">${l.description}</p>
         </div>
-        <div style="text-align:center;background:var(--bg2);padding:1rem;border-radius:8px">
-          <div style="font-family:Orbitron,monospace;font-size:1.5rem;color:var(--cyan)">+${l.xpReward}</div>
-          <div style="font-size:0.8rem;color:var(--text-dim)">XP REWARD</div>
+        <div style="display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap">
+          ${l.downloadFile?`<div style="text-align:center;background:linear-gradient(135deg,rgba(124,58,237,0.1),rgba(168,85,247,0.1));border:1px solid rgba(124,58,237,0.3);padding:1rem 1.5rem;border-radius:12px;cursor:pointer;transition:all 0.3s" onclick="downloadLabFile('${l.downloadFile}','${l.downloadFileName||'module.docx'}')" onmouseover="this.style.borderColor='rgba(124,58,237,0.6)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 15px rgba(124,58,237,0.2)'" onmouseout="this.style.borderColor='rgba(124,58,237,0.3)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+            <div style="font-size:1.8rem;margin-bottom:0.4rem"><i class="fas fa-file-download" style="color:var(--purple)"></i></div>
+            <div style="font-size:0.75rem;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:1px">Download</div>
+            <div style="font-size:0.65rem;color:var(--text-dim);margin-top:0.2rem">${l.downloadFileName||'Module File'}</div>
+          </div>`:''}
+          <div style="text-align:center;background:var(--bg2);padding:1rem;border-radius:8px">
+            <div style="font-family:Orbitron,monospace;font-size:1.5rem;color:var(--cyan)">+${l.xpReward}</div>
+            <div style="font-size:0.8rem;color:var(--text-dim)">XP REWARD</div>
+          </div>
         </div>
       </div>
       <div class="section-divider"><span>Objectives</span></div>
@@ -640,6 +650,16 @@ async function completeLab(id) {
 
 function copyCmd(cmd, el) {
   navigator.clipboard?.writeText(cmd).then(()=>{ el.style.borderColor='var(--green)'; setTimeout(()=>el.style.borderColor='',1000); });
+}
+
+function downloadLabFile(filePath, fileName) {
+  const a = document.createElement('a');
+  a.href = filePath;
+  a.download = fileName || 'module.docx';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 // ---- TOOLS ----
