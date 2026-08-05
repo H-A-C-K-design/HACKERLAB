@@ -615,6 +615,22 @@ async function openLab(id) {
       </div>
       <div class="section-divider"><span>Objectives</span></div>
       <ul style="list-style:none;margin-bottom:1.5rem">${(l.objectives||[]).map(o=>`<li style="padding:0.4rem 0;color:var(--green)"><i class="fas fa-check-circle" style="color:var(--green);margin-right:0.5rem"></i>${o}</li>`).join('')}</ul>
+      ${l.video ? `
+      <div class="section-divider"><span>Module Video</span></div>
+      <div style="margin-bottom:1.5rem">
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem">
+          <i class="fas fa-play-circle" style="color:var(--purple);font-size:1.1rem"></i>
+          <span style="font-family:Orbitron,monospace;font-size:0.9rem;color:var(--purple);text-transform:uppercase;letter-spacing:1px">Course Video</span>
+          <span style="margin-left:auto;background:rgba(255,204,0,0.15);border:1px solid rgba(255,204,0,0.4);color:#ffcc00;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.75rem;font-family:'Share Tech Mono',monospace">
+            <i class="fas fa-star"></i> Watch fully = +100 XP (no skipping)
+          </span>
+        </div>
+        <video id="lab-video-${l._id}" controls style="width:100%;border-radius:10px;border:1px solid var(--border);background:#000;max-height:480px;outline:none" preload="metadata">
+          <source src="${l.video}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <div id="lab-video-xp-msg-${l._id}" style="margin-top:0.75rem"></div>
+      </div>` : ''}
       <div class="section-divider"><span>Lab Steps</span></div>
       ${(l.steps||[]).map(s=>`
         <div class="lab-step">
@@ -630,6 +646,11 @@ async function openLab(id) {
       </div>
       <div id="lab-msg-${l._id}" style="margin-top:1rem"></div>
     </div>`;
+
+  // Init anti-skip video XP tracker for lab video
+  if (l.video) {
+    initLabVideoXpTracker(l._id);
+  }
 }
 
 function backToLabs() {
@@ -637,6 +658,51 @@ function backToLabs() {
   const detail = $('lab-detail');
   if(grid) grid.style.display='';
   if(detail) detail.style.display='none';
+}
+
+// ── Anti-skip video XP tracker for Labs ──────────────────
+function initLabVideoXpTracker(labId) {
+  const video = $('lab-video-' + labId);
+  const msgEl = $('lab-video-xp-msg-' + labId);
+  if (!video) return;
+
+  let maxWatched = 0;
+  let skipDetected = false;
+  let xpAwarded = false;
+  let lastTime = 0;
+
+  video.addEventListener('timeupdate', () => {
+    const cur = video.currentTime;
+    if (cur > maxWatched + 3 && cur > lastTime + 3) {
+      skipDetected = true;
+      if (msgEl) msgEl.innerHTML = `<div style="background:rgba(255,0,64,0.1);border:1px solid rgba(255,0,64,0.4);color:#ff4060;padding:0.6rem 1rem;border-radius:8px;font-size:0.85rem"><i class="fas fa-exclamation-triangle"></i> Skip detected — XP reward cancelled. Watch the full video without skipping to earn +100 XP.</div>`;
+    }
+    if (!skipDetected || cur <= maxWatched + 3) {
+      maxWatched = Math.max(maxWatched, cur);
+    }
+    lastTime = cur;
+  });
+
+  video.addEventListener('ended', async () => {
+    if (xpAwarded) return;
+    const watchedPct = video.duration > 0 ? (maxWatched / video.duration) : 0;
+    if (skipDetected || watchedPct < 0.95) {
+      if (msgEl) msgEl.innerHTML = `<div style="background:rgba(255,0,64,0.1);border:1px solid rgba(255,0,64,0.4);color:#ff4060;padding:0.6rem 1rem;border-radius:8px;font-size:0.85rem"><i class="fas fa-times-circle"></i> XP not awarded — watch the full video without skipping to earn +100 XP.</div>`;
+      return;
+    }
+    if (msgEl) msgEl.innerHTML = `<div style="background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.4);color:#ffcc00;padding:0.6rem 1rem;border-radius:8px;font-size:0.85rem"><i class="fas fa-spinner fa-spin"></i> Verifying watch completion...</div>`;
+    // Use learning module 1 video-complete endpoint for intro video
+    const data = await api('/learning/1/video-complete', 'POST');
+    xpAwarded = true;
+    if (data.alreadyAwarded) {
+      if (msgEl) msgEl.innerHTML = `<div style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);color:#00e5ff;padding:0.6rem 1rem;border-radius:8px;font-size:0.85rem"><i class="fas fa-check-circle"></i> You already earned XP for this video.</div>`;
+      return;
+    }
+    if (data.success) {
+      if (state.user) { state.user.xp = data.newXp; state.user.level = data.newLevel; state.user.rank = data.newRank; localStorage.setItem('cf_user', JSON.stringify(state.user)); }
+      if (msgEl) msgEl.innerHTML = `<div style="background:rgba(0,255,102,0.1);border:1px solid rgba(0,255,102,0.4);color:#00ff66;padding:0.75rem 1rem;border-radius:8px;font-size:0.95rem;font-weight:700"><i class="fas fa-star" style="color:#ffcc00"></i> +100 XP Awarded! Great job watching the full video! 🎉<br><span style="font-size:0.8rem;opacity:0.8">Total XP: ${data.newXp} | Rank: ${data.newRank}</span></div>`;
+    }
+  });
 }
 
 async function completeLab(id) {

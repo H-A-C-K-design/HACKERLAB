@@ -21,14 +21,32 @@ function calcRank(xp) {
 router.get('/', protect, async (req, res) => {
   try {
     const snap = await db.collection('labs').where('isActive', '==', true).get();
+
+    // Auto-seed if no labs exist
+    if (snap.empty) {
+      const batch = db.batch();
+      seedLabs.forEach(lab => {
+        const ref = db.collection('labs').doc();
+        batch.set(ref, { ...lab, isActive: true, createdAt: admin.firestore.FieldValue.serverTimestamp() });
+      });
+      await batch.commit();
+      // Re-fetch after seeding
+      const newSnap = await db.collection('labs').where('isActive', '==', true).get();
+      const userDoc2 = await db.collection('users').doc(req.user.id).get();
+      const completedLabs2 = userDoc2.data().completedLabs || [];
+      const labs2 = newSnap.docs.map(doc => {
+        const { steps, ...rest } = doc.data();
+        return { id: doc.id, ...rest, completed: completedLabs2.includes(doc.id) };
+      });
+      return res.json({ success: true, labs: labs2 });
+    }
+
     const userDoc = await db.collection('users').doc(req.user.id).get();
     const completedLabs = userDoc.data().completedLabs || [];
-
     const labs = snap.docs.map(doc => {
       const { steps, ...rest } = doc.data();
       return { id: doc.id, ...rest, completed: completedLabs.includes(doc.id) };
     });
-
     res.json({ success: true, labs });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -94,6 +112,7 @@ const seedLabs = [
     title: 'Module 1: Introduction to Cybersecurity',
     description: 'A comprehensive introduction to cybersecurity fundamentals — learn about the CIA Triad, common threats, types of hackers, basic networking, security principles, ethical hacking, and career paths in cybersecurity.',
     category: 'cybersecurity-fundamentals', difficulty: 'beginner', duration: '120 mins', xpReward: 300,
+    video: 'https://d4k2eekwuskedyx5.public.blob.vercel-storage.com/INTRODUCTION%20OF%20CYBER%20SECURITY.mp4',
     downloadFile: '/modules/Module_1_Introduction_to_Cybersecurity.docx',
     downloadFileName: 'Module_1_Introduction_to_Cybersecurity.docx',
     tools: ['Browser', 'Terminal', 'Wireshark'],
