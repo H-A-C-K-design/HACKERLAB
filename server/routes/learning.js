@@ -50,7 +50,8 @@ const learningModules = [
   {
     id: 1, title: 'What is Cybersecurity?', category: 'fundamentals', level: 'beginner',
     duration: '20 min', xp: 50, icon: '🛡️',
-    video: '/api/learning/video/INTRODUCTION OF CYBER SECURITY.mp4',
+    video: 'https://www.youtube.com/embed/inWWhr5tnEA',
+    videoType: 'youtube',
     content: {
       overview: 'Cybersecurity is the practice of protecting systems, networks, and programs from digital attacks. These cyberattacks are usually aimed at accessing, changing, or destroying sensitive information.',
       sections: [

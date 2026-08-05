@@ -1651,10 +1651,19 @@ async function openModule(id) {
           <i class="fas fa-play-circle" style="color:var(--purple);font-size:1.1rem"></i>
           <span style="font-family:Orbitron,monospace;font-size:0.9rem;color:var(--purple);text-transform:uppercase;letter-spacing:1px">Course Video</span>
         </div>
-        <video controls style="width:100%;border-radius:10px;border:1px solid var(--border);background:#000;max-height:480px;outline:none" preload="metadata">
-          <source src="${m.video}" type="video/mp4">
-          Your browser does not support the video tag.
-        </video>
+        ${m.videoType === 'youtube'
+          ? `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;border:1px solid var(--border)">
+               <iframe src="${m.video}?rel=0&modestbranding=1"
+                 style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;border-radius:10px"
+                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                 allowfullscreen loading="lazy" title="Course Video">
+               </iframe>
+             </div>`
+          : `<video controls style="width:100%;border-radius:10px;border:1px solid var(--border);background:#000;max-height:480px;outline:none" preload="metadata">
+               <source src="${m.video}" type="video/mp4">
+               Your browser does not support the video tag.
+             </video>`
+        }
       </div>` : ''}
       ${(m.content.sections||[]).map(s=>`
         <div class="section-item">
