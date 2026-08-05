@@ -1,10 +1,5 @@
 node_modules
 .env
 *.log
-
-# Large media files — host these on YouTube/Cloudinary/S3 instead
-*.mp4
-*.mov
-*.avi
-*.mkv
+# Large media files — tracked via Git LFS
 CYBER VEDIOES/
