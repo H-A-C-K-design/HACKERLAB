@@ -1645,6 +1645,9 @@ async function openModule(id) {
         <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem">
           <i class="fas fa-play-circle" style="color:var(--purple);font-size:1.1rem"></i>
           <span style="font-family:Orbitron,monospace;font-size:0.9rem;color:var(--purple);text-transform:uppercase;letter-spacing:1px">Course Video</span>
+          <span style="margin-left:auto;background:rgba(255,204,0,0.15);border:1px solid rgba(255,204,0,0.4);color:#ffcc00;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.75rem;font-family:'Share Tech Mono',monospace">
+            <i class="fas fa-star"></i> Watch fully = +100 XP (no skipping)
+          </span>
         </div>
         ${m.videoType === 'youtube'
           ? `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;border:1px solid var(--border)">
@@ -1654,10 +1657,11 @@ async function openModule(id) {
                  allowfullscreen loading="lazy" title="Course Video">
                </iframe>
              </div>`
-          : `<video controls style="width:100%;border-radius:10px;border:1px solid var(--border);background:#000;max-height:480px;outline:none" preload="metadata">
+          : `<video id="module-video-${m.id}" controls style="width:100%;border-radius:10px;border:1px solid var(--border);background:#000;max-height:480px;outline:none" preload="metadata">
                <source src="${m.video}" type="video/mp4">
                Your browser does not support the video tag.
-             </video>`
+             </video>
+             <div id="video-xp-msg-${m.id}" style="margin-top:0.75rem"></div>`
         }
       </div>` : ''}
       ${(m.content.sections||[]).map(s=>`
@@ -1666,11 +1670,80 @@ async function openModule(id) {
           <div class="section-body">${s.body}</div>
         </div>`).join('')}
     </div>`;
+
+  // Init anti-skip video watcher after DOM is set
+  if (m.video && m.videoType !== 'youtube') {
+    initVideoXpTracker(m.id);
+  }
 }
 
 function backToLearning() {
   const grid = $('learning-grid'); const detail = $('module-detail');
   if(grid) grid.style.display=''; if(detail) detail.style.display='none';
+}
+
+// ── Anti-skip video XP tracker ────────────────────────────
+// Awards 100 XP only if user watches 95%+ of video without
+// seeking forward past unwatched sections.
+function initVideoXpTracker(moduleId) {
+  const video = $('module-video-' + moduleId);
+  const msgEl = $('video-xp-msg-' + moduleId);
+  if (!video) return;
+
+  let maxWatched = 0;      // highest timestamp naturally reached
+  let skipDetected = false;
+  let xpAwarded = false;
+  let lastTime = 0;
+
+  // Detect forward skipping
+  video.addEventListener('timeupdate', () => {
+    const cur = video.currentTime;
+    // If jumped forward more than 3s past maxWatched = skip
+    if (cur > maxWatched + 3 && cur > lastTime + 3) {
+      skipDetected = true;
+      if (msgEl) msgEl.innerHTML = `<div style="background:rgba(255,0,64,0.1);border:1px solid rgba(255,0,64,0.4);color:#ff4060;padding:0.6rem 1rem;border-radius:8px;font-size:0.85rem"><i class="fas fa-exclamation-triangle"></i> Skip detected — XP reward cancelled. Watch the full video without skipping to earn +100 XP.</div>`;
+    }
+    // Track max naturally reached time
+    if (!skipDetected || cur <= maxWatched + 3) {
+      maxWatched = Math.max(maxWatched, cur);
+    }
+    lastTime = cur;
+  });
+
+  // On video end — check if 95%+ watched without skipping
+  video.addEventListener('ended', async () => {
+    if (xpAwarded) return;
+    const watchedPct = video.duration > 0 ? (maxWatched / video.duration) : 0;
+
+    if (skipDetected || watchedPct < 0.95) {
+      if (msgEl) msgEl.innerHTML = `<div style="background:rgba(255,0,64,0.1);border:1px solid rgba(255,0,64,0.4);color:#ff4060;padding:0.6rem 1rem;border-radius:8px;font-size:0.85rem"><i class="fas fa-times-circle"></i> XP not awarded — watch the full video without skipping to earn +100 XP.</div>`;
+      return;
+    }
+
+    // Award XP
+    if (msgEl) msgEl.innerHTML = `<div style="background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.4);color:#ffcc00;padding:0.6rem 1rem;border-radius:8px;font-size:0.85rem"><i class="fas fa-spinner fa-spin"></i> Verifying watch completion...</div>`;
+
+    const data = await api('/learning/' + moduleId + '/video-complete', 'POST');
+    xpAwarded = true;
+
+    if (data.alreadyAwarded) {
+      if (msgEl) msgEl.innerHTML = `<div style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);color:#00e5ff;padding:0.6rem 1rem;border-radius:8px;font-size:0.85rem"><i class="fas fa-check-circle"></i> You already earned XP for this video.</div>`;
+      return;
+    }
+
+    if (data.success) {
+      // Update local XP
+      if (state.user) {
+        state.user.xp = data.newXp;
+        state.user.level = data.newLevel;
+        state.user.rank = data.newRank;
+        localStorage.setItem('cf_user', JSON.stringify(state.user));
+      }
+      if (msgEl) msgEl.innerHTML = `<div style="background:rgba(0,255,102,0.1);border:1px solid rgba(0,255,102,0.4);color:#00ff66;padding:0.75rem 1rem;border-radius:8px;font-size:0.95rem;font-weight:700"><i class="fas fa-star" style="color:#ffcc00"></i> +100 XP Awarded! Great job watching the full video! 🎉<br><span style="font-size:0.8rem;opacity:0.8">Total XP: ${data.newXp} | Rank: ${data.newRank}</span></div>`;
+    } else {
+      if (msgEl) msgEl.innerHTML = `<div style="color:#ff4060;font-size:0.85rem;padding:0.5rem"><i class="fas fa-exclamation-circle"></i> ${data.message}</div>`;
+    }
+  });
 }
 
 // ---- LEADERBOARD ----

@@ -140,4 +140,61 @@ router.get('/:id', protect, (req, res) => {
   res.json({ success: true, module });
 });
 
+// ── Award XP for watching full video ─────────────────────
+// Called by the frontend when the user watches 95%+ without skipping.
+// Awards 100 XP only once per user per module video.
+router.post('/:id/video-complete', protect, async (req, res) => {
+  try {
+    const moduleId = parseInt(req.params.id);
+    const module = learningModules.find(m => m.id === moduleId);
+    if (!module || !module.video) {
+      return res.status(404).json({ success: false, message: 'Module or video not found' });
+    }
+
+    const userId = req.user.id;
+    const userRef = db.collection('users').doc(userId);
+    const userDoc = await userRef.get();
+    if (!userDoc.exists) return res.status(404).json({ success: false, message: 'User not found' });
+
+    const userData = userDoc.data();
+    const watchedVideos = userData.watchedVideos || [];
+
+    // Only award once per module video
+    if (watchedVideos.includes(moduleId)) {
+      return res.json({ success: true, alreadyAwarded: true, message: 'XP already awarded for this video', xp: userData.xp });
+    }
+
+    const XP_REWARD = 100;
+    const newXp = (userData.xp || 0) + XP_REWARD;
+
+    // Calculate new level (every 500 XP = 1 level)
+    const newLevel = Math.floor(newXp / 500) + 1;
+
+    // Calculate rank
+    const ranks = ['Script Kiddie','Curious Hacker','Code Breaker','Exploit Dev','Penetration Tester','Red Teamer','Elite Hacker','Zero Day Hunter','Cyber Ninja','Cyber God'];
+    const rankIdx = Math.min(Math.floor(newXp / 1000), ranks.length - 1);
+    const newRank = ranks[rankIdx];
+
+    await userRef.update({
+      xp: newXp,
+      level: newLevel,
+      rank: newRank,
+      watchedVideos: [...watchedVideos, moduleId]
+    });
+
+    console.log(`🎬 [VIDEO XP] User ${userData.username} earned ${XP_REWARD} XP for watching "${module.title}" video`);
+
+    res.json({
+      success: true,
+      message: `+${XP_REWARD} XP awarded for watching the full video!`,
+      xpEarned: XP_REWARD,
+      newXp,
+      newLevel,
+      newRank
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 module.exports = router;
