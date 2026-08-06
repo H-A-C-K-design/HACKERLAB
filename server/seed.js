@@ -70,59 +70,7 @@ async function seed() {
   }
 
   // ── Labs ────────────────────────────────────────────────
-  const labSnap = await db.collection('labs').limit(1).get();
-  if (labSnap.empty) {
-    const batch = db.batch();
-    const labs = [
-      {
-        title: 'Kali Linux Installation Guide',
-        description: 'Complete guide to installing Kali Linux on your laptop',
-        category: 'kali-basics', difficulty: 'beginner', duration: '45 mins', xpReward: 150,
-        tools: ['VirtualBox', 'Rufus', 'Kali ISO'],
-        objectives: ['Download Kali Linux ISO', 'Create bootable USB', 'Install Kali Linux'],
-        steps: [
-          { stepNumber: 1, title: 'Download Kali Linux', instruction: 'Go to kali.org/get-kali and download the latest ISO.', command: 'wget https://cdimage.kali.org/kali-2024.1/kali-linux-2024.1-installer-amd64.iso', expectedOutput: 'Download progress bar', hint: 'Choose the 64-bit installer version' },
-          { stepNumber: 2, title: 'Verify ISO', instruction: 'Verify your download integrity.', command: 'sha256sum kali-linux-2024.1-installer-amd64.iso', expectedOutput: 'Hash matches official website', hint: 'Compare with hash on kali.org' },
-          { stepNumber: 3, title: 'Create Bootable USB', instruction: 'Use Rufus or dd to create bootable USB.', command: 'sudo dd if=kali.iso of=/dev/sdb bs=4M status=progress', expectedOutput: 'Records in/out', hint: 'Use lsblk to identify USB drive' }
-        ],
-        isActive: true
-      },
-      {
-        title: 'Essential Linux Commands',
-        description: 'Master the most important Linux commands for cybersecurity',
-        category: 'kali-basics', difficulty: 'beginner', duration: '60 mins', xpReward: 200,
-        tools: ['Terminal', 'Bash'],
-        objectives: ['Navigate filesystem', 'Manage files', 'Network commands'],
-        steps: [
-          { stepNumber: 1, title: 'Navigation', instruction: 'Learn to move around the filesystem', command: 'ls -la && pwd', expectedOutput: 'File list with permissions', hint: 'ls -la shows hidden files' },
-          { stepNumber: 2, title: 'File Operations', instruction: 'Create and manage files', command: 'touch test.txt && echo "Hello" > test.txt && cat test.txt', expectedOutput: 'Hello', hint: 'Use cat to read files' },
-          { stepNumber: 3, title: 'Network Commands', instruction: 'Essential network recon commands', command: 'ifconfig && ip addr', expectedOutput: 'Network interfaces', hint: 'ip addr is more modern' }
-        ],
-        isActive: true
-      },
-      {
-        title: 'Nmap Network Scanning',
-        description: 'Learn Nmap - the most powerful network scanner',
-        category: 'network-scan', difficulty: 'intermediate', duration: '90 mins', xpReward: 300,
-        tools: ['nmap', 'Wireshark'],
-        objectives: ['Host discovery', 'Port scanning', 'Service detection'],
-        steps: [
-          { stepNumber: 1, title: 'Ping Sweep', instruction: 'Discover live hosts', command: 'nmap -sn 192.168.1.0/24', expectedOutput: 'Hosts up: X', hint: '-sn = no port scan' },
-          { stepNumber: 2, title: 'Port Scan', instruction: 'Scan for open ports', command: 'nmap -sS -p 1-1000 192.168.1.1', expectedOutput: 'Open ports listed', hint: '-sS is SYN scan' },
-          { stepNumber: 3, title: 'Service Detection', instruction: 'Identify running services', command: 'nmap -sV -sC 192.168.1.1', expectedOutput: 'Service names and versions', hint: '-sC runs default scripts' }
-        ],
-        isActive: true
-      }
-    ];
-    labs.forEach(l => {
-      const ref = db.collection('labs').doc();
-      batch.set(ref, { ...l, createdAt: admin.firestore.FieldValue.serverTimestamp() });
-    });
-    await batch.commit();
-    console.log(`✅ ${labs.length} labs seeded\n`);
-  } else {
-    console.log('ℹ️  Labs already exist\n');
-  }
+  console.log('ℹ️  Labs seeding disabled — no labs configured\n');
 
   // ── Tasks ───────────────────────────────────────────────
   const taskSnap = await db.collection('tasks').limit(1).get();

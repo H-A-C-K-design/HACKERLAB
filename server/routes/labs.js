@@ -20,24 +20,8 @@ function calcRank(xp) {
 
 router.get('/', protect, async (req, res) => {
   try {
-    // Filter out the removed Module 1 lab in case it still exists in Firestore
-    const snap = await db.collection('labs')
-      .where('isActive', '==', true)
-      .get();
-
-    if (snap.empty) {
-      return res.json({ success: true, labs: [] });
-    }
-
-    const userDoc = await db.collection('users').doc(req.user.id).get();
-    const completedLabs = userDoc.data().completedLabs || [];
-    const labs = snap.docs
-      .filter(doc => doc.data().category !== 'cybersecurity-fundamentals')
-      .map(doc => {
-        const { steps, ...rest } = doc.data();
-        return { id: doc.id, ...rest, completed: completedLabs.includes(doc.id) };
-      });
-    res.json({ success: true, labs });
+    // All labs are disabled — return empty array
+    res.json({ success: true, labs: [] });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
