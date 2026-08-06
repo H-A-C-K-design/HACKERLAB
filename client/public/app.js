@@ -575,9 +575,8 @@ async function loadLabs() {
         <span><i class="fas fa-star" style="color:#ffcc00"></i> +${l.xpReward} XP</span>
         ${l.completed?'<span style="color:var(--green)"><i class="fas fa-check-circle"></i> Completed</span>':''}
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.75rem">
+      <div style="margin-top:0.75rem">
         <div>${(l.tools||[]).slice(0,3).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-        ${l.downloadFile?`<button onclick="event.stopPropagation();downloadLabFile('${l.downloadFile}','${l.downloadFileName||'module.docx'}')" class="btn" style="padding:0.35rem 0.75rem;font-size:0.75rem;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:0.4rem;transition:all 0.3s" onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 0 12px rgba(124,58,237,0.4)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='none'"><i class="fas fa-download"></i> Download</button>`:''}
       </div>
     </div>`).join('');
 }
