@@ -7,6 +7,7 @@ const protect = async (req, res, next) => {
     token = req.headers.authorization.split(' ')[1];
   }
   if (!token) return res.status(401).json({ success: false, message: 'Not authorized' });
+  if (!db) return res.status(503).json({ success: false, message: 'Firebase not configured — cannot authenticate' });
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userDoc = await db.collection('users').doc(decoded.id).get();

@@ -62,12 +62,14 @@ router.get('/users', async (req, res) => {
 
 router.put('/users/:id', async (req, res) => {
   try {
-    const { role, xp, rank } = req.body;
-    await db.collection('users').doc(req.params.id).update({ role, xp, rank });
+    // Check existence before updating to avoid writing to a non-existent doc
     const doc = await db.collection('users').doc(req.params.id).get();
     if (!doc.exists) return res.status(404).json({ success: false, message: 'User not found' });
-    const { password, ...rest } = doc.data();
-    res.json({ success: true, user: { id: doc.id, ...rest } });
+    const { role, xp, rank } = req.body;
+    await db.collection('users').doc(req.params.id).update({ role, xp, rank });
+    const updated = await db.collection('users').doc(req.params.id).get();
+    const { password, ...rest } = updated.data();
+    res.json({ success: true, user: { id: updated.id, ...rest } });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

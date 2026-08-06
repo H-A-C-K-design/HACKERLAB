@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { db } = require('../config/firebase');
 const { protect } = require('../middleware/auth');
 const fs = require('fs');
 const path = require('path');
