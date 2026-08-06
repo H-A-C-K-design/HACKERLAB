@@ -20,33 +20,23 @@ function calcRank(xp) {
 
 router.get('/', protect, async (req, res) => {
   try {
-    const snap = await db.collection('labs').where('isActive', '==', true).get();
+    // Filter out the removed Module 1 lab in case it still exists in Firestore
+    const snap = await db.collection('labs')
+      .where('isActive', '==', true)
+      .get();
 
-    // Auto-seed if no labs exist
     if (snap.empty) {
-      const batch = db.batch();
-      seedLabs.forEach(lab => {
-        const ref = db.collection('labs').doc();
-        batch.set(ref, { ...lab, isActive: true, createdAt: admin.firestore.FieldValue.serverTimestamp() });
-      });
-      await batch.commit();
-      // Re-fetch after seeding
-      const newSnap = await db.collection('labs').where('isActive', '==', true).get();
-      const userDoc2 = await db.collection('users').doc(req.user.id).get();
-      const completedLabs2 = userDoc2.data().completedLabs || [];
-      const labs2 = newSnap.docs.map(doc => {
-        const { steps, ...rest } = doc.data();
-        return { id: doc.id, ...rest, completed: completedLabs2.includes(doc.id) };
-      });
-      return res.json({ success: true, labs: labs2 });
+      return res.json({ success: true, labs: [] });
     }
 
     const userDoc = await db.collection('users').doc(req.user.id).get();
     const completedLabs = userDoc.data().completedLabs || [];
-    const labs = snap.docs.map(doc => {
-      const { steps, ...rest } = doc.data();
-      return { id: doc.id, ...rest, completed: completedLabs.includes(doc.id) };
-    });
+    const labs = snap.docs
+      .filter(doc => doc.data().category !== 'cybersecurity-fundamentals')
+      .map(doc => {
+        const { steps, ...rest } = doc.data();
+        return { id: doc.id, ...rest, completed: completedLabs.includes(doc.id) };
+      });
     res.json({ success: true, labs });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -102,6 +92,46 @@ router.post('/seed/all', async (req, res) => {
     });
     await batch.commit();
     res.json({ success: true, message: 'Labs seeded!' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// DELETE all labs from Firestore — clears the collection
+router.delete('/all', async (req, res) => {
+  try {
+    const snap = await db.collection('labs').get();
+    if (snap.empty) return res.json({ success: true, message: 'No labs to delete', deleted: 0 });
+    // Firestore batch supports max 500 ops
+    const chunks = [];
+    let batch = db.batch();
+    let count = 0;
+    snap.docs.forEach((doc, i) => {
+      batch.delete(doc.ref);
+      count++;
+      if (count === 500) {
+        chunks.push(batch.commit());
+        batch = db.batch();
+        count = 0;
+      }
+    });
+    if (count > 0) chunks.push(batch.commit());
+    await Promise.all(chunks);
+    res.json({ success: true, message: `Deleted ${snap.size} labs`, deleted: snap.size });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// DELETE all labs from Firestore
+router.delete('/all', async (req, res) => {
+  try {
+    const snap = await db.collection('labs').get();
+    if (snap.empty) return res.json({ success: true, message: 'No labs to delete' });
+    const batch = db.batch();
+    snap.docs.forEach(doc => batch.delete(doc.ref));
+    await batch.commit();
+    res.json({ success: true, message: `Deleted ${snap.size} labs` });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
