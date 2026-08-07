@@ -66,7 +66,10 @@ function render() {
 function renderNavbar() {
   const u = state.user;
   return `<nav class="navbar">
-    <div class="logo" onclick="navigate('home')">CYBER<span>FORGE</span> <small style="font-size:0.6rem;color:var(--text-dim);font-family:Rajdhani">ACADEMY</small></div>
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+      <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div class="logo" onclick="navigate('home')">CYBER<span>FORGE</span> <small class="hide-mobile" style="font-size:0.6rem;color:var(--text-dim);font-family:Rajdhani">ACADEMY</small></div>
+    </div>
     <div class="nav-links">
       <button class="nav-btn ${state.page==='home'?'active':''}" onclick="navigate('home')"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
       <button class="nav-btn ${state.page==='challenges'?'active':''}" onclick="navigate('challenges')"><i class="fas fa-flag"></i> Challenges</button>
@@ -77,9 +80,9 @@ function renderNavbar() {
       <button class="nav-btn ${state.page==='tasks'?'active':''}" onclick="navigate('tasks')"><i class="fas fa-code"></i> Tasks</button>
     </div>
     <div class="nav-user">
-      <span class="xp-badge"><i class="fas fa-star" style="color:#ffcc00"></i> ${u?u.xp||0:0} XP</span>
-      <span class="rank-badge">🎖️ ${u?u.rank||'Script Kiddie':'Guest'}</span>
-      <button class="btn btn-red" style="padding:0.4rem 1rem;font-size:0.85rem" onclick="logout()">Logout</button>
+      <span class="xp-badge"><i class="fas fa-star" style="color:#ffcc00"></i> <span class="hide-mobile">${u?u.xp||0:0} XP</span></span>
+      <span class="rank-badge hide-mobile">🎖️ ${u?u.rank||'Script Kiddie':'Guest'}</span>
+      <button class="btn btn-red" style="padding:0.4rem 1rem;font-size:0.85rem" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span class="hide-mobile"> Logout</span></button>
     </div>
   </nav>`;
 }
@@ -1967,7 +1970,24 @@ function navigate(page) {
   state.selectedLab = null;
   state.selectedTool = null;
   state.selectedModule = null;
+  const s = document.querySelector('.sidebar');
+  if(s && s.classList.contains('open')) toggleSidebar();
   render();
+}
+
+function toggleSidebar() {
+  const s = document.querySelector('.sidebar');
+  if(s) {
+    s.classList.toggle('open');
+    if (s.classList.contains('open')) {
+      const overlay = document.createElement('div');
+      overlay.className = 'sidebar-overlay';
+      overlay.onclick = () => toggleSidebar();
+      document.body.appendChild(overlay);
+    } else {
+      document.querySelector('.sidebar-overlay')?.remove();
+    }
+  }
 }
 
 function attachNavEvents() {
@@ -2036,3 +2056,4 @@ window.backToLearning = backToLearning;
 window.openTask = openTask;
 window.backToTasks = backToTasks;
 window.submitTask = submitTask;
+window.toggleSidebar = toggleSidebar;
