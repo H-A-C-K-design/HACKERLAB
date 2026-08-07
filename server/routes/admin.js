@@ -62,11 +62,17 @@ router.get('/users', async (req, res) => {
 
 router.put('/users/:id', async (req, res) => {
   try {
-    // Check existence before updating to avoid writing to a non-existent doc
     const doc = await db.collection('users').doc(req.params.id).get();
     if (!doc.exists) return res.status(404).json({ success: false, message: 'User not found' });
+    // Whitelist only allowed fields — prevent arbitrary field injection
     const { role, xp, rank } = req.body;
-    await db.collection('users').doc(req.params.id).update({ role, xp, rank });
+    const update = {};
+    if (role !== undefined) update.role = role;
+    if (xp !== undefined) update.xp = Number(xp);
+    if (rank !== undefined) update.rank = String(rank);
+    if (Object.keys(update).length === 0)
+      return res.status(400).json({ success: false, message: 'No valid fields provided' });
+    await db.collection('users').doc(req.params.id).update(update);
     const updated = await db.collection('users').doc(req.params.id).get();
     const { password, ...rest } = updated.data();
     res.json({ success: true, user: { id: updated.id, ...rest } });
@@ -110,9 +116,22 @@ router.post('/challenges', async (req, res) => {
 
 router.put('/challenges/:id', async (req, res) => {
   try {
-    await db.collection('challenges').doc(req.params.id).update(req.body);
+    // Check existence first
+    const existing = await db.collection('challenges').doc(req.params.id).get();
+    if (!existing.exists) return res.status(404).json({ success: false, message: 'Challenge not found' });
+    // Whitelist allowed fields — prevent arbitrary field injection
+    const { title, description, category, difficulty, points, hints, tags, isActive } = req.body;
+    const update = {};
+    if (title !== undefined) update.title = String(title).slice(0, 200);
+    if (description !== undefined) update.description = String(description).slice(0, 5000);
+    if (category !== undefined) update.category = String(category);
+    if (difficulty !== undefined) update.difficulty = String(difficulty);
+    if (points !== undefined) update.points = Number(points);
+    if (hints !== undefined) update.hints = hints;
+    if (tags !== undefined) update.tags = tags;
+    if (isActive !== undefined) update.isActive = Boolean(isActive);
+    await db.collection('challenges').doc(req.params.id).update(update);
     const doc = await db.collection('challenges').doc(req.params.id).get();
-    if (!doc.exists) return res.status(404).json({ success: false, message: 'Challenge not found' });
     res.json({ success: true, challenge: { id: doc.id, ...doc.data() } });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });

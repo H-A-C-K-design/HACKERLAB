@@ -16,15 +16,42 @@ const { router: honeypotRouter, honeypotMiddleware } = require('./routes/honeypo
 
 const app = express();
 const server = http.createServer(app);
+// ── Allowed origins (set ALLOWED_ORIGINS in .env, comma-separated) ──
+const rawOrigins = process.env.ALLOWED_ORIGINS || 'http://localhost:3000,http://localhost:5000';
+const ALLOWED_ORIGINS = rawOrigins.split(',').map(o => o.trim()).filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow server-to-server requests (no origin) and whitelisted origins
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS policy: origin '${origin}' not allowed`));
+  },
+  credentials: true
+};
+
 const io = new Server(server, {
-  cors: { origin: '*', methods: ['GET', 'POST'] }
+  cors: { origin: ALLOWED_ORIGINS, methods: ['GET', 'POST'], credentials: true }
 });
 
 // Middleware
-app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cors({ origin: '*', credentials: true }));
-app.use(express.json());
-app.use(morgan('dev'));
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'https://www.google.com', 'https://www.gstatic.com', 'https://cdn.jsdelivr.net', 'https://cdnjs.cloudflare.com'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com'],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      connectSrc: ["'self'", 'https://identitytoolkit.googleapis.com', 'https://securetoken.googleapis.com', 'wss:'],
+      frameSrc: ["'self'", 'https://www.google.com'],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: []
+    }
+  }
+}));
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '10kb' }));
+app.use(process.env.NODE_ENV === 'production' ? morgan('combined') : morgan('dev'));
 
 // ── Honeypot — must be registered BEFORE static files and SPA catch-all ──
 app.use(honeypotMiddleware);
@@ -48,13 +75,14 @@ app.use('/api/leaderboard', require('./routes/leaderboard'));
 app.use('/api/tasks', require('./routes/tasks'));
 app.use('/api/admin', require('./routes/admin'));
 
-// Admin panel token verification
+// Admin panel token verification — token via Authorization header only (never in URL)
 app.get('/api/admin-access/verify', (req, res) => {
-  const { token } = req.query;
-  if (token === process.env.ADMIN_PANEL_TOKEN) {
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  if (token && token === process.env.ADMIN_PANEL_TOKEN) {
     return res.json({ success: true });
   }
-  res.status(404).json({ success: false, message: 'Not found' });
+  res.status(403).json({ success: false, message: 'Forbidden' });
 });
 
 // Serve frontend for all non-API routes

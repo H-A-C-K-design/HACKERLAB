@@ -33,7 +33,7 @@ async function verifyRecaptcha(token) {
         } catch { resolve(false); }
       });
     });
-    req.on('error', () => resolve(true)); // fail open on network errors
+    req.on('error', () => resolve(false)); // fail CLOSED on network errors — do not allow bots through
     req.write(params);
     req.end();
   });
@@ -45,6 +45,18 @@ router.post('/register', async (req, res) => {
     const { username, email, password, recaptchaToken } = req.body;
     if (!username || !email || !password)
       return res.status(400).json({ success: false, message: 'All fields required' });
+
+    // Input validation
+    if (username.length < 3 || username.length > 20)
+      return res.status(400).json({ success: false, message: 'Username must be 3-20 characters' });
+    if (!/^[a-zA-Z0-9_]+$/.test(username))
+      return res.status(400).json({ success: false, message: 'Username can only contain letters, numbers, and underscores' });
+    if (password.length < 6)
+      return res.status(400).json({ success: false, message: 'Password must be at least 6 characters' });
+    if (password.length > 128)
+      return res.status(400).json({ success: false, message: 'Password too long' });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      return res.status(400).json({ success: false, message: 'Invalid email format' });
 
     const captchaOk = await verifyRecaptcha(recaptchaToken);
     if (!captchaOk) return res.status(400).json({ success: false, message: 'reCAPTCHA verification failed. Please try again.' });

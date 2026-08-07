@@ -44,7 +44,7 @@ router.get('/', protect, async (req, res) => {
   }
 });
 
-router.post('/seed/all', async (req, res) => {
+router.post('/seed/all', protect, adminOnly, async (req, res) => {
   try {
     const batch = db.batch();
     seedTasks.forEach(task => {
