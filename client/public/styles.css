@@ -662,3 +662,21 @@ body::before {
 .auth-divider::before, .auth-divider::after {
   content: ''; flex: 1; height: 1px; background: var(--border);
 }
+
+/* ── Floating HUD Cards Animation ── */
+.floating-hud-card {
+  animation: floatHUD 4s ease-in-out infinite alternate;
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.floating-hud-card:hover {
+  transform: translateY(-5px) scale(1.03) !important;
+  box-shadow: 0 12px 30px rgba(124,58,237,0.22) !important;
+}
+.hud-card-1 { animation-delay: 0s; }
+.hud-card-2 { animation-delay: 1.2s; }
+.hud-card-3 { animation-delay: 2.4s; }
+
+@keyframes floatHUD {
+  0%   { transform: translateY(0px); }
+  100% { transform: translateY(-12px); }
+}

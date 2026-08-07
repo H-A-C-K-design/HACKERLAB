@@ -201,31 +201,32 @@ function renderHomePage(modal) {
       </div>
     </nav>
 
-    <!-- HERO -->
+    <!-- HERO SECTION (48% Left / 52% Right Layout) -->
     <section class="hero-wrap">
       <div class="hero-left">
         <div class="hero-badge">
           <div class="hero-badge-dot"></div>
-          LIVE CTF PLATFORM
+          ● LIVE CTF PLATFORM
         </div>
         <h1 class="hero-title">
+          Learn. Hack. Defend.<br/>
           <span class="hero-t2">CyberLab.</span>
         </h1>
         <p class="hero-desc">
-          Join live cybersecurity challenges, solve real-world problems,
-          team up with friends, and climb the leaderboard.
+          Practice cybersecurity through realistic CTF challenges, interactive labs, team competitions, and hands-on security simulations.
         </p>
+        <div style="font-size:0.85rem;font-weight:700;color:var(--purple);letter-spacing:1px;margin-bottom:1.5rem;">LEARN • PRACTICE • COMPETE • DEFEND</div>
         <div class="hero-btns">
           <button class="hero-btn-primary" onclick="showAuthModal('register')">
-            Get Started &nbsp;→
+            Start Hacking &nbsp;→
           </button>
           <button class="hero-btn-secondary" onclick="showAuthModal('login')">
-            <i class="fas fa-user"></i> &nbsp;Sign In
+            <i class="fas fa-flag" style="color:var(--purple)"></i> &nbsp;Explore Challenges
           </button>
         </div>
       </div>
 
-      <!-- Animated hacker figure -->
+      <!-- RIGHT HERO HUD & FLOATING CARDS -->
       <div class="hero-right">
         <div class="hacker-rings">
           <div class="hacker-ring"></div>
@@ -235,16 +236,31 @@ function renderHomePage(modal) {
         <div class="hacker-glow-outer"></div>
         <div class="hacker-glow-mid"></div>
         <div class="hacker-figure">👾</div>
+
+        <!-- Floating HUD Status Cards -->
+        <div class="floating-hud-card hud-card-1" style="position:absolute;top:10%;left:5%;background:#fff;border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(124,58,237,0.12);z-index:10;">
+          <div style="color:#059669;font-weight:700;font-size:0.8rem;">● SYSTEM ONLINE</div>
+          <div style="color:var(--text);font-weight:600;font-size:0.85rem;">Security Labs</div>
+          <div style="color:var(--text-dim);font-size:0.75rem;">99.9% Operational</div>
+        </div>
+        <div class="floating-hud-card hud-card-2" style="position:absolute;top:58%;right:2%;background:#fff;border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(124,58,237,0.12);z-index:10;">
+          <div style="color:var(--pink);font-weight:700;font-size:0.8rem;">⚡ ACTIVE CHALLENGE</div>
+          <div style="color:var(--text);font-weight:600;font-size:0.85rem;">Web Exploitation</div>
+          <div style="color:var(--text-dim);font-size:0.75rem;">Difficulty: Medium</div>
+        </div>
+        <div class="floating-hud-card hud-card-3" style="position:absolute;bottom:5%;left:12%;background:#fff;border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(124,58,237,0.12);z-index:10;">
+          <div style="color:var(--purple);font-weight:700;font-size:0.9rem;">👥 1,284</div>
+          <div style="color:var(--text-dim);font-size:0.75rem;">Students Online</div>
+        </div>
       </div>
     </section>
 
     <!-- STATS STRIP -->
     <div class="stats-strip">
-      <div class="strip-item"><div class="strip-num">1,200+</div><div class="strip-lbl">Active Hackers</div></div>
-      <div class="strip-item"><div class="strip-num">50+</div><div class="strip-lbl">CTF Challenges</div></div>
-      <div class="strip-item"><div class="strip-num">20+</div><div class="strip-lbl">Hacking Labs</div></div>
-      <div class="strip-item"><div class="strip-num">9</div><div class="strip-lbl">Categories</div></div>
-      <div class="strip-item"><div class="strip-num">100%</div><div class="strip-lbl">Free Access</div></div>
+      <div class="strip-item"><div class="strip-num">10K+</div><div class="strip-lbl">Students</div></div>
+      <div class="strip-item"><div class="strip-num">500+</div><div class="strip-lbl">CTF Challenges</div></div>
+      <div class="strip-item"><div class="strip-num">100+</div><div class="strip-lbl">Hacking Labs</div></div>
+      <div class="strip-item"><div class="strip-num">25+</div><div class="strip-lbl">CTF Events</div></div>
     </div>
 
     <!-- FEATURES -->
