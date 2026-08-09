@@ -162,7 +162,9 @@ let currentSection = 'dashboard';
 
   // Verify token with server
   try {
-    const res = await fetch(`${API}/admin-access/verify?token=${encodeURIComponent(accessToken)}`);
+    const res = await fetch(`${API}/admin-access/verify`, {
+      headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
     const data = await res.json();
     if (!data.success) {
       document.title = '404 - Not Found';

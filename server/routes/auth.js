@@ -7,8 +7,8 @@ const { db, admin } = require('../config/firebase');
 const { protect } = require('../middleware/auth');
 
 // Lazily resolved so they are only called after Firebase is initialised
-const getAdminAuth = () => admin.auth();
-const getFirestoreFieldValue = () => admin.firestore.FieldValue;
+const getAdminAuth = () => (admin.apps && admin.apps.length) ? admin.auth() : null;
+const getFirestoreFieldValue = () => (admin.apps && admin.apps.length && admin.firestore) ? admin.firestore.FieldValue : { serverTimestamp: () => new Date().toISOString() };
 
 const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
 

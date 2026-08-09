@@ -371,43 +371,49 @@ function buildFakeResponse(reqPath) {
 
 // ── Logging helper ────────────────────────────────────────
 async function logHoneypotHit(req, extra = {}) {
-  const ip = (req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown').split(',')[0].trim();
-  const ua = req.headers['user-agent'] || 'unknown';
-  const ref = req.headers['referer'] || '';
-
-  const entry = {
-    timestamp: admin.firestore.FieldValue.serverTimestamp(),
-    ip,
-    userAgent: ua,
-    referer: ref,
-    method: req.method,
-    path: req.path,
-    query: JSON.stringify(req.query),
-    headers: {
-      accept: req.headers['accept'] || '',
-      acceptLanguage: req.headers['accept-language'] || '',
-      xForwardedFor: req.headers['x-forwarded-for'] || '',
-      cfConnectingIp: req.headers['cf-connecting-ip'] || '',
-    },
-    ...extra
-  };
-
   try {
-    await db.collection('honeypot_logs').add(entry);
+    const ip = (req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown').split(',')[0].trim();
+    const ua = req.headers['user-agent'] || 'unknown';
+    const ref = req.headers['referer'] || '';
+
+    const timestamp = (admin.apps && admin.apps.length && admin.firestore)
+      ? admin.firestore.FieldValue.serverTimestamp()
+      : new Date().toISOString();
+
+    const entry = {
+      timestamp,
+      ip,
+      userAgent: ua,
+      referer: ref,
+      method: req.method,
+      path: req.path,
+      query: JSON.stringify(req.query),
+      headers: {
+        accept: req.headers['accept'] || '',
+        acceptLanguage: req.headers['accept-language'] || '',
+        xForwardedFor: req.headers['x-forwarded-for'] || '',
+        cfConnectingIp: req.headers['cf-connecting-ip'] || '',
+      },
+      ...extra
+    };
+
+    if (db) {
+      await db.collection('honeypot_logs').add(entry);
+    }
+
+    // Always print to server console so you see it live
+    console.warn(`\n🍯 [HONEYPOT HIT] ─────────────────────────────`);
+    console.warn(`   IP       : ${ip}`);
+    console.warn(`   Method   : ${req.method}`);
+    console.warn(`   Path     : ${req.path}`);
+    console.warn(`   UA       : ${ua.slice(0, 80)}`);
+    if (extra.username) console.warn(`   Username : ${extra.username}`);
+    if (extra.type)     console.warn(`   Type     : ${extra.type}`);
+    console.warn(`────────────────────────────────────────────────\n`);
   } catch (e) {
     // Never crash the app over logging failure
     console.warn('[HONEYPOT] Failed to write log:', e.message);
   }
-
-  // Always print to server console so you see it live
-  console.warn(`\n🍯 [HONEYPOT HIT] ─────────────────────────────`);
-  console.warn(`   IP       : ${ip}`);
-  console.warn(`   Method   : ${req.method}`);
-  console.warn(`   Path     : ${req.path}`);
-  console.warn(`   UA       : ${ua.slice(0, 80)}`);
-  if (extra.username) console.warn(`   Username : ${extra.username}`);
-  if (extra.type)     console.warn(`   Type     : ${extra.type}`);
-  console.warn(`────────────────────────────────────────────────\n`);
 }
 
 // ── Main honeypot handler middleware ──────────────────────

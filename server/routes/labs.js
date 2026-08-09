@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../config/firebase');
-const { protect } = require('../middleware/auth');
+const { protect, adminOnly } = require('../middleware/auth');
 const admin = require('firebase-admin');
 
 function calcRank(xp) {
@@ -67,7 +67,7 @@ router.post('/:id/complete', protect, async (req, res) => {
   }
 });
 
-router.post('/seed/all', async (req, res) => {
+router.post('/seed/all', protect, adminOnly, async (req, res) => {
   try {
     const batch = db.batch();
     seedLabs.forEach(lab => {
@@ -102,20 +102,6 @@ router.delete('/all', async (req, res) => {
     if (count > 0) chunks.push(batch.commit());
     await Promise.all(chunks);
     res.json({ success: true, message: `Deleted ${snap.size} labs`, deleted: snap.size });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-// DELETE all labs from Firestore
-router.delete('/all', async (req, res) => {
-  try {
-    const snap = await db.collection('labs').get();
-    if (snap.empty) return res.json({ success: true, message: 'No labs to delete' });
-    const batch = db.batch();
-    snap.docs.forEach(doc => batch.delete(doc.ref));
-    await batch.commit();
-    res.json({ success: true, message: `Deleted ${snap.size} labs` });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

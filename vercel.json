@@ -3,7 +3,10 @@
   "builds": [
     {
       "src": "server/index.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["client/public/**"]
+      }
     },
     {
       "src": "client/public/**",
@@ -25,7 +28,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "server/index.js"
+      "dest": "client/public/index.html"
     }
   ]
 }

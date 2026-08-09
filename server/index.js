@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const http = require('http');
 const path = require('path');
+const fs = require('fs');
 const { Server } = require('socket.io');
 require('dotenv').config();
 
@@ -22,15 +23,22 @@ const ALLOWED_ORIGINS = rawOrigins.split(',').map(o => o.trim()).filter(Boolean)
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow server-to-server requests (no origin) and whitelisted origins
-    if (!origin || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
-    callback(new Error(`CORS policy: origin '${origin}' not allowed`));
+    // Allow server-to-server / non-browser requests (no origin)
+    if (!origin) return callback(null, true);
+    if (
+      ALLOWED_ORIGINS.includes(origin) ||
+      origin.endsWith('.vercel.app') ||
+      process.env.NODE_ENV !== 'production'
+    ) {
+      return callback(null, true);
+    }
+    return callback(null, false);
   },
   credentials: true
 };
 
 const io = new Server(server, {
-  cors: { origin: ALLOWED_ORIGINS, methods: ['GET', 'POST'], credentials: true }
+  cors: { origin: '*', methods: ['GET', 'POST'], credentials: true }
 });
 
 // Middleware
@@ -42,7 +50,7 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com'],
       fontSrc: ["'self'", 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com'],
       imgSrc: ["'self'", 'data:', 'https:'],
-      connectSrc: ["'self'", 'https://identitytoolkit.googleapis.com', 'https://securetoken.googleapis.com', 'wss:'],
+      connectSrc: ["'self'", 'https://identitytoolkit.googleapis.com', 'https://securetoken.googleapis.com', 'wss:', 'https:'],
       frameSrc: ["'self'", 'https://www.google.com'],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: []
@@ -87,7 +95,18 @@ app.get('/api/admin-access/verify', (req, res) => {
 
 // Serve frontend for all non-API routes
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/public/index.html'));
+  const indexPath = path.join(__dirname, '../client/public/index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.send('<!DOCTYPE html><html><head><title>CyberForge Academy</title></head><body><div id="app"></div><script src="/app.js"></script></body></html>');
+  }
+});
+
+// Global Express Error Handler
+app.use((err, req, res, next) => {
+  console.error('❌ Server Error:', err.stack || err.message || err);
+  res.status(500).json({ success: false, message: 'Internal Server Error', error: err.message });
 });
 
 // Socket.io for real-time terminal simulation
