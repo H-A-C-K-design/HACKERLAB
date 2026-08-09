@@ -2011,10 +2011,24 @@ function attachAuthEvents() {
 }
 
 // ---- INIT ----
+function resetToHomePage() {
+  const p = window.location.pathname;
+  if (p !== '/' && p !== '/index.html' && p !== '/admin.html') {
+    history.replaceState(null, '', '/');
+  }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
+  resetToHomePage();
   state.token = getToken();
   state.user = getUser();
   // Start on home page (shows landing or dashboard)
+  state.page = 'home';
+  render();
+});
+
+window.addEventListener('popstate', () => {
+  resetToHomePage();
   state.page = 'home';
   render();
 });
