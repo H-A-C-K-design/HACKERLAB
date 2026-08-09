@@ -18,7 +18,15 @@ router.get('/profile/:id', protect, async (req, res) => {
 router.put('/profile', protect, async (req, res) => {
   try {
     const { bio, skills, avatar } = req.body;
-    await db.collection('users').doc(req.user.id).update({ bio, skills, avatar });
+    const cleanBio = bio ? String(bio).slice(0, 500) : '';
+    const cleanSkills = Array.isArray(skills) ? skills.slice(0, 20).map(s => String(s).slice(0, 30)) : [];
+    const cleanAvatar = avatar ? String(avatar).slice(0, 100) : 'hacker1';
+
+    await db.collection('users').doc(req.user.id).update({
+      bio: cleanBio,
+      skills: cleanSkills,
+      avatar: cleanAvatar
+    });
     const userDoc = await db.collection('users').doc(req.user.id).get();
     const user = { id: userDoc.id, ...userDoc.data() };
     delete user.password;

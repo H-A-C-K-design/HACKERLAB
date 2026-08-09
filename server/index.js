@@ -16,6 +16,7 @@ const { db, auth } = require('./config/firebase');
 const { router: honeypotRouter, honeypotMiddleware } = require('./routes/honeypot');
 
 const app = express();
+app.disable('x-powered-by');
 const server = http.createServer(app);
 // ── Allowed origins (set ALLOWED_ORIGINS in .env, comma-separated) ──
 const rawOrigins = process.env.ALLOWED_ORIGINS || 'http://localhost:3000,http://localhost:5000';
@@ -71,6 +72,15 @@ app.use(express.static(path.join(__dirname, '../client/public')));
 // Rate limiting
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 200 });
 app.use('/api/', limiter);
+
+// Strict rate limit on sensitive Auth routes (brute-force defense)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 15,
+  message: { success: false, message: 'Too many authentication attempts. Please try again after 15 minutes.' }
+});
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
