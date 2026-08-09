@@ -1,7 +1,7 @@
 // ======================================================
 // CyberForge Academy - Main Application
 // ======================================================
-const API = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api';
+const API = '/api';
 let state = {
   user: null, token: null, page: 'home',
   challenges: [], labs: [], tools: [], learningModules: [],

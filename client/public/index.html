@@ -46,7 +46,7 @@
     if (!result) return;
     const googleUser = result.user;
     googleUser.getIdToken().then(idToken => {
-      fetch((window.location.hostname === 'localhost' ? 'http://localhost:5000' : '') + '/api/auth/google', {
+      fetch('/api/auth/google', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

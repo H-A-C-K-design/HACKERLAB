@@ -457,6 +457,7 @@ router.post('/attempt', async (req, res) => {
 // ── /api/honeypot/logs — admin view of all honeypot hits ──
 router.get('/logs', async (req, res) => {
   try {
+    if (!db) return res.json({ success: true, total: 0, logs: [] });
     const snap = await db.collection('honeypot_logs')
       .orderBy('timestamp', 'desc')
       .limit(200)
@@ -464,7 +465,7 @@ router.get('/logs', async (req, res) => {
     const logs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     res.json({ success: true, total: logs.length, logs });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    res.status(500).json({ success: false, message: err.message, logs: [] });
   }
 });
 

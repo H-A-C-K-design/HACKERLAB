@@ -42,6 +42,7 @@ async function verifyRecaptcha(token) {
 // @route POST /api/auth/register
 router.post('/register', async (req, res) => {
   try {
+    if (!db) return res.status(503).json({ success: false, message: 'Database not initialized. Please set Firebase environment variables.' });
     const { username, email, password, recaptchaToken } = req.body;
     if (!username || !email || !password)
       return res.status(400).json({ success: false, message: 'All fields required' });
@@ -106,6 +107,7 @@ router.post('/register', async (req, res) => {
 // @route POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
+    if (!db) return res.status(503).json({ success: false, message: 'Database not initialized. Please set Firebase environment variables.' });
     const { email, password, recaptchaToken } = req.body;
 
     const captchaOk = await verifyRecaptcha(recaptchaToken);
@@ -159,6 +161,7 @@ router.get('/me', protect, async (req, res) => {
 // @route POST /api/auth/google — Google Sign-In
 router.post('/google', async (req, res) => {
   try {
+    if (!db) return res.status(503).json({ success: false, message: 'Database not initialized. Please set Firebase environment variables.' });
     const { idToken, email, username, photoURL } = req.body;
     if (!idToken) return res.status(400).json({ success: false, message: 'ID token required' });
 
