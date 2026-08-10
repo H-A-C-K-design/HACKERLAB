@@ -36,6 +36,87 @@ async function api(endpoint, method='GET', body=null) {
   }
 }
 
+// ---- THEME & AUDIO SOUND SYSTEM ----
+let audioCtx = null;
+let isMuted = localStorage.getItem('cf_muted') === 'true';
+let currentTheme = localStorage.getItem('cf_theme') || 'light';
+
+function initTheme() {
+  currentTheme = localStorage.getItem('cf_theme') || 'light';
+  if (currentTheme === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+  } else {
+    document.body.removeAttribute('data-theme');
+  }
+}
+
+function toggleTheme() {
+  playFx('click');
+  currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
+  localStorage.setItem('cf_theme', currentTheme);
+  initTheme();
+  render();
+}
+
+function playFx(type = 'click') {
+  if (isMuted) return;
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    const now = audioCtx.currentTime;
+    if (type === 'click') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(580, now);
+      osc.frequency.exponentialRampToValueAtTime(280, now + 0.05);
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
+      osc.start(now);
+      osc.stop(now + 0.05);
+    } else if (type === 'success') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(523.25, now);
+      osc.frequency.setValueAtTime(659.25, now + 0.08);
+      osc.frequency.setValueAtTime(783.99, now + 0.16);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.28);
+      osc.start(now);
+      osc.stop(now + 0.28);
+    } else if (type === 'error') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(180, now);
+      osc.frequency.setValueAtTime(120, now + 0.1);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+      osc.start(now);
+      osc.stop(now + 0.2);
+    } else if (type === 'hover') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(700, now);
+      osc.frequency.linearRampToValueAtTime(900, now + 0.03);
+      gain.gain.setValueAtTime(0.02, now);
+      gain.gain.linearRampToValueAtTime(0.001, now + 0.03);
+      osc.start(now);
+      osc.stop(now + 0.03);
+    }
+  } catch(e) {}
+}
+
+function toggleMute() {
+  isMuted = !isMuted;
+  localStorage.setItem('cf_muted', isMuted);
+  if (!isMuted) playFx('click');
+  render();
+}
+
 // ---- RENDER MAIN ----
 function render() {
   const app = document.getElementById('app');
@@ -82,6 +163,12 @@ function renderNavbar() {
       <button class="nav-btn ${state.page==='tasks'?'active':''}" onclick="navigate('tasks')"><i class="fas fa-code"></i> Tasks</button>
     </div>
     <div class="nav-user">
+      <button class="ctrl-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+        <i class="fas ${currentTheme==='dark'?'fa-sun':'fa-moon'}"></i> <span class="hide-mobile">${currentTheme==='dark'?'Light':'Dark'}</span>
+      </button>
+      <button class="ctrl-btn" onclick="toggleMute()" title="Toggle Sound FX">
+        <i class="fas ${isMuted?'fa-volume-xmark':'fa-volume-high'}"></i>
+      </button>
       <span class="xp-badge"><i class="fas fa-star" style="color:#ffcc00"></i> <span class="hide-mobile">${u?u.xp||0:0} XP</span></span>
       <span class="rank-badge hide-mobile">🎖️ ${u?u.rank||'Script Kiddie':'Guest'}</span>
       <button class="btn btn-red" style="padding:0.4rem 1rem;font-size:0.85rem" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span class="hide-mobile"> Logout</span></button>
@@ -201,6 +288,12 @@ function renderHomePage(modal) {
         <button class="home-nav-link" onclick="showAuthModal('login')">TERMINAL</button>
       </div>
       <div class="home-nav-right">
+        <button class="ctrl-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+          <i class="fas ${currentTheme==='dark'?'fa-sun':'fa-moon'}"></i> <span class="hide-mobile">${currentTheme==='dark'?'Light':'Dark'}</span>
+        </button>
+        <button class="ctrl-btn" onclick="toggleMute()" title="Toggle Sound FX">
+          <i class="fas ${isMuted?'fa-volume-xmark':'fa-volume-high'}"></i>
+        </button>
         <button class="home-nav-btn-outline" onclick="showAuthModal('login')">Sign In</button>
         <button class="home-nav-btn-fill"    onclick="showAuthModal('register')">Get Started →</button>
       </div>
@@ -1971,6 +2064,7 @@ async function submitTask(id) {
 
 // ---- NAVIGATION ----
 function navigate(page) {
+  playFx('click');
   state.page = page;
   state.selectedChallenge = null;
   state.selectedLab = null;
@@ -2025,6 +2119,7 @@ function resetToHomePage() {
 
 function initApp() {
   resetToHomePage();
+  initTheme();
   state.token = getToken();
   state.user = getUser();
   // Start on home page (shows landing or dashboard)
@@ -2056,6 +2151,9 @@ function addMatrixBg() {
 }
 
 // Make all functions global
+window.toggleTheme = toggleTheme;
+window.toggleMute = toggleMute;
+window.playFx = playFx;
 window.navigate = navigate;
 window.doLogin = doLogin;
 window.doRegister = doRegister;

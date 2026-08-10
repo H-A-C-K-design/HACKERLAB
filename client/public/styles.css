@@ -28,6 +28,53 @@
   --grad-dark: linear-gradient(135deg, #5b21b6, #9d174d);
 }
 
+[data-theme="dark"] {
+  --bg:         #0b0f19;
+  --bg2:        #111827;
+  --bg-card:    #161f32;
+  --bg-card2:   #1f293d;
+  --bg-panel:   #1a2337;
+  --border:     rgba(255, 255, 255, 0.1);
+  --border-hi:  rgba(124, 58, 237, 0.4);
+  --purple:     #a78bfa;
+  --purple-d:   #7c3aed;
+  --purple-l:   #c4b5fd;
+  --pink:       #f472b6;
+  --pink-d:     #db2777;
+  --cyan:       #38bdf8;
+  --green:      #34d399;
+  --orange:     #fbbf24;
+  --red:        #f87171;
+  --text:       #f9fafb;
+  --text-dim:   #9ca3af;
+  --text-mid:   #d1d5db;
+  --glow-p: 0 0 15px rgba(167,139,250,.35);
+  --glow-pk: 0 0 15px rgba(244,114,182,.35);
+  --glow-c: 0 0 15px rgba(56,189,248,.35);
+}
+
+/* ── Theme & Audio Controls ── */
+.ctrl-btn {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.25s ease;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+}
+.ctrl-btn:hover {
+  border-color: var(--purple);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+}
+
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
 body {
