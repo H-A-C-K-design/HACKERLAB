@@ -7,42 +7,65 @@
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 <link rel="stylesheet" href="styles.css"/>
-<!-- reCAPTCHA v3 (Dynamically loaded if site key is configured) -->
+<!-- reCAPTCHA v2 Checkbox API -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <script>
-  window.loadRecaptcha = function(siteKey) {
-    try {
-      if (!siteKey || siteKey.includes('YOUR_')) return;
-      window.RECAPTCHA_SITE_KEY = siteKey;
-      if (!document.getElementById('recaptcha-script')) {
-        const s = document.createElement('script');
-        s.id = 'recaptcha-script';
-        s.async = true;
-        s.defer = true;
-        s.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`;
-        s.onerror = function() { console.warn('reCAPTCHA failed to load'); };
-        document.head.appendChild(s);
-      }
-    } catch(e) {}
+  window.RECAPTCHA_SITE_KEY = '6LdhXn8tAAAAAImyZ7ElHS_TYkkBfKcvYS_jDt_u';
+
+  window.onRecaptchaSuccess = function(token) {
+    const statusEl = document.getElementById('recaptcha-gateway-status');
+    if (statusEl) {
+      statusEl.innerHTML = '<span style="color:#059669"><i class="fas fa-circle-check"></i> Verification successful! Opening CyberForge...</span>';
+    }
+    sessionStorage.setItem('cf_recaptcha_verified', 'true');
+    setTimeout(() => {
+      const overlay = document.getElementById('recaptcha-gateway-overlay');
+      if (overlay) overlay.classList.add('hidden');
+    }, 600);
   };
-  
-  window.RECAPTCHA_SITE_KEY = window.RECAPTCHA_SITE_KEY || '6LdhXn8tAAAAAImyZ7ElHS_TYkkBfKcvYS_jDt_u';
-  if (window.RECAPTCHA_SITE_KEY) {
-    window.loadRecaptcha(window.RECAPTCHA_SITE_KEY);
-  } else {
-    // Attempt fetching configured site key from backend
-    const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const configUrl = isLocalHost ? (window.location.port === '5000' ? '/api/auth/recaptcha-config' : 'http://localhost:5000/api/auth/recaptcha-config') : '/api/auth/recaptcha-config';
-    fetch(configUrl).then(r => r.json()).then(data => {
-      if (data && data.siteKey) {
-        window.loadRecaptcha(data.siteKey);
-      }
-    }).catch(() => {});
+
+  window.onRecaptchaExpired = function() {
+    const statusEl = document.getElementById('recaptcha-gateway-status');
+    if (statusEl) {
+      statusEl.innerHTML = '<span style="color:#dc2626"><i class="fas fa-circle-exclamation"></i> Verification expired. Please check again.</span>';
+    }
+    sessionStorage.removeItem('cf_recaptcha_verified');
+  };
+
+  // Automatically hide overlay if already verified in this session
+  if (sessionStorage.getItem('cf_recaptcha_verified') === 'true') {
+    document.addEventListener('DOMContentLoaded', () => {
+      const overlay = document.getElementById('recaptcha-gateway-overlay');
+      if (overlay) overlay.classList.add('hidden');
+    });
   }
 </script>
 </head>
 <body>
 <canvas id="bg-canvas"></canvas>
 <div id="app"></div>
+
+<!-- reCAPTCHA v2 Security Gateway Overlay -->
+<div id="recaptcha-gateway-overlay" class="recaptcha-gateway-overlay">
+  <div class="recaptcha-gateway-box">
+    <div class="recaptcha-gateway-icon">
+      <i class="fas fa-shield-halved"></i>
+    </div>
+    <div class="recaptcha-gateway-title">SECURITY CHECK</div>
+    <div class="recaptcha-gateway-sub">
+      Please check the <b>"I'm not a robot"</b> box below to open CyberForge Academy.
+    </div>
+    <div class="recaptcha-widget-wrap">
+      <div class="g-recaptcha" data-sitekey="6LdhXn8tAAAAAImyZ7ElHS_TYkkBfKcvYS_jDt_u" data-callback="onRecaptchaSuccess" data-expired-callback="onRecaptchaExpired"></div>
+    </div>
+    <div id="recaptcha-gateway-status"></div>
+    <script>
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        document.write('<div style="margin-top:0.8rem"><button onclick="onRecaptchaSuccess(\'dev-token\')" style="background:#f3f4f6;color:#4b5563;border:1px solid #d1d5db;font-size:0.75rem;padding:0.35rem 0.9rem;border-radius:6px;cursor:pointer">⚡ Local Dev Bypass</button></div>');
+      }
+    </script>
+  </div>
+</div>
 
 <!-- Firebase Client SDK -->
 <script type="module">
