@@ -10,14 +10,19 @@
 <!-- reCAPTCHA v3 (Dynamically loaded if site key is configured) -->
 <script>
   window.loadRecaptcha = function(siteKey) {
-    if (!siteKey || siteKey.includes('YOUR_')) return;
-    window.RECAPTCHA_SITE_KEY = siteKey;
-    if (!document.getElementById('recaptcha-script')) {
-      const s = document.createElement('script');
-      s.id = 'recaptcha-script';
-      s.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`;
-      document.head.appendChild(s);
-    }
+    try {
+      if (!siteKey || siteKey.includes('YOUR_')) return;
+      window.RECAPTCHA_SITE_KEY = siteKey;
+      if (!document.getElementById('recaptcha-script')) {
+        const s = document.createElement('script');
+        s.id = 'recaptcha-script';
+        s.async = true;
+        s.defer = true;
+        s.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`;
+        s.onerror = function() { console.warn('reCAPTCHA failed to load'); };
+        document.head.appendChild(s);
+      }
+    } catch(e) {}
   };
   
   window.RECAPTCHA_SITE_KEY = window.RECAPTCHA_SITE_KEY || '6LdhXn8tAAAAAImyZ7ElHS_TYkkBfKcvYS_jDt_u';
