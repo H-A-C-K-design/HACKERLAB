@@ -1963,7 +1963,7 @@ async function loadLeaderboard() {
   if(!data.success) { el.innerHTML = `<div class="empty-state"><p>${data.message}</p></div>`; return; }
   const lb = data.leaderboard;
   if(!lb||!lb.length) { el.innerHTML = '<div class="empty-state"><i class="fas fa-trophy"></i><p>No players yet. Be the first!</p></div>'; return; }
-  el.innerHTML = `<table class="leaderboard-table">
+  el.innerHTML = `<div class="table-responsive"><table class="leaderboard-table">
     <thead><tr><th>#</th><th>Hacker</th><th>Rank</th><th>XP</th><th>Level</th><th>Challenges</th><th>Badges</th></tr></thead>
     <tbody>${lb.map(p=>`
       <tr class="${p.position<=3?'pos-'+p.position:''}">
@@ -1976,7 +1976,7 @@ async function loadLeaderboard() {
         <td><i class="fas fa-medal" style="color:#ffcc00"></i> ${p.badgeCount}</td>
       </tr>`).join('')}
     </tbody>
-  </table>`;
+  </table></div>`;
 }
 
 // ---- TASKS ----
@@ -2018,7 +2018,7 @@ async function openTask(id, type, title) {
   detail.style.display='';
   detail.innerHTML = `
     <button class="btn btn-outline" style="margin-bottom:1.5rem" onclick="backToTasks()"><i class="fas fa-arrow-left"></i> Back to Tasks</button>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;flex-wrap:wrap" id="task-layout">
+    <div class="task-layout-grid" id="task-layout">
       <div>
         <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1rem">
           <span class="diff-badge diff-${task.difficulty}">${task.difficulty}</span>
@@ -2039,10 +2039,6 @@ async function openTask(id, type, title) {
         <div id="task-result-${task._id}" style="margin-top:1rem"></div>
       </div>
     </div>`;
-  if(window.innerWidth < 900) {
-    const layout = $('task-layout');
-    if(layout) layout.style.gridTemplateColumns = '1fr';
-  }
 }
 
 function backToTasks() {
