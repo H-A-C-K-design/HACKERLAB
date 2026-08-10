@@ -1036,10 +1036,7 @@ function streamLines(cmd, lines, delayPerLine = 300, onComplete = null) {
   }, delayPerLine);
 }
 
-function escapeHtml(text) {
-  if (typeof text !== 'string') return text;
-  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
+
 
 function execTermCmd(cmdStr) {
   if (termState.isExecuting) return;
