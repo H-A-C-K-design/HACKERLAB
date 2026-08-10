@@ -16,6 +16,7 @@ let state = {
 
 // ---- helpers ----
 const $ = id => document.getElementById(id);
+const escapeHtml = str => (str || '').toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 const html = (el, content) => { if(el) el.innerHTML = content; };
 const show = id => { const e=$(id); if(e) e.style.display=''; };
 const hide = id => { const e=$(id); if(e) e.style.display='none'; };
@@ -1870,8 +1871,8 @@ async function loadLeaderboard() {
     <tbody>${lb.map(p=>`
       <tr class="${p.position<=3?'pos-'+p.position:''}">
         <td><span class="pos-badge">${p.position===1?'🥇':p.position===2?'🥈':p.position===3?'🥉':'#'+p.position}</span></td>
-        <td style="font-weight:700">${p.username}</td>
-        <td style="font-size:0.85rem;color:var(--text-dim)">${p.rank}</td>
+        <td style="font-weight:700">${escapeHtml(p.username)}</td>
+        <td style="font-size:0.85rem;color:var(--text-dim)">${escapeHtml(p.rank)}</td>
         <td style="font-family:Orbitron,monospace;color:var(--cyan)">${p.xp.toLocaleString()}</td>
         <td>Lv.${p.level}</td>
         <td><i class="fas fa-flag" style="color:var(--green)"></i> ${p.challengesSolved}</td>

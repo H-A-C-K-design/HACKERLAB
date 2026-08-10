@@ -7,8 +7,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 <link rel="stylesheet" href="styles.css"/>
-<!-- reCAPTCHA v3 -->
-<script src="https://www.google.com/recaptcha/api.js?render=YOUR_RECAPTCHA_SITE_KEY"></script>
+<!-- reCAPTCHA v3 (Dynamically loaded if site key is configured) -->
+<script>
+  window.RECAPTCHA_SITE_KEY = window.RECAPTCHA_SITE_KEY || '6LebRnAtAAAAA...'; // Set in env if configured
+  if (window.RECAPTCHA_SITE_KEY && !window.RECAPTCHA_SITE_KEY.includes('YOUR_')) {
+    const s = document.createElement('script');
+    s.src = `https://www.google.com/recaptcha/api.js?render=${window.RECAPTCHA_SITE_KEY}`;
+    document.head.appendChild(s);
+  }
+</script>
 </head>
 <body>
 <canvas id="bg-canvas"></canvas>

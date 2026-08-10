@@ -30,16 +30,35 @@ router.get('/', protect, async (req, res) => {
     let tasks = [];
     if (!snap.empty) {
       tasks = snap.docs.map(doc => {
-        const { solution, ...rest } = doc.data();
-        return { _id: doc.id, id: doc.id, ...rest, completed: completedTasks.includes(doc.id) };
+        const data = doc.data();
+        const taskId = doc.id;
+        const isCompleted = completedTasks.includes(taskId);
+        if (!isCompleted && req.user.role !== 'admin') {
+          delete data.solution;
+        }
+        return { _id: taskId, id: taskId, ...data, completed: isCompleted };
       });
     } else {
-      tasks = seedTasks.map((t, idx) => ({ _id: 'task_' + (idx + 1), id: 'task_' + (idx + 1), ...t, completed: false }));
+      tasks = seedTasks.map((t, idx) => {
+        const taskId = 'task_' + (idx + 1);
+        const isCompleted = completedTasks.includes(taskId);
+        const { solution, ...rest } = t;
+        return {
+          _id: taskId,
+          id: taskId,
+          ...rest,
+          ...(isCompleted || req.user.role === 'admin' ? { solution } : {}),
+          completed: isCompleted
+        };
+      });
     }
 
     res.json({ success: true, tasks });
   } catch (err) {
-    const tasks = seedTasks.map((t, idx) => ({ _id: 'task_' + (idx + 1), id: 'task_' + (idx + 1), ...t, completed: false }));
+    const tasks = seedTasks.map((t, idx) => {
+      const { solution, ...rest } = t;
+      return { _id: 'task_' + (idx + 1), id: 'task_' + (idx + 1), ...rest, completed: false };
+    });
     res.json({ success: true, tasks });
   }
 });

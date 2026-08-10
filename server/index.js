@@ -19,27 +19,23 @@ const app = express();
 app.disable('x-powered-by');
 const server = http.createServer(app);
 // ── Allowed origins (set ALLOWED_ORIGINS in .env, comma-separated) ──
-const rawOrigins = process.env.ALLOWED_ORIGINS || 'http://localhost:3000,http://localhost:5000';
+const rawOrigins = process.env.ALLOWED_ORIGINS || 'https://hackerlab-rho.vercel.app,http://localhost:3000,http://localhost:5000';
 const ALLOWED_ORIGINS = rawOrigins.split(',').map(o => o.trim()).filter(Boolean);
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow server-to-server / non-browser requests (no origin)
+    // Allow non-browser requests with no origin header
     if (!origin) return callback(null, true);
-    if (
-      ALLOWED_ORIGINS.includes(origin) ||
-      origin.endsWith('.vercel.app') ||
-      process.env.NODE_ENV !== 'production'
-    ) {
+    if (ALLOWED_ORIGINS.includes(origin) || (process.env.NODE_ENV !== 'production' && (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')))) {
       return callback(null, true);
     }
-    return callback(null, false);
+    return callback(new Error('CORS request rejected: Origin not allowed'), false);
   },
   credentials: true
 };
 
 const io = new Server(server, {
-  cors: { origin: '*', methods: ['GET', 'POST'], credentials: true }
+  cors: { origin: ALLOWED_ORIGINS, methods: ['GET', 'POST'], credentials: true }
 });
 
 // Middleware
@@ -103,6 +99,11 @@ app.get('/api/admin-access/verify', (req, res) => {
   res.status(403).json({ success: false, message: 'Forbidden' });
 });
 
+// JSON 404 handler for API routes
+app.use('/api/*', (req, res) => {
+  res.status(404).json({ success: false, message: 'API endpoint not found' });
+});
+
 // Serve frontend for all non-API routes
 app.get('*', (req, res) => {
   const indexPath = path.join(__dirname, '../client/public/index.html');
@@ -116,7 +117,11 @@ app.get('*', (req, res) => {
 // Global Express Error Handler
 app.use((err, req, res, next) => {
   console.error('❌ Server Error:', err.stack || err.message || err);
-  res.status(500).json({ success: false, message: 'Internal Server Error', error: err.message });
+  const isDev = process.env.NODE_ENV !== 'production';
+  res.status(500).json({
+    success: false,
+    message: isDev ? (err.message || 'Internal Server Error') : 'An internal server error occurred'
+  });
 });
 
 // Socket.io for real-time terminal simulation

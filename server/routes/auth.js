@@ -47,15 +47,28 @@ router.post('/register', async (req, res) => {
     if (!username || !email || !password)
       return res.status(400).json({ success: false, message: 'All fields required' });
 
+    // Input type validation to prevent NoSQL / method manipulation attacks
+    if (typeof username !== 'string' || typeof email !== 'string' || typeof password !== 'string') {
+      return res.status(400).json({ success: false, message: 'Invalid input data format' });
+    }
+
     // Input validation
     if (username.length < 3 || username.length > 20)
       return res.status(400).json({ success: false, message: 'Username must be 3-20 characters' });
     if (!/^[a-zA-Z0-9_]+$/.test(username))
       return res.status(400).json({ success: false, message: 'Username can only contain letters, numbers, and underscores' });
-    if (password.length < 6)
-      return res.status(400).json({ success: false, message: 'Password must be at least 6 characters' });
+    
+    // Strengthened Password Policy (min 8 chars)
+    if (password.length < 8)
+      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long' });
     if (password.length > 128)
       return res.status(400).json({ success: false, message: 'Password too long' });
+    
+    const weakPasswords = ['password', '12345678', 'admin123', 'cyberforge', 'password123', 'qwertyuiop'];
+    if (weakPasswords.includes(password.toLowerCase())) {
+      return res.status(400).json({ success: false, message: 'Password is too common or easily guessable. Please choose a stronger password.' });
+    }
+
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       return res.status(400).json({ success: false, message: 'Invalid email format' });
 
@@ -63,7 +76,7 @@ router.post('/register', async (req, res) => {
     if (!captchaOk) return res.status(400).json({ success: false, message: 'reCAPTCHA verification failed. Please try again.' });
 
     const emailSnap = await db.collection('users').where('email', '==', email.toLowerCase()).limit(1).get();
-    if (!emailSnap.empty) return res.status(400).json({ success: false, message: 'Email already in use' });
+    if (!emailSnap.empty) return res.status(400).json({ success: false, message: 'An account with this email already exists' });
 
     const userSnap = await db.collection('users').where('username', '==', username).limit(1).get();
     if (!userSnap.empty) return res.status(400).json({ success: false, message: 'Username already taken' });
@@ -100,9 +113,13 @@ router.post('/register', async (req, res) => {
       user: { id: userRef.id, username, email: email.toLowerCase(), level: 1, xp: 0, rank: 'Script Kiddie', role: 'student' }
     });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    res.status(500).json({ success: false, message: 'Registration failed. Please verify input data and try again.' });
   }
 });
+
+// Account Lockout Constants (5 failed attempts => 5 hours lockout)
+const MAX_FAILED_ATTEMPTS = 5;
+const LOCKOUT_DURATION_MS = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
 
 // @route POST /api/auth/login
 router.post('/login', async (req, res) => {
@@ -110,19 +127,71 @@ router.post('/login', async (req, res) => {
     if (!db) return res.status(503).json({ success: false, message: 'Database not initialized. Please set Firebase environment variables.' });
     const { email, password, recaptchaToken } = req.body;
 
+    if (!email || !password || typeof email !== 'string' || typeof password !== 'string') {
+      return res.status(400).json({ success: false, message: 'Invalid credentials format' });
+    }
+
     const captchaOk = await verifyRecaptcha(recaptchaToken);
     if (!captchaOk) return res.status(400).json({ success: false, message: 'reCAPTCHA verification failed. Please try again.' });
 
-    const snap = await db.collection('users').where('email', '==', email.toLowerCase()).limit(1).get();
+    const normalizedEmail = email.toLowerCase().trim();
+    const snap = await db.collection('users').where('email', '==', normalizedEmail).limit(1).get();
     if (snap.empty) return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
     const userDoc = snap.docs[0];
     const user = userDoc.data();
+    const now = Date.now();
 
+    // 1. Check if account is currently locked out for 5 hours
+    if (user.lockoutUntil && user.lockoutUntil > now) {
+      const remainingMs = user.lockoutUntil - now;
+      const remainingMins = Math.ceil(remainingMs / (1000 * 60));
+      const remainingHours = (remainingMs / (1000 * 60 * 60)).toFixed(1);
+      const timeStr = remainingMins > 60 ? `${remainingHours} hours` : `${remainingMins} minutes`;
+      return res.status(423).json({
+        success: false,
+        message: `Account locked due to 5 consecutive failed login attempts. Please try again after ${timeStr}.`,
+        isLockedOut: true,
+        lockoutUntil: user.lockoutUntil
+      });
+    }
+
+    // 2. Verify password match
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
-    await userDoc.ref.update({ lastActive: getFirestoreFieldValue().serverTimestamp() });
+    if (!isMatch) {
+      const attempts = (user.failedAttempts || 0) + 1;
+      const updateData = { failedAttempts: attempts };
+
+      if (attempts >= MAX_FAILED_ATTEMPTS) {
+        // Trigger 5-hour account lockout
+        const lockoutUntil = now + LOCKOUT_DURATION_MS;
+        updateData.lockoutUntil = lockoutUntil;
+        await userDoc.ref.update(updateData);
+        return res.status(423).json({
+          success: false,
+          message: '⛔ Account locked! You entered incorrect credentials 5 times. Account is locked for 5 hours.',
+          isLockedOut: true,
+          lockoutUntil
+        });
+      } else {
+        await userDoc.ref.update(updateData);
+        const remaining = MAX_FAILED_ATTEMPTS - attempts;
+        return res.status(401).json({
+          success: false,
+          message: `Invalid credentials. Warning: ${remaining} attempt${remaining === 1 ? '' : 's'} left before 5-hour account lockout!`,
+          attemptsRemaining: remaining
+        });
+      }
+    }
+
+    // 3. Successful login — reset failed attempts counter & clear lockout
+    await userDoc.ref.update({
+      lastActive: getFirestoreFieldValue().serverTimestamp(),
+      failedAttempts: 0,
+      lockoutUntil: null
+    });
+
     const token = generateToken(userDoc.id);
 
     res.json({
@@ -142,7 +211,7 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    res.status(401).json({ success: false, message: 'Invalid credentials' });
   }
 });
 
@@ -154,7 +223,7 @@ router.get('/me', protect, async (req, res) => {
     delete user.password;
     res.json({ success: true, user });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    res.status(500).json({ success: false, message: 'Failed to retrieve profile' });
   }
 });
 
@@ -162,25 +231,28 @@ router.get('/me', protect, async (req, res) => {
 router.post('/google', async (req, res) => {
   try {
     if (!db) return res.status(503).json({ success: false, message: 'Database not initialized. Please set Firebase environment variables.' });
-    const { idToken, email, username, photoURL } = req.body;
-    if (!idToken) return res.status(400).json({ success: false, message: 'ID token required' });
+    const { idToken, username, photoURL } = req.body;
+    if (!idToken || typeof idToken !== 'string') return res.status(400).json({ success: false, message: 'ID token required' });
 
     const decoded = await getAdminAuth().verifyIdToken(idToken);
     const uid = decoded.uid;
+    // Trust verified email claim directly from verified Google ID token
+    const verifiedEmail = (decoded.email || '').toLowerCase();
 
     let userDoc = await db.collection('users').doc(uid).get();
     const FieldValue = getFirestoreFieldValue();
 
     if (!userDoc.exists) {
-      const cleanUsername = username || 'user_' + uid.slice(0, 8);
+      const rawUsername = (typeof username === 'string' && username.trim()) ? username.replace(/[^a-zA-Z0-9_]/g, '') : '';
+      const cleanUsername = rawUsername || 'user_' + uid.slice(0, 8);
       const uSnap = await db.collection('users').where('username', '==', cleanUsername).limit(1).get();
       const finalUsername = uSnap.empty ? cleanUsername : cleanUsername + '_' + Date.now().toString().slice(-4);
 
       await db.collection('users').doc(uid).set({
         username: finalUsername,
-        email: email.toLowerCase(),
+        email: verifiedEmail,
         password: '',
-        avatar: photoURL || 'hacker1',
+        avatar: (typeof photoURL === 'string' && photoURL) ? photoURL : 'hacker1',
         role: 'student',
         level: 1,
         xp: 0,
@@ -223,7 +295,7 @@ router.post('/google', async (req, res) => {
       }
     });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    res.status(401).json({ success: false, message: 'Google Authentication failed: Invalid or expired token' });
   }
 });
 
