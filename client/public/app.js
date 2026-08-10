@@ -2026,14 +2026,20 @@ function resetToHomePage() {
   }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+function initApp() {
   resetToHomePage();
   state.token = getToken();
   state.user = getUser();
   // Start on home page (shows landing or dashboard)
   state.page = 'home';
   render();
-});
+}
+
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
 
 window.addEventListener('popstate', () => {
   resetToHomePage();
