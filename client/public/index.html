@@ -9,11 +9,29 @@
 <link rel="stylesheet" href="styles.css"/>
 <!-- reCAPTCHA v3 (Dynamically loaded if site key is configured) -->
 <script>
-  window.RECAPTCHA_SITE_KEY = window.RECAPTCHA_SITE_KEY || '6LebRnAtAAAAA...'; // Set in env if configured
-  if (window.RECAPTCHA_SITE_KEY && !window.RECAPTCHA_SITE_KEY.includes('YOUR_')) {
-    const s = document.createElement('script');
-    s.src = `https://www.google.com/recaptcha/api.js?render=${window.RECAPTCHA_SITE_KEY}`;
-    document.head.appendChild(s);
+  window.loadRecaptcha = function(siteKey) {
+    if (!siteKey || siteKey.includes('YOUR_')) return;
+    window.RECAPTCHA_SITE_KEY = siteKey;
+    if (!document.getElementById('recaptcha-script')) {
+      const s = document.createElement('script');
+      s.id = 'recaptcha-script';
+      s.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`;
+      document.head.appendChild(s);
+    }
+  };
+  
+  window.RECAPTCHA_SITE_KEY = window.RECAPTCHA_SITE_KEY || '6LdhXn8tAAAAAImyZ7ElHS_TYkkBfKcvYS_jDt_u';
+  if (window.RECAPTCHA_SITE_KEY) {
+    window.loadRecaptcha(window.RECAPTCHA_SITE_KEY);
+  } else {
+    // Attempt fetching configured site key from backend
+    const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const configUrl = isLocalHost ? (window.location.port === '5000' ? '/api/auth/recaptcha-config' : 'http://localhost:5000/api/auth/recaptcha-config') : '/api/auth/recaptcha-config';
+    fetch(configUrl).then(r => r.json()).then(data => {
+      if (data && data.siteKey) {
+        window.loadRecaptcha(data.siteKey);
+      }
+    }).catch(() => {});
   }
 </script>
 </head>

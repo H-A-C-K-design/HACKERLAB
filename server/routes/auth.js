@@ -39,6 +39,14 @@ async function verifyRecaptcha(token) {
   });
 }
 
+// @route GET /api/auth/recaptcha-config
+router.get('/recaptcha-config', (req, res) => {
+  res.json({
+    enabled: !!process.env.RECAPTCHA_SITE_KEY,
+    siteKey: process.env.RECAPTCHA_SITE_KEY || ''
+  });
+});
+
 // @route POST /api/auth/register
 router.post('/register', async (req, res) => {
   try {

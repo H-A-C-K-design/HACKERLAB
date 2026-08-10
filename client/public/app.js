@@ -341,11 +341,14 @@ function renderAuthModal(mode) {
           <input class="form-input" id="reg-email" type="email" placeholder="you@example.com" autocomplete="email"/>
         </div>
         <div class="form-group"><label class="form-label">Password</label>
-          <input class="form-input" id="reg-pass" type="password" placeholder="Min. 6 characters" autocomplete="new-password"/>
+          <input class="form-input" id="reg-pass" type="password" placeholder="Min. 8 characters" autocomplete="new-password"/>
         </div>
         <button class="auth-box-submit" onclick="doRegister()">Create Account →</button>
         <div class="auth-switch">Already registered? <a onclick="showAuthModal('login')">Sign in →</a></div>
       `}
+      <div class="recaptcha-notice">
+        <i class="fas fa-shield-halved" style="color:var(--green);margin-right:4px"></i> Protected by reCAPTCHA
+      </div>
     </div>
   </div>`;
 }
@@ -380,9 +383,11 @@ async function doLogin() {
   showMsg('auth-msg','<i class="fas fa-spinner fa-spin"></i> Verifying...','');
 
   let recaptchaToken = '';
-  try {
-    recaptchaToken = await grecaptcha.execute('YOUR_RECAPTCHA_SITE_KEY', { action: 'login' });
-  } catch(e) { /* reCAPTCHA not loaded, proceed anyway in dev */ }
+  if (window.grecaptcha && window.RECAPTCHA_SITE_KEY && !window.RECAPTCHA_SITE_KEY.includes('YOUR_')) {
+    try {
+      recaptchaToken = await window.grecaptcha.execute(window.RECAPTCHA_SITE_KEY, { action: 'login' });
+    } catch(e) { console.warn('reCAPTCHA execution error:', e); }
+  }
 
   showMsg('auth-msg','<i class="fas fa-spinner fa-spin"></i> Connecting...','');
   const data = await api('/auth/login','POST',{email,password,recaptchaToken});
@@ -402,9 +407,11 @@ async function doRegister() {
   showMsg('auth-msg','<i class="fas fa-spinner fa-spin"></i> Verifying...','');
 
   let recaptchaToken = '';
-  try {
-    recaptchaToken = await grecaptcha.execute('YOUR_RECAPTCHA_SITE_KEY', { action: 'register' });
-  } catch(e) { /* reCAPTCHA not loaded, proceed anyway in dev */ }
+  if (window.grecaptcha && window.RECAPTCHA_SITE_KEY && !window.RECAPTCHA_SITE_KEY.includes('YOUR_')) {
+    try {
+      recaptchaToken = await window.grecaptcha.execute(window.RECAPTCHA_SITE_KEY, { action: 'register' });
+    } catch(e) { console.warn('reCAPTCHA execution error:', e); }
+  }
 
   showMsg('auth-msg','<i class="fas fa-spinner fa-spin"></i> Creating account...','');
   const data = await api('/auth/register','POST',{username,email,password,recaptchaToken});

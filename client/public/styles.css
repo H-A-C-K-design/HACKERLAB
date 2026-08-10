@@ -682,6 +682,13 @@ body::before {
 .auth-divider::before, .auth-divider::after {
   content: ''; flex: 1; height: 1px; background: var(--border);
 }
+.recaptcha-notice {
+  margin-top: 1rem; text-align: center;
+  font-size: 0.75rem; color: var(--text-dim);
+  display: flex; align-items: center; justify-content: center;
+  gap: 0.25rem; font-family: 'Inter', sans-serif;
+}
+
 
 /* ── Floating HUD Cards Animation ── */
 .floating-hud-card {
