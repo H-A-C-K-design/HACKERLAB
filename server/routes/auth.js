@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const https = require('https');
 const { db, admin } = require('../config/firebase');
 const { protect } = require('../middleware/auth');
 
@@ -12,24 +11,13 @@ const getFirestoreFieldValue = () => (admin.apps && admin.apps.length && admin.f
 
 const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
 
-// ── reCAPTCHA v3 verification helper (Disabled) ──────────────────────
-async function verifyRecaptcha(token) {
-  return true;
-}
 
-// @route GET /api/auth/recaptcha-config
-router.get('/recaptcha-config', (req, res) => {
-  res.json({
-    enabled: !!process.env.RECAPTCHA_SITE_KEY,
-    siteKey: process.env.RECAPTCHA_SITE_KEY || ''
-  });
-});
 
 // @route POST /api/auth/register
 router.post('/register', async (req, res) => {
   try {
     if (!db) return res.status(503).json({ success: false, message: 'Database not initialized. Please set Firebase environment variables.' });
-    const { username, email, password, recaptchaToken } = req.body;
+    const { username, email, password } = req.body;
     if (!username || !email || !password)
       return res.status(400).json({ success: false, message: 'All fields required' });
 
@@ -58,8 +46,7 @@ router.post('/register', async (req, res) => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       return res.status(400).json({ success: false, message: 'Invalid email format' });
 
-    const captchaOk = await verifyRecaptcha(recaptchaToken);
-    if (!captchaOk) return res.status(400).json({ success: false, message: 'reCAPTCHA verification failed. Please try again.' });
+
 
     const emailSnap = await db.collection('users').where('email', '==', email.toLowerCase()).limit(1).get();
     if (!emailSnap.empty) return res.status(400).json({ success: false, message: 'An account with this email already exists' });
@@ -111,14 +98,11 @@ const LOCKOUT_DURATION_MS = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
 router.post('/login', async (req, res) => {
   try {
     if (!db) return res.status(503).json({ success: false, message: 'Database not initialized. Please set Firebase environment variables.' });
-    const { email, password, recaptchaToken } = req.body;
+    const { email, password } = req.body;
 
     if (!email || !password || typeof email !== 'string' || typeof password !== 'string') {
       return res.status(400).json({ success: false, message: 'Invalid credentials format' });
     }
-
-    const captchaOk = await verifyRecaptcha(recaptchaToken);
-    if (!captchaOk) return res.status(400).json({ success: false, message: 'reCAPTCHA verification failed. Please try again.' });
 
     const normalizedEmail = email.toLowerCase().trim();
     const snap = await db.collection('users').where('email', '==', normalizedEmail).limit(1).get();
