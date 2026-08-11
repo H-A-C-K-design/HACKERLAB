@@ -196,7 +196,6 @@ function renderSidebar() {
     { page:'tasks', icon:'fa-code', label:'Coding Tasks' },
   ];
   const u = state.user || {};
-  const pct = Math.min(100, ((u.xp||0) % 500) / 500 * 100);
   const username = u.username && !u.username.includes('@') ? u.username : (u.username||'').split('@')[0];
   
   return `<div class="sidebar">${items.map(i => `<div class="sidebar-item ${state.page===i.page?'active':''}" onclick="navigate('${i.page}')"><i class="fas ${i.icon}"></i> ${i.label}</div>`).join('')}
@@ -206,16 +205,6 @@ function renderSidebar() {
         <div class="profile-meta">
           <div class="profile-label">LOGGED IN AS</div>
           <div class="profile-name" title="${u.username||''}">${username}</div>
-          <div class="profile-level">Level ${u.level||1}</div>
-        </div>
-      </div>
-      <div class="profile-xp-section">
-        <div class="profile-stats">
-          <span class="profile-stats-label">XP</span>
-          <span class="profile-stats-value">${u.xp||0} / ${((u.level||1)) * 500} XP</span>
-        </div>
-        <div class="profile-xp-track">
-          <div class="profile-xp-bar" style="width:${pct}%"></div>
         </div>
       </div>
     </div>
