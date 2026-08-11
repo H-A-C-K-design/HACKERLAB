@@ -464,7 +464,7 @@ function renderHomePage(modal) {
 
         <!-- Floating HUD Status Cards Orbiting the 3D Rings -->
         <div class="floating-hud-card hud-card-1" style="position:absolute;top:6%;left:2%;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(124,58,237,0.15);z-index:10;">
-          <div style="color:#059669;font-weight:700;font-size:0.8rem;">● SYSTEM ONLINE</div>
+          <div style="color:var(--green);font-weight:700;font-size:0.8rem;">● SYSTEM ONLINE</div>
           <div style="color:var(--text);font-weight:600;font-size:0.85rem;">Security Labs</div>
           <div style="color:var(--text-dim);font-size:0.75rem;">99.9% Operational</div>
         </div>
@@ -474,7 +474,7 @@ function renderHomePage(modal) {
           <div style="color:var(--text-dim);font-size:0.75rem;">Difficulty: Medium</div>
         </div>
         <div class="floating-hud-card hud-card-3" style="position:absolute;bottom:4%;left:8%;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(124,58,237,0.15);z-index:10;">
-          <div style="color:var(--purple);font-weight:700;font-size:0.9rem;">👥 1,284</div>
+          <div style="color:var(--purple-l);font-weight:700;font-size:0.9rem;">👥 1,284</div>
           <div style="color:var(--text-dim);font-size:0.75rem;">Students Online</div>
         </div>
       </div>
