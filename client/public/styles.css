@@ -265,60 +265,164 @@ body::before {
 }
 .hero-btn-secondary:hover { background: rgba(168,85,247,.18); border-color: var(--purple); }
 
-/* ── Hero Right — Hacker Figure ── */
+/* ── Hero Right — 3D Orbital Rings & Logo Showcase ── */
 .hero-right {
-  flex: 0 0 480px; position: relative; height: 500px;
-  display: flex; align-items: center; justify-content: center;
+  flex: 0 0 500px;
+  position: relative;
+  height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 1;
+  perspective: 1000px;
+  transform-style: preserve-3d;
 }
+
 .hacker-glow-outer {
-  position: absolute; width: 420px; height: 420px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(124,58,237,.12) 0%, rgba(219,39,119,.07) 40%, transparent 70%);
+  position: absolute;
+  width: 440px;
+  height: 440px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168,85,247,0.18) 0%, rgba(6,182,212,0.12) 40%, transparent 70%);
   animation: outerGlow 4s ease-in-out infinite;
+  pointer-events: none;
 }
 @keyframes outerGlow { 0%,100%{transform:scale(1);opacity:.8} 50%{transform:scale(1.12);opacity:1} }
+
 .hacker-glow-mid {
-  position: absolute; width: 280px; height: 280px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(124,58,237,.15) 0%, transparent 70%);
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(168,85,247,0.22) 0%, transparent 70%);
   animation: midGlow 3s ease-in-out infinite reverse;
+  pointer-events: none;
 }
 @keyframes midGlow { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
-.hacker-figure {
-  position: relative; z-index: 3; font-size: 11rem; line-height: 1;
-  filter: drop-shadow(0 0 20px rgba(124,58,237,.4)) drop-shadow(0 0 40px rgba(219,39,119,.2));
-  animation: figureFloat 5s ease-in-out infinite;
+
+.hacker-rings-3d {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.hacker-ring-3d {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  transform-style: preserve-3d;
+}
+
+/* Ring 1 - Tilted X / Z */
+.hacker-ring-3d:nth-child(1) {
+  width: 340px;
+  height: 340px;
+  border-color: rgba(168, 85, 247, 0.25);
+  border-top-color: var(--purple-l);
+  border-bottom-color: rgba(168, 85, 247, 0.6);
+  transform: rotateX(68deg) rotateY(15deg);
+  animation: ringRotate3D1 12s linear infinite;
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+}
+
+/* Ring 2 - Tilted Y / X */
+.hacker-ring-3d:nth-child(2) {
+  width: 410px;
+  height: 410px;
+  border-color: rgba(219, 39, 119, 0.2);
+  border-left-color: var(--pink);
+  border-right-color: rgba(219, 39, 119, 0.5);
+  transform: rotateX(42deg) rotateY(-35deg);
+  animation: ringRotate3D2 16s linear infinite reverse;
+  box-shadow: 0 0 15px rgba(219, 39, 119, 0.15);
+}
+
+/* Ring 3 - Outer Orbital Tilt */
+.hacker-ring-3d:nth-child(3) {
+  width: 470px;
+  height: 470px;
+  border-color: rgba(6, 182, 212, 0.18);
+  border-right-color: var(--cyan);
+  border-top-color: rgba(6, 182, 212, 0.5);
+  transform: rotateX(25deg) rotateY(55deg);
+  animation: ringRotate3D3 20s linear infinite;
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
+}
+
+/* Orbiting Particles on Rings */
+.orbit-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.hacker-ring-3d:nth-child(1) .orbit-particle {
+  background: var(--purple-l);
+  box-shadow: 0 0 10px var(--purple-l), 0 0 20px var(--purple-l);
+}
+
+.hacker-ring-3d:nth-child(2) .orbit-particle {
+  background: var(--pink);
+  box-shadow: 0 0 10px var(--pink), 0 0 20px var(--pink);
+}
+
+.hacker-ring-3d:nth-child(3) .orbit-particle {
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan), 0 0 20px var(--cyan);
+}
+
+@keyframes ringRotate3D1 {
+  0%   { transform: rotateX(68deg) rotateY(15deg) rotateZ(0deg); }
+  100% { transform: rotateX(68deg) rotateY(15deg) rotateZ(360deg); }
+}
+
+@keyframes ringRotate3D2 {
+  0%   { transform: rotateX(42deg) rotateY(-35deg) rotateZ(0deg); }
+  100% { transform: rotateX(42deg) rotateY(-35deg) rotateZ(360deg); }
+}
+
+@keyframes ringRotate3D3 {
+  0%   { transform: rotateX(25deg) rotateY(55deg) rotateZ(0deg); }
+  100% { transform: rotateX(25deg) rotateY(55deg) rotateZ(360deg); }
+}
+
+/* Hero Logo Central Container */
+.hero-logo-container {
+  position: relative;
+  z-index: 5;
+  width: 250px;
+  height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: heroLogoFloat 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px rgba(168, 85, 247, 0.45)) drop-shadow(0 0 50px rgba(6, 182, 212, 0.3));
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
 }
-@keyframes figureFloat {
-  0%,100% { transform: translateY(0) rotate(-1deg); }
-  50%      { transform: translateY(-20px) rotate(1deg); }
+
+.hero-logo-container:hover {
+  transform: scale(1.08) translateZ(25px);
 }
-.hacker-rings {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
+
+.hero-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
-.hacker-ring {
-  position: absolute; border-radius: 50%; border: 1px solid transparent;
-  animation: ringRotate 8s linear infinite;
+
+@keyframes heroLogoFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-14px) rotate(1.5deg); }
 }
-.hacker-ring:nth-child(1) {
-  width: 320px; height: 320px;
-  border-color: rgba(124,58,237,.2);
-  border-top-color: var(--purple);
-}
-.hacker-ring:nth-child(2) {
-  width: 380px; height: 380px;
-  border-color: rgba(219,39,119,.15);
-  border-bottom-color: var(--pink);
-  animation-direction: reverse; animation-duration: 12s;
-}
-.hacker-ring:nth-child(3) {
-  width: 440px; height: 440px;
-  border-color: rgba(8,145,178,.1);
-  border-left-color: var(--cyan);
-  animation-duration: 20s;
-}
-@keyframes ringRotate { to { transform: rotate(360deg); } }
 
 /* ── Floating stat chips ── */
 .stat-chip {

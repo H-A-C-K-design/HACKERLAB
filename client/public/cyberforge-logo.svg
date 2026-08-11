@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <!-- Primary Neon Shield Gradient -->
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d946ef"/>
+      <stop offset="45%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+
+    <!-- Inner Shield Gradient -->
+    <linearGradient id="innerShieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="50%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+
+    <!-- Lightning Bolt Gradient -->
+    <linearGradient id="boltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f472b6"/>
+      <stop offset="50%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="shieldGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background Ambient Glow -->
+  <circle cx="300" cy="270" r="180" fill="rgba(139,92,246,0.12)" filter="blur(30px)" />
+
+  <!-- Circuit Traces Left -->
+  <g stroke="url(#shieldGrad)" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.95">
+    <path d="M 170 180 L 110 180" />
+    <circle cx="102" cy="180" r="6" fill="url(#shieldGrad)" />
+
+    <path d="M 145 225 L 125 225 L 100 255 L 80 255" />
+    <circle cx="72" cy="255" r="6" fill="url(#shieldGrad)" />
+
+    <path d="M 138 310 L 118 310 L 95 340 L 75 340" />
+    <circle cx="67" cy="340" r="6" fill="url(#shieldGrad)" />
+  </g>
+
+  <!-- Circuit Traces Right -->
+  <g stroke="url(#shieldGrad)" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.95">
+    <path d="M 430 180 L 490 180" />
+    <circle cx="498" cy="180" r="6" fill="url(#shieldGrad)" />
+
+    <path d="M 455 225 L 475 225 L 500 255 L 520 255" />
+    <circle cx="528" cy="255" r="6" fill="url(#shieldGrad)" />
+
+    <path d="M 462 310 L 482 310 L 505 340 L 525 340" />
+    <circle cx="533" cy="340" r="6" fill="url(#shieldGrad)" />
+  </g>
+
+  <!-- Outer Shield Border -->
+  <path d="M 300 80 L 450 140 C 450 320 375 430 300 480 C 225 430 150 320 150 140 Z" 
+        fill="none" stroke="url(#shieldGrad)" stroke-width="14" stroke-linejoin="round" filter="url(#shieldGlow)"/>
+
+  <!-- Inner Dark Shield Body -->
+  <path d="M 300 95 L 436 150 C 436 310 365 412 300 460 C 235 412 164 310 164 150 Z" 
+        fill="#0b0f19" stroke="url(#innerShieldGrad)" stroke-width="3" />
+
+  <!-- Pixelated Space Invader Devil Emblem (Center) -->
+  <g fill="url(#innerShieldGrad)">
+    <!-- Horns / Top Pixels -->
+    <rect x="234" y="190" width="18" height="30" rx="3"/>
+    <rect x="348" y="190" width="18" height="30" rx="3"/>
+    
+    <rect x="252" y="210" width="18" height="20" rx="2"/>
+    <rect x="330" y="210" width="18" height="20" rx="2"/>
+
+    <!-- Head Main Block -->
+    <rect x="216" y="220" width="168" height="70" rx="6"/>
+
+    <!-- Ear Flaps / Side Wings -->
+    <rect x="198" y="240" width="20" height="40" rx="3"/>
+    <rect x="382" y="240" width="20" height="40" rx="3"/>
+
+    <rect x="180" y="250" width="20" height="50" rx="3"/>
+    <rect x="400" y="250" width="20" height="50" rx="3"/>
+
+    <!-- Lower Cheeks -->
+    <rect x="216" y="285" width="30" height="40" rx="4"/>
+    <rect x="354" y="285" width="30" height="40" rx="4"/>
+
+    <!-- Eyes (Cutouts / Dark Boxes) -->
+    <rect x="246" y="242" width="22" height="24" fill="#0b0f19" rx="3"/>
+    <rect x="332" y="242" width="22" height="24" fill="#0b0f19" rx="3"/>
+  </g>
+
+  <!-- Electric Lightning Bolt (Center Bottom) -->
+  <polygon points="312,280 270,360 305,360 272,460 340,345 302,345" 
+           fill="url(#boltGrad)" filter="url(#shieldGlow)"/>
+
+  <!-- Logo Text: CYBERFORGE -->
+  <text x="300" y="530" text-anchor="middle" 
+        font-family="'Orbitron', sans-serif" font-weight="900" font-size="34" letter-spacing="4" 
+        fill="url(#shieldGrad)">CYBERFORGE</text>
+
+  <!-- Subtext: LEARN. HACK. DEFEND. -->
+  <text x="300" y="562" text-anchor="middle" 
+        font-family="'Rajdhani', sans-serif" font-weight="700" font-size="16" letter-spacing="6" 
+        fill="#94a3b8">LEARN. HACK. DEFEND.</text>
+</svg>
