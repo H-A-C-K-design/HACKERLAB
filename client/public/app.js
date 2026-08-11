@@ -1,7 +1,7 @@
 // ======================================================
 // CyberForge Academy - Main Application
 // ======================================================
-const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
 const API = isLocal ? (window.location.port === '5000' ? '/api' : 'http://localhost:5000/api') : '/api';
 let state = {
   user: null, token: null, page: 'home',
