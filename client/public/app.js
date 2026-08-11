@@ -133,6 +133,7 @@ function render() {
       app.innerHTML = renderHomePage(null);
     }
     attachAuthEvents();
+    initStatsCounter();
     return;
   }
 
@@ -287,6 +288,89 @@ async function loadDashboardData() {
   if(tip) tip.textContent = tips[Math.floor(Math.random()*tips.length)];
 }
 
+// ---- ANIMATED STATS COUNTER ----
+let statsAnimated = false;
+
+function initStatsCounter() {
+  const statsSection = document.getElementById('stats-section');
+  if (!statsSection) return;
+
+  const statNumbers = statsSection.querySelectorAll('.stat-number');
+  if (!statNumbers.length) return;
+
+  if (statsAnimated || statsSection.dataset.animated === 'true') {
+    statNumbers.forEach(el => {
+      const format = el.dataset.format;
+      if (format) el.textContent = format;
+    });
+    return;
+  }
+
+  if (!('IntersectionObserver' in window)) {
+    statsAnimated = true;
+    statsSection.dataset.animated = 'true';
+    animateAllCounters(statNumbers);
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        statsAnimated = true;
+        statsSection.dataset.animated = 'true';
+        animateAllCounters(statNumbers);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  observer.observe(statsSection);
+}
+
+function animateAllCounters(statElements) {
+  const duration = 1600;
+  const startTime = performance.now();
+
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  function step(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const easedProgress = easeOutCubic(progress);
+
+    statElements.forEach(el => {
+      const target = parseFloat(el.dataset.target) || 0;
+      const format = el.dataset.format || '';
+
+      if (progress >= 1) {
+        el.textContent = format;
+      } else {
+        const currentVal = Math.floor(target * easedProgress);
+        if (target >= 10000) {
+          if (currentVal >= 10000) {
+            el.textContent = format;
+          } else if (currentVal >= 1000) {
+            const formattedK = (currentVal / 1000).toFixed(1);
+            el.textContent = `${formattedK}K+`;
+          } else {
+            el.textContent = `${currentVal}+`;
+          }
+        } else {
+          el.textContent = `${currentVal}+`;
+        }
+      }
+    });
+
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    }
+  }
+
+  requestAnimationFrame(step);
+}
+
 // =========================================================
 // HOME PAGE — CyberSpace Devil Theme
 // =========================================================
@@ -356,15 +440,6 @@ function renderHomePage(modal) {
 
       <!-- RIGHT HERO HUD & FLOATING CARDS -->
       <div class="hero-right">
-        <div class="hacker-rings">
-          <div class="hacker-ring"></div>
-          <div class="hacker-ring"></div>
-          <div class="hacker-ring"></div>
-        </div>
-        <div class="hacker-glow-outer"></div>
-        <div class="hacker-glow-mid"></div>
-        <div class="hacker-figure">👾</div>
-
         <!-- Floating HUD Status Cards -->
         <div class="floating-hud-card hud-card-1" style="position:absolute;top:10%;left:5%;background:#fff;border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(124,58,237,0.12);z-index:10;">
           <div style="color:#059669;font-weight:700;font-size:0.8rem;">● SYSTEM ONLINE</div>
@@ -383,13 +458,49 @@ function renderHomePage(modal) {
       </div>
     </section>
 
-    <!-- STATS STRIP -->
-    <div class="stats-strip">
-      <div class="strip-item"><div class="strip-num">10K+</div><div class="strip-lbl">Students</div></div>
-      <div class="strip-item"><div class="strip-num">500+</div><div class="strip-lbl">CTF Challenges</div></div>
-      <div class="strip-item"><div class="strip-num">100+</div><div class="strip-lbl">Hacking Labs</div></div>
-      <div class="strip-item"><div class="strip-num">25+</div><div class="strip-lbl">CTF Events</div></div>
-    </div>
+    <!-- STATS SECTION -->
+    <section class="stats-section" id="stats-section">
+      <div class="stats-container">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon-wrapper">
+              <i class="fa-solid fa-user-shield stat-icon"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number" data-target="10000" data-format="10K+">0</div>
+              <div class="stat-label">Students</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon-wrapper">
+              <i class="fa-solid fa-flag stat-icon"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number" data-target="500" data-format="500+">0</div>
+              <div class="stat-label">CTF Challenges</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon-wrapper">
+              <i class="fa-solid fa-terminal stat-icon"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number" data-target="100" data-format="100+">0</div>
+              <div class="stat-label">Hacking Labs</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon-wrapper">
+              <i class="fa-solid fa-trophy stat-icon"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number" data-target="25" data-format="25+">0</div>
+              <div class="stat-label">CTF Events</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- FEATURES -->
     <section class="features-section">
