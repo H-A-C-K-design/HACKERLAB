@@ -18,56 +18,7 @@ function calcRank(xp) {
   return ranks.filter(r => xp >= r.min).pop().name;
 }
 
-const workshops = [
-  {
-    id: 'intro-cybersecurity',
-    title: 'Introduction to Cybersecurity',
-    description: 'Learn the core security concepts, CIA triad, and common attack vectors in this beginner-friendly overview.',
-    videoUrl: 'videos/intro-cybersecurity.mp4',
-    duration: '20 mins',
-    xpReward: 100,
-    difficulty: 'Beginner',
-    instructor: 'Alex Hunter (SecOps Lead)',
-    status: 'recorded',
-    tags: ['Security Basics', 'Threat Modeling']
-  },
-  {
-    id: 'kali-linux-setup',
-    title: 'Kali Linux Setup & Configuration',
-    description: 'Walkthrough of installing Kali Linux in a virtual machine and configuring key penetration testing tools.',
-    videoUrl: 'videos/kali-linux-setup.mp4',
-    duration: '15 mins',
-    xpReward: 150,
-    difficulty: 'Intermediate',
-    instructor: 'Diana Prince (SRE)',
-    status: 'recorded',
-    tags: ['Linux', 'Lab Setup']
-  },
-  {
-    id: 'web-pen-testing',
-    title: 'Web Application Penetration Testing',
-    description: 'Deep dive into OWASP Top 10 vulnerabilities, demonstrating SQL injection and Cross-Site Scripting (XSS).',
-    duration: '90 mins',
-    xpReward: 250,
-    difficulty: 'Advanced',
-    instructor: 'Bruce Wayne (Ethical Hacker)',
-    status: 'upcoming',
-    date: 'Aug 18, 2026, 6:00 PM',
-    tags: ['Web Security', 'OWASP']
-  },
-  {
-    id: 'wireless-auditing',
-    title: 'Wireless Network Auditing & WPA2 Cracking',
-    description: 'Step-by-step session on auditing Wi-Fi networks and understanding WPA2 security handshake vulnerabilities.',
-    duration: '60 mins',
-    xpReward: 200,
-    difficulty: 'Intermediate',
-    instructor: 'Barry Allen (Network Admin)',
-    status: 'upcoming',
-    date: 'Aug 25, 2026, 5:00 PM',
-    tags: ['Wi-Fi Security', 'Aircrack-ng']
-  }
-];
+const workshops = [];
 
 // GET all workshops
 router.get('/', protect, async (req, res) => {
