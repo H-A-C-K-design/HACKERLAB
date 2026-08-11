@@ -201,19 +201,22 @@ function renderSidebar() {
   
   return `<div class="sidebar">${items.map(i => `<div class="sidebar-item ${state.page===i.page?'active':''}" onclick="navigate('${i.page}')"><i class="fas ${i.icon}"></i> ${i.label}</div>`).join('')}
     <div class="sidebar-profile-card">
-      <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:0.65rem;">
+      <div class="profile-header">
         <div class="profile-avatar"><i class="fas fa-user-shield"></i></div>
-        <div style="overflow:hidden; flex:1;">
+        <div class="profile-meta">
           <div class="profile-label">LOGGED IN AS</div>
           <div class="profile-name" title="${u.username||''}">${username}</div>
+          <div class="profile-level">Level ${u.level||1}</div>
         </div>
       </div>
-      <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-dim); margin-bottom:0.35rem; font-family:'Share Tech Mono',monospace;">
-        <span>LVL ${u.level||1}</span>
-        <span>${u.xp||0} XP</span>
-      </div>
-      <div class="profile-xp-track">
-        <div class="profile-xp-bar" style="width:${pct}%"></div>
+      <div class="profile-xp-section">
+        <div class="profile-stats">
+          <span class="profile-stats-label">XP</span>
+          <span class="profile-stats-value">${u.xp||0} / ${((u.level||1)) * 500} XP</span>
+        </div>
+        <div class="profile-xp-track">
+          <div class="profile-xp-bar" style="width:${pct}%"></div>
+        </div>
       </div>
     </div>
   </div>`;
