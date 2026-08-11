@@ -48,7 +48,7 @@ app.use(helmet({
       fontSrc: ["'self'", 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com'],
       imgSrc: ["'self'", 'data:', 'https:'],
       connectSrc: ["'self'", 'https://identitytoolkit.googleapis.com', 'https://securetoken.googleapis.com', 'ws:', 'wss:', 'http:', 'https:'],
-      frameSrc: ["'self'", 'https://www.google.com'],
+      frameSrc: ["'self'", 'https://www.google.com', 'https://*.firebaseapp.com'],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null
     }
