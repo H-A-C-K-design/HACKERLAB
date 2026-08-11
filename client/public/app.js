@@ -138,6 +138,8 @@ function render() {
 
   if (state.page === 'home') { app.innerHTML = renderDashboardLayout(renderDashboard()); attachNavEvents(); loadDashboardData(); }
   else if (state.page === 'challenges') { app.innerHTML = renderDashboardLayout(renderChallengesPage()); attachNavEvents(); loadChallenges(); }
+  else if (state.page === 'events') { app.innerHTML = renderDashboardLayout(renderEventsPage()); attachNavEvents(); loadEvents(); }
+  else if (state.page === 'eventSessions') { app.innerHTML = renderDashboardLayout(renderEventSessionsPage()); attachNavEvents(); loadEventSessions(); }
   else if (state.page === 'labs') { app.innerHTML = renderDashboardLayout(renderLabsPage()); attachNavEvents(); loadLabs(); }
   else if (state.page === 'workshops') { app.innerHTML = renderDashboardLayout(renderWorkshopsPage()); attachNavEvents(); loadWorkshops(); }
   else if (state.page === 'tools') { app.innerHTML = renderDashboardLayout(renderToolsPage()); attachNavEvents(); loadTools(); }
@@ -157,6 +159,8 @@ function renderNavbar() {
     <div class="nav-links">
       <button class="nav-btn ${state.page==='home'?'active':''}" onclick="navigate('home')"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
       <button class="nav-btn ${state.page==='challenges'?'active':''}" onclick="navigate('challenges')"><i class="fas fa-flag"></i> Challenges</button>
+      <button class="nav-btn ${state.page==='events'?'active':''}" onclick="navigate('events')"><i class="fas fa-trophy"></i> Events</button>
+      <button class="nav-btn ${state.page==='eventSessions'?'active':''}" onclick="navigate('eventSessions')"><i class="fas fa-calendar-check"></i> Sessions</button>
       <button class="nav-btn ${state.page==='labs'?'active':''}" onclick="navigate('labs')"><i class="fas fa-flask"></i> Labs</button>
       <button class="nav-btn ${state.page==='workshops'?'active':''}" onclick="navigate('workshops')"><i class="fas fa-laptop-code"></i> Workshops</button>
       <button class="nav-btn ${state.page==='tools'?'active':''}" onclick="navigate('tools')"><i class="fas fa-tools"></i> Tools</button>
@@ -182,6 +186,8 @@ function renderSidebar() {
   const items = [
     { page:'home', icon:'fa-tachometer-alt', label:'Dashboard' },
     { page:'challenges', icon:'fa-flag', label:'CTF Challenges' },
+    { page:'events', icon:'fa-trophy', label:'CTF Events' },
+    { page:'eventSessions', icon:'fa-calendar-check', label:'Event Sessions' },
     { page:'labs', icon:'fa-flask', label:'Hacking Labs' },
     { page:'workshops', icon:'fa-laptop-code', label:'One Session Workshops' },
     { page:'tools', icon:'fa-tools', label:'Security Tools' },
@@ -189,17 +195,40 @@ function renderSidebar() {
     { page:'terminal', icon:'fa-terminal', label:'Live Terminal' },
     { page:'tasks', icon:'fa-code', label:'Coding Tasks' },
   ];
+  const u = state.user || {};
+  const pct = Math.min(100, ((u.xp||0) % 500) / 500 * 100);
+  const username = u.username && !u.username.includes('@') ? u.username : (u.username||'').split('@')[0];
+  
   return `<div class="sidebar">${items.map(i => `<div class="sidebar-item ${state.page===i.page?'active':''}" onclick="navigate('${i.page}')"><i class="fas ${i.icon}"></i> ${i.label}</div>`).join('')}
-    <div style="padding:1.5rem; margin-top:auto; border-top:1px solid var(--border); margin-top:2rem;">
-      <div style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:0.5rem;">Logged in as</div>
-      <div style="color:var(--purple); font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px;" title="${state.user?state.user.username:''}">${state.user ? (state.user.username && !state.user.username.includes('@') ? state.user.username : (state.user.username||'').split('@')[0]) : 'Unknown'}</div>
-      <div style="font-size:0.8rem; color:var(--text-dim); margin-top:0.25rem;">Level ${state.user?state.user.level||1:1}</div>
+    <div class="sidebar-profile-card">
+      <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:0.65rem;">
+        <div class="profile-avatar"><i class="fas fa-user-shield"></i></div>
+        <div style="overflow:hidden; flex:1;">
+          <div class="profile-label">LOGGED IN AS</div>
+          <div class="profile-name" title="${u.username||''}">${username}</div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-dim); margin-bottom:0.35rem; font-family:'Share Tech Mono',monospace;">
+        <span>LVL ${u.level||1}</span>
+        <span>${u.xp||0} XP</span>
+      </div>
+      <div class="profile-xp-track">
+        <div class="profile-xp-bar" style="width:${pct}%"></div>
+      </div>
     </div>
   </div>`;
 }
 
 function renderDashboardLayout(content) {
-  return renderNavbar() + renderSidebar() + `<div class="content-area fade-in">${content}</div>`;
+  return `
+    <div class="event-banner">
+      <span>🏆 NEXT CTF EVENT: <span style="color:#00e5ff">HEXNOVA CTF</span> IS LIVE ON SEPTEMBER 5TH! ORGANIZED BY CYBERFORGE 🏁</span>
+      <button onclick="window.open('https://hexnova.space/register', '_blank')" class="banner-btn">REGISTER AT HEXNOVA ↗</button>
+    </div>
+    ${renderNavbar()}
+    ${renderSidebar()}
+    <div class="content-area fade-in">${content}</div>
+  `;
 }
 
 // ---- DASHBOARD ----
@@ -271,7 +300,7 @@ async function loadDashboardData() {
 // =========================================================
 function renderHomePage(modal) {
   const feats = [
-    {icon:'🚩', title:'CTF Challenges', desc:'50+ real-world hacking challenges across web, crypto, forensics, pwn & more.'},
+    {icon:'🏆', title:'HexNova CTF Event', desc:'Upcoming live CTF event on September 5th! Organized by CyberForge. Team up and compete.'},
     {icon:'🧪', title:'Hacking Labs',   desc:'Step-by-step guided labs. Kali basics to advanced exploitation.'},
     {icon:'💻', title:'Live Terminal',  desc:'Simulate Kali Linux in-browser. Practice safely with real commands.'},
     {icon:'📚', title:'Learn & Master', desc:'Structured courses from beginner to advanced. Theory meets practice.'},
@@ -279,14 +308,20 @@ function renderHomePage(modal) {
   ];
   return `
   <div style="min-height:100vh;background:var(--bg);position:relative;z-index:1">
+    <div class="event-banner">
+      <span>🏆 NEXT CTF EVENT: <span style="color:#00e5ff">HEXNOVA CTF</span> IS LIVE ON SEPTEMBER 5TH! ORGANIZED BY CYBERFORGE 🏁</span>
+      <button onclick="window.open('https://hexnova.space/register', '_blank')" class="banner-btn">REGISTER AT HEXNOVA ↗</button>
+    </div>
     <!-- NAVBAR -->
     <nav class="home-nav">
       <span class="home-logo-icon">⚡</span>
       <span class="home-logo" onclick="navigate('home')">CYBERFORGE</span>
       <div class="home-nav-links">
         <button class="home-nav-link active">HOME</button>
+        <button class="home-nav-link" onclick="showAuthModal('login')">EVENTS</button>
         <button class="home-nav-link" onclick="showAuthModal('login')">CHALLENGES</button>
         <button class="home-nav-link" onclick="showAuthModal('login')">LABS</button>
+        <button class="home-nav-link" onclick="showAuthModal('login')">WORKSHOPS</button>
         <button class="home-nav-link" onclick="showAuthModal('login')">FEATURES</button>
         <button class="home-nav-link" onclick="showAuthModal('login')">TERMINAL</button>
       </div>
@@ -2337,10 +2372,278 @@ async function completeWorkshop(id) {
   }
 }
 
+// ---- EVENTS ----
+function renderEventsPage() {
+  return `<div class="page-header">
+    <div class="page-title">🏆 CTF <span>Events</span></div>
+    <div class="page-sub">Official live competitions, hackathons, and global CTF events hosted by CyberForge Academy.</div>
+  </div>
+  <div id="events-grid" class="events-grid">
+    <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading events...</div>
+  </div>`;
+}
+
+async function loadEvents() {
+  const grid = $('events-grid');
+  if (!grid) return;
+  
+  try {
+    const data = await api('/events');
+    if (!data.success) {
+      throw new Error(data.message || 'API endpoint unavailable');
+    }
+    
+    const events = data.events;
+    if (!events || !events.length) {
+      grid.innerHTML = `<div class="empty-state" style="text-align:center; padding:3.5rem 1.5rem; background:var(--bg-card); border:1px solid var(--border); border-radius:12px;"><i class="fas fa-trophy" style="font-size:3rem; color:var(--purple); margin-bottom:1rem;"></i><h3 style="font-family:Orbitron,monospace; font-size:1.2rem;">No Upcoming Events</h3><p style="color:var(--text-dim);">Check back soon for new CTF hackathons!</p></div>`;
+      return;
+    }
+
+    grid.innerHTML = events.map(e => `
+      <div class="card event-card" style="background:var(--bg-card); border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.2); transition:transform 0.25s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="background:${e.bannerGradient || 'linear-gradient(135deg, #7c3aed, #db2777)'}; padding:2rem; color:#fff; position:relative;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
+            <div>
+              <span style="background:rgba(255,255,255,0.2); backdrop-filter:blur(5px); color:#fff; padding:4px 12px; border-radius:20px; font-size:0.75rem; font-family:'Share Tech Mono',monospace; text-transform:uppercase; font-weight:700;"><i class="fas fa-signal"></i> ${e.status.toUpperCase()} EVENT</span>
+              <h2 style="font-family:Orbitron,monospace; font-size:1.8rem; margin-top:0.75rem; font-weight:900;">${e.title}</h2>
+              <div style="font-size:0.9rem; opacity:0.9; margin-top:0.4rem;"><i class="fas fa-shield-halved"></i> Organized by <b>${e.organizer}</b></div>
+            </div>
+            <div style="text-align:center; background:rgba(0,0,0,0.3); backdrop-filter:blur(10px); padding:0.85rem 1.4rem; border-radius:12px; border:1px solid rgba(255,255,255,0.2);">
+              <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; opacity:0.8;">Event Date</div>
+              <div style="font-family:Orbitron,monospace; font-size:1.2rem; font-weight:700; margin-top:0.25rem; color:#00e5ff;">${e.date}</div>
+              <div style="font-size:0.75rem; margin-top:0.2rem; opacity:0.8;">${e.time}</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding:1.75rem;">
+          <p style="color:var(--text-dim); line-height:1.7; font-size:0.95rem; margin-bottom:1.5rem;">${e.description}</p>
+          
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; margin-bottom:1.5rem; background:var(--bg2); padding:1.2rem; border-radius:10px; border:1px solid var(--border);">
+            <div>
+              <div style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase;">Format</div>
+              <div style="font-weight:700; color:var(--text); margin-top:0.2rem;"><i class="fas fa-layer-group" style="color:var(--purple); margin-right:0.4rem;"></i>${e.type}</div>
+            </div>
+            <div>
+              <div style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase;">Duration</div>
+              <div style="font-weight:700; color:var(--text); margin-top:0.2rem;"><i class="fas fa-clock" style="color:var(--cyan); margin-right:0.4rem;"></i>${e.duration}</div>
+            </div>
+            <div>
+              <div style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase;">XP Pool</div>
+              <div style="font-weight:700; color:#ffcc00; margin-top:0.2rem;"><i class="fas fa-star" style="margin-right:0.4rem;"></i>+${e.xpReward} XP</div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:1.5rem;">
+            <div style="font-size:0.85rem; font-weight:700; color:var(--text); margin-bottom:0.6rem; text-transform:uppercase; letter-spacing:0.5px;">Categories</div>
+            <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+              ${(e.categories||[]).map(c => `<span class="tag" style="background:rgba(124,58,237,0.1); border-color:rgba(124,58,237,0.3); color:var(--purple); font-weight:600;">${c}</span>`).join('')}
+            </div>
+          </div>
+
+          <div style="margin-bottom:1.5rem;">
+            <div style="font-size:0.85rem; font-weight:700; color:var(--text); margin-bottom:0.6rem; text-transform:uppercase; letter-spacing:0.5px;">Competition Rules</div>
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:0.4rem;">
+              ${(e.rules||[]).map(r => `<li style="font-size:0.85rem; color:var(--text-dim);"><i class="fas fa-check-circle" style="color:var(--green); margin-right:0.5rem;"></i>${r}</li>`).join('')}
+            </ul>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; border-top:1px solid var(--border); padding-top:1.25rem;">
+            <div id="event-msg-${e.id}"></div>
+            <div>
+              ${e.isRegistered ? 
+                `<a href="${e.registrationUrl || 'https://hexnova.space/register'}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-green" style="display:inline-flex; align-items:center; gap:0.4rem; text-decoration:none;"><i class="fas fa-check-circle"></i> Registered & Go to HexNova.space ↗</a>` : 
+                `<a href="${e.registrationUrl || 'https://hexnova.space/register'}" target="_blank" rel="noopener noreferrer" id="btn-reg-event-${e.id}" class="btn btn-purple" onclick="registerForEvent('${e.id}')" style="display:inline-flex; align-items:center; gap:0.4rem; text-decoration:none;"><i class="fas fa-external-link-alt"></i> Register on HexNova.space ↗</a>`
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    grid.innerHTML = `
+      <div class="api-error-card" style="text-align:center; padding:3rem 2rem; background:rgba(255,0,64,0.03); border:1px solid rgba(255,0,64,0.15); border-radius:16px; box-shadow:0 8px 32px rgba(255,0,64,0.05); max-width:550px; margin:2rem auto;">
+        <i class="fas fa-server" style="font-size:3.5rem; color:#ff4060; margin-bottom:1.2rem; filter:drop-shadow(0 0 10px rgba(255,0,64,0.3)); animate: pulse 2s infinite;"></i>
+        <h3 style="font-family:Orbitron,monospace; font-size:1.4rem; color:var(--text); margin-bottom:0.75rem;">Unable to load CTF events</h3>
+        <p style="color:var(--text-dim); font-size:0.95rem; margin-bottom:1.5rem; line-height:1.6;">We couldn't connect to the events service right now.</p>
+        <div class="api-status" style="font-family:'Share Tech Mono',monospace; font-size:0.8rem; background:rgba(0,0,0,0.2); padding:0.4rem 1rem; border-radius:6px; display:inline-block; border:1px solid var(--border); color:#ff4060; margin-bottom:1.5rem;">Status: API endpoint unavailable</div>
+        <div class="error-actions" style="display:flex; justify-content:center; gap:1rem;">
+          <button class="btn btn-purple" onclick="loadEvents()"><i class="fas fa-sync-alt"></i> Retry</button>
+          <button class="btn btn-outline" onclick="navigate('home')"><i class="fas fa-home"></i> Back to Dashboard</button>
+        </div>
+      </div>
+    `;
+  }
+}
+
+async function registerForEvent(id) {
+  const btn = $('btn-reg-event-' + id);
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+  }
+  const data = await api('/events/' + id + '/register', 'POST');
+  const msgEl = $('event-msg-' + id);
+  
+  if (data.success) {
+    if (msgEl) msgEl.innerHTML = `<div style="background:rgba(0,255,102,0.1); border:1px solid rgba(0,255,102,0.4); color:#00ff66; padding:0.6rem 1rem; border-radius:8px; font-size:0.85rem; font-weight:700;"><i class="fas fa-check-circle"></i> ${data.message}</div>`;
+    loadEvents();
+  } else {
+    if (msgEl) msgEl.innerHTML = `<div style="background:rgba(255,0,64,0.1); border:1px solid rgba(255,0,64,0.4); color:#ff4060; padding:0.6rem 1rem; border-radius:8px; font-size:0.85rem;"><i class="fas fa-times-circle"></i> ${data.message}</div>`;
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-external-link-alt"></i> Register on HexNova.space ↗';
+    }
+  }
+}
+
+// ---- EVENT SESSIONS ----
+function renderEventSessionsPage() {
+  return `<div class="page-header">
+    <div class="page-title">📅 Event <span>Sessions</span></div>
+    <div class="page-sub">Live webinars, hands-on workshops, AMAs, and interactive sessions hosted by industry experts.</div>
+  </div>
+  <div id="event-sessions-grid" class="events-grid">
+    <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading event sessions...</div>
+  </div>`;
+}
+
+async function loadEventSessions() {
+  const grid = $('event-sessions-grid');
+  if (!grid) return;
+
+  try {
+    const data = await api('/event-sessions');
+    if (!data.success) {
+      throw new Error(data.message || 'API endpoint unavailable');
+    }
+
+    const sessions = data.sessions;
+    if (!sessions || !sessions.length) {
+      grid.innerHTML = `<div class="empty-state" style="text-align:center; padding:3.5rem 1.5rem; background:var(--bg-card); border:1px solid var(--border); border-radius:12px;"><i class="fas fa-calendar-check" style="font-size:3rem; color:var(--purple); margin-bottom:1rem;"></i><h3 style="font-family:Orbitron,monospace; font-size:1.2rem;">No Event Sessions Available</h3><p style="color:var(--text-dim);">Check back soon for upcoming live sessions!</p></div>`;
+      return;
+    }
+
+    grid.innerHTML = sessions.map(s => {
+      const capacityPct = Math.round((s.enrolled / s.capacity) * 100);
+      const isUpcoming = s.status === 'upcoming';
+      const isCompleted = s.status === 'completed';
+      const statusLabel = isCompleted ? 'COMPLETED' : 'UPCOMING';
+      const statusIcon = isCompleted ? 'fa-check-circle' : 'fa-broadcast-tower';
+
+      return `
+      <div class="card event-session-card" style="background:var(--bg-card); border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.15); transition:transform 0.25s, box-shadow 0.25s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 16px 40px rgba(124,58,237,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.15)'">
+        <div style="background:${s.bannerGradient || 'linear-gradient(135deg, #7c3aed, #2563eb)'}; padding:1.75rem; color:#fff; position:relative;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
+            <div style="flex:1;">
+              <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.6rem;">
+                <span style="background:rgba(255,255,255,0.2); backdrop-filter:blur(5px); color:#fff; padding:3px 10px; border-radius:20px; font-size:0.7rem; font-family:'Share Tech Mono',monospace; text-transform:uppercase; font-weight:700;"><i class="fas ${statusIcon}"></i> ${statusLabel}</span>
+                <span style="background:rgba(0,0,0,0.25); backdrop-filter:blur(5px); color:#fff; padding:3px 10px; border-radius:20px; font-size:0.7rem; font-family:'Share Tech Mono',monospace; text-transform:uppercase; font-weight:700;"><i class="fas fa-tag"></i> ${s.type}</span>
+              </div>
+              <h2 style="font-family:Orbitron,monospace; font-size:1.4rem; font-weight:900; margin:0;">${s.title}</h2>
+              <div style="font-size:0.85rem; opacity:0.9; margin-top:0.4rem;"><i class="fas fa-user-tie"></i> ${s.speaker}</div>
+            </div>
+            <div style="text-align:center; background:rgba(0,0,0,0.3); backdrop-filter:blur(10px); padding:0.75rem 1.2rem; border-radius:12px; border:1px solid rgba(255,255,255,0.15);">
+              <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:1px; opacity:0.8;">Session Date</div>
+              <div style="font-family:Orbitron,monospace; font-size:1rem; font-weight:700; margin-top:0.2rem; color:#00e5ff;">${s.date}</div>
+              <div style="font-size:0.7rem; margin-top:0.15rem; opacity:0.8;">${s.time}</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding:1.5rem;">
+          <p style="color:var(--text-dim); line-height:1.65; font-size:0.9rem; margin-bottom:1.25rem;">${s.description}</p>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:0.75rem; margin-bottom:1.25rem; background:var(--bg2); padding:1rem; border-radius:10px; border:1px solid var(--border);">
+            <div>
+              <div style="font-size:0.7rem; color:var(--text-dim); text-transform:uppercase;">Duration</div>
+              <div style="font-weight:700; color:var(--text); margin-top:0.15rem; font-size:0.9rem;"><i class="fas fa-clock" style="color:var(--cyan); margin-right:0.4rem;"></i>${s.duration}</div>
+            </div>
+            <div>
+              <div style="font-size:0.7rem; color:var(--text-dim); text-transform:uppercase;">XP Reward</div>
+              <div style="font-weight:700; color:#ffcc00; margin-top:0.15rem; font-size:0.9rem;"><i class="fas fa-star" style="margin-right:0.4rem;"></i>+${s.xpReward} XP</div>
+            </div>
+            <div>
+              <div style="font-size:0.7rem; color:var(--text-dim); text-transform:uppercase;">Capacity</div>
+              <div style="font-weight:700; color:var(--text); margin-top:0.15rem; font-size:0.9rem;"><i class="fas fa-users" style="color:var(--purple); margin-right:0.4rem;"></i>${s.enrolled}/${s.capacity}</div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:1.25rem;">
+            <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-dim); margin-bottom:0.35rem;"><span>Enrollment</span><span>${capacityPct}%</span></div>
+            <div style="background:var(--bg2); border-radius:20px; height:6px; overflow:hidden; border:1px solid var(--border);">
+              <div style="height:100%; width:${capacityPct}%; background:linear-gradient(90deg, var(--purple), var(--cyan)); border-radius:20px; transition:width 0.6s ease;"></div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:1.25rem;">
+            <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
+              ${(s.tags||[]).map(t => '<span class="tag" style="background:rgba(124,58,237,0.1); border-color:rgba(124,58,237,0.3); color:var(--purple); font-weight:600; font-size:0.75rem;">' + t + '</span>').join('')}
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; border-top:1px solid var(--border); padding-top:1rem;">
+            <div id="session-msg-${s.id}"></div>
+            <div>
+              ${s.isCompleted ?
+                '<button class="btn btn-outline btn-green" disabled style="display:inline-flex; align-items:center; gap:0.4rem;"><i class="fas fa-check-circle"></i> Completed</button>' :
+                s.isRegistered ?
+                  '<button class="btn btn-outline btn-green" disabled style="display:inline-flex; align-items:center; gap:0.4rem;"><i class="fas fa-check-circle"></i> Registered</button>' :
+                  (isUpcoming ?
+                    '<button id="btn-reg-session-' + s.id + '" class="btn btn-purple" onclick="registerForSession(\'' + s.id + '\')" style="display:inline-flex; align-items:center; gap:0.4rem;"><i class="fas fa-calendar-plus"></i> Register Now</button>' :
+                    '<button class="btn btn-outline" disabled style="display:inline-flex; align-items:center; gap:0.4rem;"><i class="fas fa-lock"></i> Session Ended</button>')}
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (err) {
+    grid.innerHTML = `
+      <div class="api-error-card" style="text-align:center; padding:3rem 2rem; background:rgba(255,0,64,0.03); border:1px solid rgba(255,0,64,0.15); border-radius:16px; box-shadow:0 8px 32px rgba(255,0,64,0.05); max-width:550px; margin:2rem auto;">
+        <i class="fas fa-server" style="font-size:3.5rem; color:#ff4060; margin-bottom:1.2rem; filter:drop-shadow(0 0 10px rgba(255,0,64,0.3));"></i>
+        <h3 style="font-family:Orbitron,monospace; font-size:1.4rem; color:var(--text); margin-bottom:0.75rem;">Unable to load event sessions</h3>
+        <p style="color:var(--text-dim); font-size:0.95rem; margin-bottom:1.5rem; line-height:1.6;">We couldn't connect to the event sessions service right now.</p>
+        <div class="api-status" style="font-family:'Share Tech Mono',monospace; font-size:0.8rem; background:rgba(0,0,0,0.2); padding:0.4rem 1rem; border-radius:6px; display:inline-block; border:1px solid var(--border); color:#ff4060; margin-bottom:1.5rem;">Status: API endpoint unavailable</div>
+        <div class="error-actions" style="display:flex; justify-content:center; gap:1rem;">
+          <button class="btn btn-purple" onclick="loadEventSessions()"><i class="fas fa-sync-alt"></i> Retry</button>
+          <button class="btn btn-outline" onclick="navigate('home')"><i class="fas fa-home"></i> Back to Dashboard</button>
+        </div>
+      </div>
+    `;
+  }
+}
+
+async function registerForSession(id) {
+  const btn = $('btn-reg-session-' + id);
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+  }
+  const data = await api('/event-sessions/' + id + '/register', 'POST');
+  const msgEl = $('session-msg-' + id);
+
+  if (data.success) {
+    if (msgEl) msgEl.innerHTML = `<div style="background:rgba(0,255,102,0.1); border:1px solid rgba(0,255,102,0.4); color:#00ff66; padding:0.6rem 1rem; border-radius:8px; font-size:0.85rem; font-weight:700;"><i class="fas fa-check-circle"></i> ${data.message}</div>`;
+    loadEventSessions();
+  } else {
+    if (msgEl) msgEl.innerHTML = `<div style="background:rgba(255,0,64,0.1); border:1px solid rgba(255,0,64,0.4); color:#ff4060; padding:0.6rem 1rem; border-radius:8px; font-size:0.85rem;"><i class="fas fa-times-circle"></i> ${data.message}</div>`;
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-calendar-plus"></i> Register Now';
+    }
+  }
+}
+
 // Expose functions globally
+window.renderEventsPage = renderEventsPage;
+window.loadEvents = loadEvents;
+window.registerForEvent = registerForEvent;
 window.renderWorkshopsPage = renderWorkshopsPage;
 window.loadWorkshops = loadWorkshops;
 window.playWorkshop = playWorkshop;
 window.closeWorkshopPlayer = closeWorkshopPlayer;
 window.completeWorkshop = completeWorkshop;
+window.renderEventSessionsPage = renderEventSessionsPage;
+window.loadEventSessions = loadEventSessions;
+window.registerForSession = registerForSession;
 

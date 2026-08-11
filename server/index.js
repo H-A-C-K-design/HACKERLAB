@@ -89,6 +89,8 @@ app.use('/api/leaderboard', require('./routes/leaderboard'));
 app.use('/api/tasks', require('./routes/tasks'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/workshops', require('./routes/workshops'));
+app.use('/api/events', require('./routes/events'));
+app.use('/api/event-sessions', require('./routes/eventSessions'));
 
 // Admin panel token verification — token via Authorization header only (never in URL)
 app.get('/api/admin-access/verify', (req, res) => {
