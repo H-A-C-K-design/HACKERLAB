@@ -440,18 +440,30 @@ function renderHomePage(modal) {
 
       <!-- RIGHT HERO HUD & FLOATING CARDS -->
       <div class="hero-right">
+        <!-- Central Cyber Emblem & Glowing Orbit Rings -->
+        <div class="hacker-glow-outer"></div>
+        <div class="hacker-glow-mid"></div>
+        <div class="hacker-rings">
+          <div class="hacker-ring"></div>
+          <div class="hacker-ring"></div>
+          <div class="hacker-ring"></div>
+        </div>
+        <div class="hacker-figure">
+          <i class="fa-solid fa-user-ninja" style="color:var(--purple-l);font-size:6.5rem;filter:drop-shadow(0 0 25px rgba(124,58,237,0.4));"></i>
+        </div>
+
         <!-- Floating HUD Status Cards -->
-        <div class="floating-hud-card hud-card-1" style="position:absolute;top:10%;left:5%;background:#fff;border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(124,58,237,0.12);z-index:10;">
+        <div class="floating-hud-card hud-card-1" style="position:absolute;top:10%;left:5%;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(124,58,237,0.12);z-index:10;">
           <div style="color:#059669;font-weight:700;font-size:0.8rem;">● SYSTEM ONLINE</div>
           <div style="color:var(--text);font-weight:600;font-size:0.85rem;">Security Labs</div>
           <div style="color:var(--text-dim);font-size:0.75rem;">99.9% Operational</div>
         </div>
-        <div class="floating-hud-card hud-card-2" style="position:absolute;top:58%;right:2%;background:#fff;border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(124,58,237,0.12);z-index:10;">
+        <div class="floating-hud-card hud-card-2" style="position:absolute;top:58%;right:2%;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(124,58,237,0.12);z-index:10;">
           <div style="color:var(--pink);font-weight:700;font-size:0.8rem;">⚡ ACTIVE CHALLENGE</div>
           <div style="color:var(--text);font-weight:600;font-size:0.85rem;">Web Exploitation</div>
           <div style="color:var(--text-dim);font-size:0.75rem;">Difficulty: Medium</div>
         </div>
-        <div class="floating-hud-card hud-card-3" style="position:absolute;bottom:5%;left:12%;background:#fff;border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(124,58,237,0.12);z-index:10;">
+        <div class="floating-hud-card hud-card-3" style="position:absolute;bottom:5%;left:12%;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(124,58,237,0.12);z-index:10;">
           <div style="color:var(--purple);font-weight:700;font-size:0.9rem;">👥 1,284</div>
           <div style="color:var(--text-dim);font-size:0.75rem;">Students Online</div>
         </div>
