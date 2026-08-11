@@ -11,7 +11,7 @@ const events = [
     organizer: 'CyberForge Academy',
     date: 'September 5, 2026',
     time: '10:00 AM UTC',
-    duration: '24 Hours',
+    duration: '8 Hours',
     type: 'Jeopardy & Attack-Defense',
     status: 'upcoming',
     xpReward: 500,
