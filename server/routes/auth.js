@@ -12,31 +12,9 @@ const getFirestoreFieldValue = () => (admin.apps && admin.apps.length && admin.f
 
 const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
 
-// ── reCAPTCHA v3 verification helper ──────────────────────
+// ── reCAPTCHA v3 verification helper (Disabled) ──────────────────────
 async function verifyRecaptcha(token) {
-  const secret = process.env.RECAPTCHA_SECRET_KEY;
-  if (!secret || !token) return true; // skip if not configured (dev mode)
-  return new Promise((resolve) => {
-    const params = `secret=${secret}&response=${token}`;
-    const req = https.request({
-      hostname: 'www.google.com',
-      path: '/recaptcha/api/siteverify',
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': params.length }
-    }, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        try {
-          const result = JSON.parse(data);
-          resolve(result.success && result.score >= 0.5);
-        } catch { resolve(false); }
-      });
-    });
-    req.on('error', () => resolve(false)); // fail CLOSED on network errors — do not allow bots through
-    req.write(params);
-    req.end();
-  });
+  return true;
 }
 
 // @route GET /api/auth/recaptcha-config

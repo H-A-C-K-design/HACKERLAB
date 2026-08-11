@@ -3,3 +3,4 @@ node_modules
 *.log
 # Large media files — tracked via Git LFS
 CYBER VEDIOES/
+client/public/videos/kali-linux-setup.mp4

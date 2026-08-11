@@ -139,6 +139,7 @@ function render() {
   if (state.page === 'home') { app.innerHTML = renderDashboardLayout(renderDashboard()); attachNavEvents(); loadDashboardData(); }
   else if (state.page === 'challenges') { app.innerHTML = renderDashboardLayout(renderChallengesPage()); attachNavEvents(); loadChallenges(); }
   else if (state.page === 'labs') { app.innerHTML = renderDashboardLayout(renderLabsPage()); attachNavEvents(); loadLabs(); }
+  else if (state.page === 'workshops') { app.innerHTML = renderDashboardLayout(renderWorkshopsPage()); attachNavEvents(); loadWorkshops(); }
   else if (state.page === 'tools') { app.innerHTML = renderDashboardLayout(renderToolsPage()); attachNavEvents(); loadTools(); }
   else if (state.page === 'terminal') { app.innerHTML = renderDashboardLayout(renderTerminalPage()); attachNavEvents(); initTerminal(); }
   else if (state.page === 'learning') { app.innerHTML = renderDashboardLayout(renderLearningPage()); attachNavEvents(); loadLearning(); }
@@ -157,6 +158,7 @@ function renderNavbar() {
       <button class="nav-btn ${state.page==='home'?'active':''}" onclick="navigate('home')"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
       <button class="nav-btn ${state.page==='challenges'?'active':''}" onclick="navigate('challenges')"><i class="fas fa-flag"></i> Challenges</button>
       <button class="nav-btn ${state.page==='labs'?'active':''}" onclick="navigate('labs')"><i class="fas fa-flask"></i> Labs</button>
+      <button class="nav-btn ${state.page==='workshops'?'active':''}" onclick="navigate('workshops')"><i class="fas fa-laptop-code"></i> Workshops</button>
       <button class="nav-btn ${state.page==='tools'?'active':''}" onclick="navigate('tools')"><i class="fas fa-tools"></i> Tools</button>
       <button class="nav-btn ${state.page==='learning'?'active':''}" onclick="navigate('learning')"><i class="fas fa-book"></i> Learn</button>
       <button class="nav-btn ${state.page==='terminal'?'active':''}" onclick="navigate('terminal')"><i class="fas fa-terminal"></i> Terminal</button>
@@ -181,6 +183,7 @@ function renderSidebar() {
     { page:'home', icon:'fa-tachometer-alt', label:'Dashboard' },
     { page:'challenges', icon:'fa-flag', label:'CTF Challenges' },
     { page:'labs', icon:'fa-flask', label:'Hacking Labs' },
+    { page:'workshops', icon:'fa-laptop-code', label:'One Session Workshops' },
     { page:'tools', icon:'fa-tools', label:'Security Tools' },
     { page:'learning', icon:'fa-book-open', label:'Learn Hacking' },
     { page:'terminal', icon:'fa-terminal', label:'Live Terminal' },
@@ -439,9 +442,7 @@ function renderAuthModal(mode) {
         <button class="auth-box-submit" onclick="doRegister()">Create Account →</button>
         <div class="auth-switch">Already registered? <a onclick="showAuthModal('login')">Sign in →</a></div>
       `}
-      <div class="recaptcha-notice">
-        <i class="fas fa-shield-halved" style="color:var(--green);margin-right:4px"></i> Protected by reCAPTCHA
-      </div>
+
     </div>
   </div>`;
 }
@@ -473,17 +474,9 @@ async function doLogin() {
   const email = $('login-email')?.value;
   const password = $('login-pass')?.value;
   if(!email||!password) { showMsg('auth-msg','Please fill all fields','error'); return; }
-  showMsg('auth-msg','<i class="fas fa-spinner fa-spin"></i> Verifying...','');
-
-  let recaptchaToken = '';
-  if (window.grecaptcha && window.RECAPTCHA_SITE_KEY && !window.RECAPTCHA_SITE_KEY.includes('YOUR_')) {
-    try {
-      recaptchaToken = await window.grecaptcha.execute(window.RECAPTCHA_SITE_KEY, { action: 'login' });
-    } catch(e) { console.warn('reCAPTCHA execution error:', e); }
-  }
 
   showMsg('auth-msg','<i class="fas fa-spinner fa-spin"></i> Connecting...','');
-  const data = await api('/auth/login','POST',{email,password,recaptchaToken});
+  const data = await api('/auth/login','POST',{email,password});
   if(data.success) {
     localStorage.setItem('cf_token', data.token);
     localStorage.setItem('cf_user', JSON.stringify(data.user));
@@ -497,17 +490,9 @@ async function doRegister() {
   const email = $('reg-email')?.value;
   const password = $('reg-pass')?.value;
   if(!username||!email||!password) { showMsg('auth-msg','Please fill all fields','error'); return; }
-  showMsg('auth-msg','<i class="fas fa-spinner fa-spin"></i> Verifying...','');
-
-  let recaptchaToken = '';
-  if (window.grecaptcha && window.RECAPTCHA_SITE_KEY && !window.RECAPTCHA_SITE_KEY.includes('YOUR_')) {
-    try {
-      recaptchaToken = await window.grecaptcha.execute(window.RECAPTCHA_SITE_KEY, { action: 'register' });
-    } catch(e) { console.warn('reCAPTCHA execution error:', e); }
-  }
 
   showMsg('auth-msg','<i class="fas fa-spinner fa-spin"></i> Creating account...','');
-  const data = await api('/auth/register','POST',{username,email,password,recaptchaToken});
+  const data = await api('/auth/register','POST',{username,email,password});
   if(data.success) {
     localStorage.setItem('cf_token', data.token);
     localStorage.setItem('cf_user', JSON.stringify(data.user));
@@ -2177,3 +2162,185 @@ window.openTask = openTask;
 window.backToTasks = backToTasks;
 window.submitTask = submitTask;
 window.toggleSidebar = toggleSidebar;
+
+// ---- WORKSHOPS ----
+function renderWorkshopsPage() {
+  return `<div class="page-header">
+    <div class="page-title">🎓 One-Session <span>Workshops</span></div>
+    <div class="page-sub">Intense, hands-on, single-session deep dives into specific security techniques. Watch recorded workshops to earn XP!</div>
+  </div>
+  <div id="workshops-layout">
+    <div id="workshop-player-container" style="display:none; margin-bottom:2rem;"></div>
+    <div id="workshops-grid" class="card-grid">
+      <div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading workshops...</div>
+    </div>
+  </div>`;
+}
+
+async function loadWorkshops() {
+  const data = await api('/workshops');
+  const grid = $('workshops-grid');
+  if (!grid) return;
+  if (!data.success) {
+    grid.innerHTML = `<div class="empty-state"><p>${data.message}</p></div>`;
+    return;
+  }
+  const workshops = data.workshops;
+  if (!workshops || !workshops.length) {
+    grid.innerHTML = `<div class="empty-state"><i class="fas fa-video"></i><p>No workshops found.</p></div>`;
+    return;
+  }
+  
+  grid.innerHTML = workshops.map(w => {
+    const isRecorded = w.status === 'recorded';
+    const tagHtml = (w.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+    const difficultyClass = `level-${w.difficulty.toLowerCase()}`;
+    
+    let actionBtnHtml = '';
+    if (isRecorded) {
+      if (w.completed) {
+        actionBtnHtml = `<button class="btn btn-outline btn-green" style="width:100%" onclick="playWorkshop('${w.id}')"><i class="fas fa-play-circle"></i> Watch Again <span style="font-size:0.75rem;margin-left:0.5rem;color:var(--green)"><i class="fas fa-check-circle"></i> Completed</span></button>`;
+      } else {
+        actionBtnHtml = `<button class="btn btn-purple" style="width:100%" onclick="playWorkshop('${w.id}')"><i class="fas fa-play"></i> Watch Recording (+${w.xpReward} XP)</button>`;
+      }
+    } else {
+      actionBtnHtml = `<button class="btn btn-outline" style="width:100%" disabled><i class="fas fa-calendar-alt"></i> Live: ${w.date}</button>`;
+    }
+
+    return `
+      <div class="card workshop-card" style="display:flex; flex-direction:column; justify-content:space-between; position:relative; overflow:hidden;">
+        ${w.completed ? `<div style="position:absolute; top:12px; right:12px; background:rgba(0,255,102,0.15); border:1px solid rgba(0,255,102,0.4); color:#00ff66; padding:2px 8px; border-radius:12px; font-size:0.75rem; font-family:'Share Tech Mono',monospace; font-weight:700;"><i class="fas fa-check"></i> Completed</div>` : ''}
+        <div>
+          <div style="margin-bottom:0.75rem;">
+            <span class="module-level ${difficultyClass}">${w.difficulty}</span>
+            <span class="cat-badge" style="background:rgba(168,85,247,0.1); border-color:rgba(168,85,247,0.3); color:var(--purple);">${w.status.toUpperCase()}</span>
+          </div>
+          <div class="card-title" style="margin-bottom:0.5rem;">${w.title}</div>
+          <div class="card-desc" style="margin-bottom:1rem;">${w.description}</div>
+        </div>
+        <div>
+          <div style="display:flex; flex-direction:column; gap:0.4rem; font-size:0.8rem; color:var(--text-dim); margin-bottom:1rem; border-top:1px solid var(--border); padding-top:0.75rem;">
+            <span><i class="fas fa-clock" style="width:18px"></i> ${w.duration}</span>
+            <span><i class="fas fa-user-tie" style="width:18px"></i> ${w.instructor}</span>
+            <span><i class="fas fa-star" style="width:18px; color:#ffcc00"></i> +${w.xpReward} XP Reward</span>
+          </div>
+          <div style="margin-bottom:1rem;">${tagHtml}</div>
+          <div style="width:100%;">${actionBtnHtml}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function playWorkshop(id) {
+  const data = await api('/workshops');
+  if (!data.success) return;
+  const w = data.workshops.find(x => x.id === id);
+  if (!w) return;
+
+  const playerContainer = $('workshop-player-container');
+  const grid = $('workshops-grid');
+  
+  if (!playerContainer || !grid) return;
+  
+  grid.style.display = 'none';
+  playerContainer.style.display = '';
+  
+  playerContainer.innerHTML = `
+    <button class="btn btn-outline" style="margin-bottom:1.5rem;" onclick="closeWorkshopPlayer()"><i class="fas fa-arrow-left"></i> Back to Workshops</button>
+    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:2rem; box-shadow:0 8px 30px rgba(0,0,0,0.3); background-image:linear-gradient(to bottom right, var(--bg-card), rgba(124,58,237,0.02));">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+        <div>
+          <span class="module-level level-${w.difficulty.toLowerCase()}">${w.difficulty}</span>
+          <h2 style="font-family:Orbitron,monospace; font-size:1.5rem; margin-top:0.75rem; color:var(--text);">${w.title}</h2>
+          <p style="color:var(--text-dim); margin-top:0.5rem;">${w.description}</p>
+        </div>
+        <div style="text-align:center; background:rgba(0,229,255,0.05); border:1px solid rgba(0,229,255,0.15); padding:0.75rem 1.25rem; border-radius:8px;">
+          <div style="font-family:Orbitron,monospace; font-size:1.5rem; color:var(--cyan); font-weight:700;">+${w.xpReward}</div>
+          <div style="font-size:0.75rem; color:var(--text-dim); letter-spacing:1px; text-transform:uppercase; margin-top:0.25rem;">XP Reward</div>
+        </div>
+      </div>
+      
+      <div style="margin-bottom:1.5rem; border-radius:10px; overflow:hidden; border:1px solid var(--border); background:#000; position:relative;">
+        <video id="workshop-video" controls style="width:100%; display:block; max-height:500px;" preload="metadata">
+          <source src="${w.videoUrl}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+        <div style="font-size:0.85rem; color:var(--text-dim);">
+          <i class="fas fa-info-circle"></i> Watch the recording fully to claim your workshop XP badge.
+        </div>
+        <div id="workshop-claim-area">
+          ${w.completed ? 
+            `<button class="btn btn-outline btn-green" disabled><i class="fas fa-check-circle"></i> Already Completed & Claimed</button>` : 
+            `<button id="btn-claim-workshop" class="btn btn-green" onclick="completeWorkshop('${w.id}')"><i class="fas fa-award"></i> Complete Workshop & Claim XP</button>`
+          }
+        </div>
+      </div>
+      <div id="workshop-msg" style="margin-top:1rem;"></div>
+    </div>
+  `;
+}
+
+function closeWorkshopPlayer() {
+  const playerContainer = $('workshop-player-container');
+  const grid = $('workshops-grid');
+  if (playerContainer) {
+    playerContainer.style.display = 'none';
+    playerContainer.innerHTML = '';
+  }
+  if (grid) grid.style.display = '';
+  loadWorkshops();
+}
+
+async function completeWorkshop(id) {
+  const btn = $('btn-claim-workshop');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+  }
+  const data = await api('/workshops/' + id + '/complete', 'POST');
+  const msgEl = $('workshop-msg');
+  if (!msgEl) return;
+  
+  if (data.success) {
+    msgEl.innerHTML = `<div style="background:rgba(0,255,102,0.1); border:1px solid rgba(0,255,102,0.4); color:#00ff66; padding:0.75rem 1rem; border-radius:8px; font-size:0.95rem; font-weight:700;"><i class="fas fa-star" style="color:#ffcc00"></i> +${data.xpEarned} XP Earned! ${data.message} 🎉</div>`;
+    state.user.xp = (state.user.xp || 0) + data.xpEarned;
+    state.user.level = Math.floor(state.user.xp / 500) + 1;
+    const ranks = [
+      { min: 0, name: 'Script Kiddie' },
+      { min: 500, name: 'Newbie Hacker' },
+      { min: 1500, name: 'Penetration Tester' },
+      { min: 3000, name: 'Security Analyst' },
+      { min: 6000, name: 'Ethical Hacker' },
+      { min: 10000, name: 'Cyber Warrior' },
+      { min: 20000, name: 'Elite Hacker' },
+      { min: 50000, name: 'Cyber God' }
+    ];
+    state.user.rank = ranks.filter(r => state.user.xp >= r.min).pop().name;
+    localStorage.setItem('cf_user', JSON.stringify(state.user));
+    
+    render();
+    
+    const claimArea = $('workshop-claim-area');
+    if (claimArea) {
+      claimArea.innerHTML = `<button class="btn btn-outline btn-green" disabled><i class="fas fa-check-circle"></i> Already Completed & Claimed</button>`;
+    }
+  } else {
+    msgEl.innerHTML = `<div style="background:rgba(255,0,64,0.1); border:1px solid rgba(255,0,64,0.4); color:#ff4060; padding:0.6rem 1rem; border-radius:8px; font-size:0.85rem;"><i class="fas fa-times-circle"></i> ${data.message}</div>`;
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-award"></i> Complete Workshop & Claim XP';
+    }
+  }
+}
+
+// Expose functions globally
+window.renderWorkshopsPage = renderWorkshopsPage;
+window.loadWorkshops = loadWorkshops;
+window.playWorkshop = playWorkshop;
+window.closeWorkshopPlayer = closeWorkshopPlayer;
+window.completeWorkshop = completeWorkshop;
+
