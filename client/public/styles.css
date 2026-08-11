@@ -725,23 +725,24 @@ body::before {
 .navbar {
   display:flex; align-items:center; justify-content:space-between;
   padding:0 1.8rem; height:58px;
-  background:rgba(255,255,255,.97);
+  background:var(--bg-nav);
   border-bottom:1px solid var(--border);
   position:fixed; top:0; width:100%; z-index:1000;
   backdrop-filter:blur(16px);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 .logo { font-family:'Orbitron',monospace; font-size:1.1rem; font-weight:900; letter-spacing:2px; cursor:pointer; background:var(--grad-main); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
 .logo span { color:var(--cyan); -webkit-text-fill-color:var(--cyan); }
 .nav-links { display:flex; gap:.2rem; align-items:center; }
-.nav-btn { background:none; border:none; color:var(--text-dim); font-family:'Inter',sans-serif; font-size:.8rem; font-weight:500; cursor:pointer; padding:.35rem .7rem; border-radius:6px; transition:all .2s; text-transform:uppercase; letter-spacing:.3px; }
-.nav-btn:hover,.nav-btn.active { color:var(--purple-l); background:rgba(168,85,247,.1); }
+.nav-btn { background:none; border:none; color:var(--text-mid); font-family:'Inter',sans-serif; font-size:.8rem; font-weight:600; cursor:pointer; padding:.35rem .7rem; border-radius:6px; transition:all .2s; text-transform:uppercase; letter-spacing:.3px; }
+.nav-btn:hover,.nav-btn.active { color:var(--purple-l); background:rgba(168,85,247,.15); }
 .nav-user { display:flex; align-items:center; gap:.65rem; }
-.xp-badge { background:rgba(168,85,247,.1); border:1px solid rgba(168,85,247,.25); padding:.22rem .65rem; border-radius:20px; font-size:.76rem; font-family:'Share Tech Mono',monospace; color:var(--purple-l); }
-.rank-badge { background:rgba(236,72,153,.08); border:1px solid rgba(236,72,153,.2); padding:.22rem .65rem; border-radius:20px; font-size:.75rem; color:var(--pink); font-weight:600; }
-.sidebar { width:225px; background:rgba(255,255,255,.98); border-right:1px solid var(--border); padding:1.2rem 0; position:fixed; top:58px; bottom:0; left:0; overflow-y:auto; }
-.sidebar-item { display:flex; align-items:center; gap:.6rem; padding:.62rem 1.4rem; cursor:pointer; color:var(--text-dim); font-weight:500; transition:all .2s; font-size:.85rem; border-left:2px solid transparent; font-family:'Inter',sans-serif; }
-.sidebar-item:hover { color:var(--text); background:rgba(168,85,247,.06); border-left-color:var(--purple); }
-.sidebar-item.active { color:var(--purple-l); background:rgba(168,85,247,.1); border-left-color:var(--purple); }
+.xp-badge { background:rgba(168,85,247,.12); border:1px solid rgba(168,85,247,.3); padding:.22rem .65rem; border-radius:20px; font-size:.76rem; font-family:'Share Tech Mono',monospace; color:var(--purple-l); }
+.rank-badge { background:rgba(236,72,153,.1); border:1px solid rgba(236,72,153,.25); padding:.22rem .65rem; border-radius:20px; font-size:.75rem; color:var(--pink); font-weight:600; }
+.sidebar { width:225px; background:var(--bg-side); border-right:1px solid var(--border); padding:1.2rem 0; position:fixed; top:58px; bottom:0; left:0; overflow-y:auto; transition: background-color 0.3s ease, border-color 0.3s ease; }
+.sidebar-item { display:flex; align-items:center; gap:.6rem; padding:.62rem 1.4rem; cursor:pointer; color:var(--text-mid); font-weight:500; transition:all .2s; font-size:.85rem; border-left:2px solid transparent; font-family:'Inter',sans-serif; }
+.sidebar-item:hover { color:var(--text); background:rgba(168,85,247,.08); border-left-color:var(--purple-l); }
+.sidebar-item.active { color:var(--purple-l); background:rgba(168,85,247,.14); border-left-color:var(--purple-l); }
 .sidebar-item i { width:16px; text-align:center; font-size:.8rem; }
 
 /* Sidebar Profile Card */
