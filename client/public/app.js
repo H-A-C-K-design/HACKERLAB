@@ -1093,7 +1093,7 @@ let termState = {
     '/home/kali/Downloads': { type: 'dir' },
     '/home/kali/Tools': { type: 'dir' },
     '/home/kali/ctf_workspace': { type: 'dir' },
-    '/home/kali/ctf_workspace/flag.txt': { type: 'file', content: 'CyberForge{k4l1_l1nux_m4st3r_2026}' },
+    '/home/kali/ctf_workspace/flag.txt': { type: 'file', content: atob('Q3liZXJGb3JnZXtrNGwxX2wxbnV4X200c3Qzcl8yMDI2fQ==') },
     '/home/kali/ctf_workspace/target_notes.txt': { type: 'file', content: 'Target IP: 10.10.10.5\nVulnerable service: vsftpd 2.3.4 & Apache 2.4.51\nCheck /admin directory and database' },
     '/home/kali/ctf_workspace/hash.txt': { type: 'file', content: '5f4dcc3b5aa765d61d8327deb882cf99' },
     '/home/kali/wordlists': { type: 'dir' },
@@ -1634,7 +1634,7 @@ lo: flags=73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 65536
         `+----+----------+----------------------------------+----------------------------------+`,
         `| id | username | password_hash                    | flag                             |`,
         `+----+----------+----------------------------------+----------------------------------+`,
-        `| 1  | admin    | 5f4dcc3b5aa765d61d8327deb882cf99 | <span class="term-flag">CyberForge{sql_1nj3ct10n_m4st3r}</span>|`,
+        `| 1  | admin    | 5f4dcc3b5aa765d61d8327deb882cf99 | <span class="term-flag">${atob('Q3liZXJGb3JnZXtzcWxfMW5qM2N0MTBuX200c3Qzcn0=')}</span>|`,
         `| 2  | root     | 21232f297a57a5a743894a0e4a801fc3 | NULL                             |`,
         `+----+----------+----------------------------------+----------------------------------+`
       ];
@@ -1821,11 +1821,11 @@ kali:$6$vS34bM90$pT1...:1001:1001:Kali:/home/kali:/bin/bash</span>`);
     case 'shell':
       appendTermLine(rawCmd, `<span class="term-flag">Process 4512 created. Spawning root shell...
 root@cyberforge-target:~# cat /root/root.txt
-CyberForge{m3t4spl01t_r00t_0wn3d_2026}</span>`);
+${atob('Q3liZXJGb3JnZXttM3Q0c3BsMDF0X3IwMHRfMHduM2RfMjAyNn0=')}</span>`);
       break;
 
     case 'cat':
-      appendTermLine(rawCmd, `<span class="term-flag">CyberForge{m3t4spl01t_r00t_0wn3d_2026}</span>`);
+      appendTermLine(rawCmd, `<span class="term-flag">${atob('Q3liZXJGb3JnZXttM3Q0c3BsMDF0X3IwMHRfMHduM2RfMjAyNn0=')}</span>`);
       break;
 
     case 'exit':

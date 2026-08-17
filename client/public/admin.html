@@ -143,13 +143,13 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const API = 'http://localhost:5000/api';
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+const API = isLocal ? (window.location.port === '5000' ? '/api' : 'http://localhost:5000/api') : '/api';
 let adminToken = null;
 let currentSection = 'dashboard';
 
 // ── GATE LOGIC ────────────────────────────────────────────
-// Secret URL: admin.html?access=cf_admin_x9k2m7p4q8r1s6t3
-// Typing just /admin or admin.html shows 404
+// Token verification via server authorization header
 (async function init() {
   const params = new URLSearchParams(window.location.search);
   const accessToken = params.get('access');
