@@ -6,11 +6,70 @@
 <title>CyberForge Academy | Live CTF Platform</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-<link rel="stylesheet" href="styles.css?v=20260811_restored"/>
+
+<!-- Anti-Inspect, DevTools Blocker & Console Privacy Guard -->
+<script>
+  (function() {
+    // 1. Disable all console logs to prevent API data leak in Inspect Console
+    try {
+      const noop = function() {};
+      console.log = noop;
+      console.warn = noop;
+      console.error = noop;
+      console.info = noop;
+      console.debug = noop;
+      console.table = noop;
+      console.dir = noop;
+      setInterval(function() {
+        console.clear();
+      }, 1000);
+    } catch(e) {}
+
+    // 2. Disable Right-Click Context Menu
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      return false;
+    });
+
+    // 3. Block Developer Tools & Inspect Shortcuts
+    document.addEventListener('keydown', function(e) {
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && ['I', 'J', 'C', 'i', 'j', 'c'].includes(e.key)) ||
+        (e.ctrlKey && ['u', 'U', 's', 'S'].includes(e.key))
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    }, true);
+
+    // 4. DevTools Debugger Guard
+    setInterval(function() {
+      const start = performance.now();
+      debugger;
+      if (performance.now() - start > 100) {
+        try { console.clear(); } catch(e) {}
+      }
+    }, 1000);
+  })();
+</script>
 </head>
 <body>
 <canvas id="bg-canvas"></canvas>
 <div id="app"></div>
+
+<!-- Dynamic In-Memory Stylesheet Loader (Hides styles.css from Sources Tab) -->
+<script>
+  fetch('styles.css?v=20260811_restored')
+    .then(r => r.text())
+    .then(css => {
+      const styleEl = document.createElement('style');
+      styleEl.textContent = css;
+      document.head.appendChild(styleEl);
+    })
+    .catch(() => {});
+</script>
 
 <!-- Firebase Client SDK -->
 <script type="module">
@@ -67,7 +126,34 @@
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
-<script src="app.js?v=20260811_restored"></script>
+
+<!-- Dynamic In-Memory App Loader (Hides app.js from DevTools Sources Tab) -->
+<script>
+  (function() {
+    function loadAppInMemory() {
+      fetch('app.js?v=20260811_restored')
+        .then(function(res) { return res.text(); })
+        .then(function(code) {
+          // Execute code in memory without sourceURL so only index.html appears in Sources tab
+          try {
+            new Function(code)();
+          } catch(err) {
+            console.error('App init error:', err);
+          }
+        })
+        .catch(function(err) {
+          console.error('Failed to load application script.', err);
+        });
+    }
+
+    if (window.firebaseReady) {
+      loadAppInMemory();
+    } else {
+      window.addEventListener('firebaseReady', loadAppInMemory, { once: true });
+    }
+  })();
+</script>
+
 <script>
 /* ─── Animated grid / particle canvas ─── */
 const C = document.getElementById('bg-canvas');
