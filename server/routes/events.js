@@ -6,8 +6,8 @@ const admin = require('firebase-admin');
 
 const events = [
   {
-    id: 'chakraview-ctf-2026',
-    title: 'CHAKRAVIEW CTF 2026',
+    id: 'chakravyuh-ctf-2026',
+    title: 'CHAKRAVYUH CTF 2026',
     organizer: 'CyberForge Academy',
     date: 'September 5, 2026',
     time: '10:00 AM UTC',
@@ -24,7 +24,7 @@ const events = [
       'Attacking the event submission infrastructure will result in immediate disqualification.',
       'Sharing flags or writeups during the active competition is strictly forbidden.'
     ],
-    registrationUrl: 'https://chakraview.space/register'
+    registrationUrl: 'https://chakravyuh.space/register'
   }
 ];
 
@@ -38,7 +38,8 @@ router.get('/', protect, async (req, res) => {
 
     const list = events.map(e => ({
       ...e,
-      isRegistered: registeredEvents.includes(e.id) || (e.id === 'chakraview-ctf-2026' && registeredEvents.includes('hexnova-ctf-2026'))
+      isRegistered: registeredEvents.includes(e.id) || 
+        (e.id === 'chakravyuh-ctf-2026' && (registeredEvents.includes('chakraview-ctf-2026') || registeredEvents.includes('hexnova-ctf-2026')))
     }));
 
     res.json({ success: true, events: list });
@@ -51,7 +52,9 @@ router.get('/', protect, async (req, res) => {
 router.post('/:id/register', protect, async (req, res) => {
   try {
     const eventId = req.params.id;
-    const event = events.find(e => e.id === eventId || (eventId === 'hexnova-ctf-2026' && e.id === 'chakraview-ctf-2026'));
+    const event = events.find(e => e.id === eventId || 
+      ((eventId === 'hexnova-ctf-2026' || eventId === 'chakraview-ctf-2026') && e.id === 'chakravyuh-ctf-2026')
+    );
     if (!event) return res.status(404).json({ success: false, message: 'Event not found' });
 
     const userDoc = await db.collection('users').doc(req.user.id).get();
@@ -59,7 +62,9 @@ router.post('/:id/register', protect, async (req, res) => {
     const user = userDoc.data();
     const registeredEvents = user.registeredEvents || [];
 
-    if (registeredEvents.includes(eventId) || (eventId === 'chakraview-ctf-2026' && registeredEvents.includes('hexnova-ctf-2026'))) {
+    if (registeredEvents.includes(eventId) || 
+       (eventId === 'chakravyuh-ctf-2026' && (registeredEvents.includes('chakraview-ctf-2026') || registeredEvents.includes('hexnova-ctf-2026'))) ||
+       ((eventId === 'chakraview-ctf-2026' || eventId === 'hexnova-ctf-2026') && registeredEvents.includes('chakravyuh-ctf-2026'))) {
       return res.json({ success: false, message: 'Already registered for this event' });
     }
 

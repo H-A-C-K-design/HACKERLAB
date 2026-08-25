@@ -215,8 +215,8 @@ function renderSidebar() {
 function renderDashboardLayout(content) {
   return `
     <div class="event-banner">
-      <span>🏆 NEXT CTF EVENT: <span style="color:#00e5ff">CHAKRAVIEW CTF</span> IS LIVE ON SEPTEMBER 5TH! ORGANIZED BY CYBERFORGE 🏁</span>
-      <button onclick="navigate('events')" class="banner-btn">VIEW CHAKRAVIEW ↗</button>
+      <span>🏆 NEXT CTF EVENT: <span style="color:#00e5ff">CHAKRAVYUH CTF</span> IS LIVE ON SEPTEMBER 5TH! ORGANIZED BY CYBERFORGE 🏁</span>
+      <button onclick="navigate('events')" class="banner-btn">VIEW CHAKRAVYUH ↗</button>
     </div>
     ${renderNavbar()}
     ${renderSidebar()}
@@ -376,7 +376,7 @@ function animateAllCounters(statElements) {
 // =========================================================
 function renderHomePage(modal) {
   const feats = [
-    {icon:'🏆', title:'CHAKRAVIEW CTF Event', desc:'Upcoming live CTF event on September 5th! Organized by CyberForge. Team up and compete.'},
+    {icon:'🏆', title:'CHAKRAVYUH CTF Event', desc:'Upcoming live CTF event on September 5th! Organized by CyberForge. Team up and compete.'},
     {icon:'🧪', title:'Hacking Labs',   desc:'Step-by-step guided labs. Kali basics to advanced exploitation.'},
     {icon:'💻', title:'Live Terminal',  desc:'Simulate Kali Linux in-browser. Practice safely with real commands.'},
     {icon:'📚', title:'Learn & Master', desc:'Structured courses from beginner to advanced. Theory meets practice.'},
@@ -385,8 +385,8 @@ function renderHomePage(modal) {
   return `
   <div style="min-height:100vh;background:var(--bg);position:relative;z-index:1">
     <div class="event-banner">
-      <span>🏆 NEXT CTF EVENT: <span style="color:#00e5ff">CHAKRAVIEW CTF</span> IS LIVE ON SEPTEMBER 5TH! ORGANIZED BY CYBERFORGE 🏁</span>
-      <button onclick="showAuthModal('login')" class="banner-btn">REGISTER FOR CHAKRAVIEW ↗</button>
+      <span>🏆 NEXT CTF EVENT: <span style="color:#00e5ff">CHAKRAVYUH CTF</span> IS LIVE ON SEPTEMBER 5TH! ORGANIZED BY CYBERFORGE 🏁</span>
+      <button onclick="showAuthModal('login')" class="banner-btn">REGISTER FOR CHAKRAVYUH ↗</button>
     </div>
     <!-- NAVBAR -->
     <nav class="home-nav">
@@ -2577,8 +2577,8 @@ async function loadEvents() {
             <div id="event-msg-${e.id}"></div>
             <div>
               ${e.isRegistered ? 
-                `<a href="${e.registrationUrl || 'https://chakraview.space/register'}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-green" style="display:inline-flex; align-items:center; gap:0.4rem; text-decoration:none;"><i class="fas fa-check-circle"></i> Registered & Go to CHAKRAVIEW ↗</a>` : 
-                `<a href="${e.registrationUrl || 'https://chakraview.space/register'}" target="_blank" rel="noopener noreferrer" id="btn-reg-event-${e.id}" class="btn btn-purple" onclick="registerForEvent('${e.id}')" style="display:inline-flex; align-items:center; gap:0.4rem; text-decoration:none;"><i class="fas fa-external-link-alt"></i> Register on CHAKRAVIEW ↗</a>`
+                `<a href="${e.registrationUrl || 'https://chakravyuh.space/register'}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-green" style="display:inline-flex; align-items:center; gap:0.4rem; text-decoration:none;"><i class="fas fa-check-circle"></i> Registered & Go to CHAKRAVYUH ↗</a>` : 
+                `<a href="${e.registrationUrl || 'https://chakravyuh.space/register'}" target="_blank" rel="noopener noreferrer" id="btn-reg-event-${e.id}" class="btn btn-purple" onclick="registerForEvent('${e.id}')" style="display:inline-flex; align-items:center; gap:0.4rem; text-decoration:none;"><i class="fas fa-external-link-alt"></i> Register on CHAKRAVYUH ↗</a>`
               }
             </div>
           </div>
@@ -2617,7 +2617,7 @@ async function registerForEvent(id) {
     if (msgEl) msgEl.innerHTML = `<div style="background:rgba(255,0,64,0.1); border:1px solid rgba(255,0,64,0.4); color:#ff4060; padding:0.6rem 1rem; border-radius:8px; font-size:0.85rem;"><i class="fas fa-times-circle"></i> ${data.message}</div>`;
     if (btn) {
       btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-external-link-alt"></i> Register on CHAKRAVIEW ↗';
+      btn.innerHTML = '<i class="fas fa-external-link-alt"></i> Register on CHAKRAVYUH ↗';
     }
   }
 }
