@@ -18,7 +18,50 @@ function calcRank(xp) {
   return ranks.filter(r => xp >= r.min).pop().name;
 }
 
-const workshops = [];
+const workshops = [
+  {
+    id: 'ctf-in-hindi-explained',
+    title: 'What is CTF in Hindi | Capture The Flag Explained',
+    description: 'Master the core concepts of Capture The Flag (CTF) security competitions in Hindi. Deep dive into Jeopardy vs Attack-Defense styles, Web Exploitation, Reverse Engineering, Cryptography, Forensics, and practical tips to start competing and capturing flags.',
+    instructor: 'Ankit Chauhan',
+    duration: '18 mins',
+    difficulty: 'Beginner',
+    status: 'recorded',
+    xpReward: 300,
+    tags: ['CTF', 'Hindi', 'Jeopardy', 'Reverse Engineering', 'Web Security'],
+    videoUrl: 'https://d4k2eekwuskedyx5.public.blob.vercel-storage.com/What%20is%20CTF%20in%20Hindi%20%20Capture%20The%20Flag%20Explained%20%20CTF%202021%20-%20Ankit%20Chauhan.mp3',
+    date: 'CTF 2021',
+    mediaType: 'audio'
+  },
+  {
+    id: 'intro-to-web-security-owasp',
+    title: 'OWASP Top 10 Web Vulnerabilities Deep Dive',
+    description: 'Hands-on breakdown of modern web exploitation vectors including SQL Injection, Cross-Site Scripting (XSS), IDOR, and Server-Side Request Forgery (SSRF) with live demonstrations.',
+    instructor: 'CyberForge Core Team',
+    duration: '45 mins',
+    difficulty: 'Intermediate',
+    status: 'recorded',
+    xpReward: 350,
+    tags: ['Web Security', 'OWASP', 'SQLi', 'XSS', 'AppSec'],
+    videoUrl: 'https://d4k2eekwuskedyx5.public.blob.vercel-storage.com/What%20is%20CTF%20in%20Hindi%20%20Capture%20The%20Flag%20Explained%20%20CTF%202021%20-%20Ankit%20Chauhan.mp3',
+    date: '2024',
+    mediaType: 'audio'
+  },
+  {
+    id: 'intro-network-sniffing-wireshark',
+    title: 'Packet Analysis & Threat Hunting with Wireshark',
+    description: 'Master packet inspection, traffic flow reconstruction, PCAP forensic investigations, and extracting malicious payloads from live network streams.',
+    instructor: 'CyberForge Core Team',
+    duration: '35 mins',
+    difficulty: 'Intermediate',
+    status: 'recorded',
+    xpReward: 300,
+    tags: ['Network Security', 'Wireshark', 'PCAP', 'Packet Analysis'],
+    videoUrl: 'https://d4k2eekwuskedyx5.public.blob.vercel-storage.com/What%20is%20CTF%20in%20Hindi%20%20Capture%20The%20Flag%20Explained%20%20CTF%202021%20-%20Ankit%20Chauhan.mp3',
+    date: '2024',
+    mediaType: 'audio'
+  }
+];
 
 // GET all workshops
 router.get('/', protect, async (req, res) => {

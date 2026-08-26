@@ -2353,15 +2353,17 @@ async function loadWorkshops() {
   
   grid.innerHTML = workshops.map(w => {
     const isRecorded = w.status === 'recorded';
+    const isAudio = w.mediaType === 'audio' || /\.(mp3|wav|ogg|m4a|aac)(\?.*)?$/i.test(w.videoUrl || '');
     const tagHtml = (w.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
     const difficultyClass = `level-${w.difficulty.toLowerCase()}`;
+    const mediaBadge = isAudio ? `<span class="cat-badge" style="background:rgba(0,229,255,0.1); border-color:rgba(0,229,255,0.3); color:var(--cyan);"><i class="fas fa-headphones-alt"></i> AUDIO WORKSHOP</span>` : `<span class="cat-badge" style="background:rgba(168,85,247,0.1); border-color:rgba(168,85,247,0.3); color:var(--purple);"><i class="fas fa-video"></i> ${w.status.toUpperCase()}</span>`;
     
     let actionBtnHtml = '';
     if (isRecorded) {
       if (w.completed) {
-        actionBtnHtml = `<button class="btn btn-outline btn-green" style="width:100%" onclick="playWorkshop('${w.id}')"><i class="fas fa-play-circle"></i> Watch Again <span style="font-size:0.75rem;margin-left:0.5rem;color:var(--green)"><i class="fas fa-check-circle"></i> Completed</span></button>`;
+        actionBtnHtml = `<button class="btn btn-outline btn-green" style="width:100%" onclick="playWorkshop('${w.id}')"><i class="fas fa-play-circle"></i> ${isAudio ? 'Listen Again' : 'Watch Again'} <span style="font-size:0.75rem;margin-left:0.5rem;color:var(--green)"><i class="fas fa-check-circle"></i> Completed</span></button>`;
       } else {
-        actionBtnHtml = `<button class="btn btn-purple" style="width:100%" onclick="playWorkshop('${w.id}')"><i class="fas fa-play"></i> Watch Recording (+${w.xpReward} XP)</button>`;
+        actionBtnHtml = `<button class="btn btn-purple" style="width:100%" onclick="playWorkshop('${w.id}')"><i class="fas fa-play"></i> ${isAudio ? 'Listen Workshop' : 'Watch Recording'} (+${w.xpReward} XP)</button>`;
       }
     } else {
       actionBtnHtml = `<button class="btn btn-outline" style="width:100%" disabled><i class="fas fa-calendar-alt"></i> Live: ${w.date}</button>`;
@@ -2371,9 +2373,9 @@ async function loadWorkshops() {
       <div class="card workshop-card" style="display:flex; flex-direction:column; justify-content:space-between; position:relative; overflow:hidden;">
         ${w.completed ? `<div style="position:absolute; top:12px; right:12px; background:rgba(0,255,102,0.15); border:1px solid rgba(0,255,102,0.4); color:#00ff66; padding:2px 8px; border-radius:12px; font-size:0.75rem; font-family:'Share Tech Mono',monospace; font-weight:700;"><i class="fas fa-check"></i> Completed</div>` : ''}
         <div>
-          <div style="margin-bottom:0.75rem;">
+          <div style="margin-bottom:0.75rem; display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
             <span class="module-level ${difficultyClass}">${w.difficulty}</span>
-            <span class="cat-badge" style="background:rgba(168,85,247,0.1); border-color:rgba(168,85,247,0.3); color:var(--purple);">${w.status.toUpperCase()}</span>
+            ${mediaBadge}
           </div>
           <div class="card-title" style="margin-bottom:0.5rem;">${w.title}</div>
           <div class="card-desc" style="margin-bottom:1rem;">${w.description}</div>
@@ -2406,6 +2408,47 @@ async function playWorkshop(id) {
   grid.style.display = 'none';
   playerContainer.style.display = '';
   
+  const isAudio = w.mediaType === 'audio' || /\.(mp3|wav|ogg|m4a|aac)(\?.*)?$/i.test(w.videoUrl || '');
+  
+  const mediaHtml = isAudio ? `
+    <div style="background:linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(26, 16, 48, 0.98)); border-radius:14px; border:1px solid rgba(124, 58, 237, 0.35); padding:2.5rem 2rem; margin-bottom:1.5rem; text-align:center; position:relative; overflow:hidden; box-shadow: inset 0 0 40px rgba(124,58,237,0.15);">
+      <div style="position:absolute; top:-30px; right:-30px; width:140px; height:140px; background:radial-gradient(circle, rgba(124,58,237,0.25) 0%, transparent 70%); border-radius:50%; pointer-events:none;"></div>
+      <div style="position:absolute; bottom:-30px; left:-30px; width:140px; height:140px; background:radial-gradient(circle, rgba(0,229,255,0.2) 0%, transparent 70%); border-radius:50%; pointer-events:none;"></div>
+      
+      <div style="display:inline-flex; align-items:center; justify-content:center; width:90px; height:90px; border-radius:50%; background:linear-gradient(135deg, rgba(124,58,237,0.35), rgba(0,229,255,0.25)); border:2px solid var(--purple); margin-bottom:1.2rem; box-shadow:0 0 30px rgba(124,58,237,0.4);">
+        <i class="fas fa-podcast" style="font-size:2.6rem; color:var(--cyan);"></i>
+      </div>
+      
+      <div style="margin-bottom:0.6rem;">
+        <span style="font-size:0.75rem; font-family:'Share Tech Mono',monospace; background:rgba(124,58,237,0.2); border:1px solid rgba(124,58,237,0.4); color:var(--purple); padding:3px 12px; border-radius:14px; font-weight:700; text-transform:uppercase;">
+          <i class="fas fa-headphones-alt"></i> Masterclass Audio Workshop Session
+        </span>
+      </div>
+      
+      <h3 style="font-family:'Orbitron', monospace; font-size:1.3rem; font-weight:800; color:#fff; margin-bottom:0.4rem; letter-spacing:0.5px;">${w.title}</h3>
+      <div style="color:var(--text-dim); font-size:0.9rem; margin-bottom:1.5rem;">
+        <span style="margin-right:1.2rem;"><i class="fas fa-user-tie" style="color:var(--purple);"></i> Instructor: <strong style="color:var(--text);">${w.instructor}</strong></span>
+        <span><i class="fas fa-clock" style="color:var(--cyan);"></i> Duration: <strong style="color:var(--text);">${w.duration}</strong></span>
+      </div>
+      
+      <div style="max-width:650px; margin:0 auto; background:rgba(0,0,0,0.4); padding:1.25rem 1.5rem; border-radius:16px; border:1px solid rgba(255,255,255,0.1); backdrop-filter:blur(10px);">
+        <audio id="workshop-video" controls style="width:100%; height:46px; outline:none; display:block;" preload="metadata">
+          <source src="${w.videoUrl}" type="audio/mpeg">
+          <source src="${w.videoUrl}">
+          Your browser does not support the audio tag.
+        </audio>
+      </div>
+    </div>
+  ` : `
+    <div style="margin-bottom:1.5rem; border-radius:10px; overflow:hidden; border:1px solid var(--border); background:#000; position:relative;">
+      <video id="workshop-video" controls style="width:100%; display:block; max-height:500px;" preload="metadata">
+        <source src="${w.videoUrl}" type="video/mp4">
+        <source src="${w.videoUrl}">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  `;
+
   playerContainer.innerHTML = `
     <button class="btn btn-outline" style="margin-bottom:1.5rem;" onclick="closeWorkshopPlayer()"><i class="fas fa-arrow-left"></i> Back to Workshops</button>
     <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:2rem; box-shadow:0 8px 30px rgba(0,0,0,0.3); background-image:linear-gradient(to bottom right, var(--bg-card), rgba(124,58,237,0.02));">
@@ -2421,16 +2464,11 @@ async function playWorkshop(id) {
         </div>
       </div>
       
-      <div style="margin-bottom:1.5rem; border-radius:10px; overflow:hidden; border:1px solid var(--border); background:#000; position:relative;">
-        <video id="workshop-video" controls style="width:100%; display:block; max-height:500px;" preload="metadata">
-          <source src="${w.videoUrl}" type="video/mp4">
-          Your browser does not support the video tag.
-        </video>
-      </div>
+      ${mediaHtml}
 
       <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
         <div style="font-size:0.85rem; color:var(--text-dim);">
-          <i class="fas fa-info-circle"></i> Watch the recording fully to claim your workshop XP badge.
+          <i class="fas fa-info-circle"></i> Complete the session to claim your workshop XP badge.
         </div>
         <div id="workshop-claim-area">
           ${w.completed ? 

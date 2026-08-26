@@ -49,6 +49,7 @@ app.use(helmet({
       imgSrc: ["'self'", 'data:', 'https:'],
       connectSrc: ["'self'", 'https://identitytoolkit.googleapis.com', 'https://securetoken.googleapis.com', 'ws:', 'wss:', 'http:', 'https:'],
       frameSrc: ["'self'", 'https://www.google.com', 'https://*.firebaseapp.com'],
+      mediaSrc: ["'self'", 'https:', 'blob:', 'data:'],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null
     }
