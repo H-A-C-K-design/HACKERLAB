@@ -18,40 +18,7 @@ function calcRank(xp) {
   return ranks.filter(r => xp >= r.min).pop().name;
 }
 
-const eventSessions = [
-  {
-    id: 'ctf-workshop-session-2025',
-    title: 'Capture The Flag (CTF) Masterclass & Strategy',
-    speaker: 'Ankit Chauhan',
-    description: 'Live interactive breakdown of CTF tactics, tools, and methodologies. Learn how to identify web vulnerabilities, decode cryptographic ciphers, and capture flags under pressure.',
-    bannerGradient: 'linear-gradient(135deg, #7c3aed, #db2777)',
-    status: 'upcoming',
-    type: 'Masterclass',
-    date: 'March 20, 2025',
-    time: '6:30 PM IST',
-    duration: '45 mins',
-    xpReward: 300,
-    enrolled: 86,
-    capacity: 150,
-    tags: ['CTF', 'Hindi', 'Ethical Hacking', 'Hands-On']
-  },
-  {
-    id: 'web-pentesting-live-lab',
-    title: 'Hands-on API Security & Broken Object Authorization',
-    speaker: 'CyberForge Lead Research',
-    description: 'Live interactive hacking lab targeting modern REST and GraphQL APIs. Exploit BOLA, IDOR, and privilege escalation vulnerabilities in real time.',
-    bannerGradient: 'linear-gradient(135deg, #2563eb, #06b6d4)',
-    status: 'upcoming',
-    type: 'Interactive Lab',
-    date: 'March 25, 2025',
-    time: '7:00 PM IST',
-    duration: '60 mins',
-    xpReward: 400,
-    enrolled: 124,
-    capacity: 200,
-    tags: ['API Security', 'BOLA', 'Web Pentesting']
-  }
-];
+const eventSessions = [];
 
 // GET all event sessions
 router.get('/', protect, async (req, res) => {
