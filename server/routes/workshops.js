@@ -18,7 +18,22 @@ function calcRank(xp) {
   return ranks.filter(r => xp >= r.min).pop().name;
 }
 
-const workshops = [];
+const workshops = [
+  {
+    id: 'ctf-in-hindi-explained',
+    title: 'What is CTF in Hindi | Capture The Flag Explained',
+    description: 'Master the core fundamentals of Capture The Flag (CTF) security competitions in Hindi. Learn Jeopardy vs Attack-Defense formats, Web Exploitation, Reverse Engineering, Cryptography, Forensics, and practical tips to start competing.',
+    instructor: 'Ankit Chauhan',
+    duration: '18 mins',
+    difficulty: 'Beginner',
+    status: 'recorded',
+    xpReward: 300,
+    tags: ['CTF', 'Hindi', 'Capture The Flag', 'Cybersecurity', 'Beginner Guide'],
+    videoUrl: 'https://d4k2eekwuskedyx5.public.blob.vercel-storage.com/What%20is%20CTF%20in%20Hindi%20%20Capture%20The%20Flag%20Explained%20%20CTF%202021%20-%20Ankit%20Chauhan%20%281080p%2C%20h264%29.mp4',
+    date: 'CTF 2021',
+    mediaType: 'video'
+  }
+];
 
 // GET all workshops
 router.get('/', protect, async (req, res) => {
