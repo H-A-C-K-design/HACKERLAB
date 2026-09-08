@@ -11,7 +11,13 @@ const getFirestoreFieldValue = () => (admin.apps && admin.apps.length && admin.f
 
 const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
 
-
+// @route GET /api/auth/recaptcha-config
+router.get('/recaptcha-config', (req, res) => {
+  res.json({
+    enabled: !!process.env.RECAPTCHA_SITE_KEY,
+    siteKey: process.env.RECAPTCHA_SITE_KEY || '6LfHlq8tAAAAADQYY-nAJXz4SNcLnrojg48Y6qSM'
+  });
+});
 
 // @route POST /api/auth/register
 router.post('/register', async (req, res) => {
