@@ -102,10 +102,12 @@
 <!-- ===== GATE SCREEN (default visible, shows 404) ===== -->
 <div id="gate-screen">
   <div class="notfound" id="notfound-view">
-    <h1>404</h1>
+    <h1 style="cursor:pointer" onclick="promptTokenGate()" title="Staff Verification">404</h1>
     <p>The page you are looking for does not exist.</p>
     <p style="margin-top:0.5rem;font-size:0.85rem;color:#2a3a4a">
       <a href="index.html" style="color:#1a4a6a;text-decoration:none">← Return to homepage</a>
+      <span style="margin: 0 8px; color: #1a2a3a;">•</span>
+      <a href="javascript:void(0)" onclick="promptTokenGate()" style="color:#2a3a4a;text-decoration:none;font-size:0.8rem">Staff Access</a>
     </p>
   </div>
 </div>
@@ -151,43 +153,114 @@ let currentSection = 'dashboard';
 // ── GATE LOGIC ────────────────────────────────────────────
 // Token verification via server authorization header
 (async function init() {
-  const params = new URLSearchParams(window.location.search);
-  const accessToken = params.get('access');
-
-  if (!accessToken) {
-    // No token in URL → stay on 404 page
-    document.title = '404 - Not Found';
-    return;
-  }
-
-  // Verify token with server
-  try {
-    const res = await fetch(`${API}/admin-access/verify`, {
-      headers: { 'Authorization': `Bearer ${accessToken}` }
-    });
-    const data = await res.json();
-    if (!data.success) {
-      document.title = '404 - Not Found';
-      return;
-    }
-  } catch(e) {
-    // Server unreachable — still show 404 to be safe
-    document.title = '404 - Not Found';
-    return;
-  }
-
-  // Token valid — check if already logged in as admin
   const savedToken = sessionStorage.getItem('admin_jwt');
   if (savedToken) {
     const ok = await verifyAdminJWT(savedToken);
     if (ok) { adminToken = savedToken; showAdminApp(); return; }
   }
 
-  // Show login gate (not 404 — token was valid)
+  const params = new URLSearchParams(window.location.search);
+  const urlToken = params.get('access');
+
+  // Immediately strip any token from URL query string to prevent history/referrer leakage
+  if (urlToken) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  const accessToken = urlToken || sessionStorage.getItem('admin_access_token');
+
+  if (!accessToken) {
+    // No token → remain on stealth 404 view
+    document.title = '404 - Not Found';
+    return;
+  }
+
+  const isValid = await verifyAccessToken(accessToken);
+  if (!isValid) {
+    sessionStorage.removeItem('admin_access_token');
+    document.title = '404 - Not Found';
+    return;
+  }
+
+  sessionStorage.setItem('admin_access_token', accessToken);
   showLoginGate(accessToken);
 })();
 
+async function verifyAccessToken(token) {
+  try {
+    const res = await fetch(`${API}/admin-access/verify`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    return !!data.success;
+  } catch(e) {
+    return false;
+  }
+}
+
+function promptTokenGate() {
+  document.getElementById('notfound-view').style.display = 'none';
+  document.title = 'Staff Verification';
+
+  const existingBox = document.querySelector('.gate-box');
+  if (existingBox) existingBox.remove();
+
+  const tokenBox = document.createElement('div');
+  tokenBox.className = 'gate-box';
+  tokenBox.innerHTML = `
+    <div class="gate-title"><i class="fas fa-key"></i> Staff Verification</div>
+    <div class="gate-sub">Enter your Administrative Access Token</div>
+    <div id="token-err" class="g-err"></div>
+    <div style="margin-bottom:0.75rem">
+      <label style="display:block;font-size:0.75rem;color:var(--muted);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:1px">Access Token</label>
+      <input class="g-input" id="prompt-token-input" type="password" placeholder="Enter ADMIN_PANEL_TOKEN" autocomplete="off"/>
+    </div>
+    <button class="g-btn" id="verify-token-btn" onclick="submitAccessToken()"><i class="fas fa-unlock"></i> Verify Token</button>
+    <div style="text-align:center;margin-top:1rem">
+      <a href="javascript:void(0)" onclick="cancelTokenPrompt()" style="color:var(--muted);font-size:0.8rem;text-decoration:none">← Back</a>
+    </div>
+  `;
+  document.getElementById('gate-screen').appendChild(tokenBox);
+
+  setTimeout(() => {
+    document.getElementById('prompt-token-input')?.focus();
+  }, 100);
+}
+
+function cancelTokenPrompt() {
+  const existingBox = document.querySelector('.gate-box');
+  if (existingBox) existingBox.remove();
+  document.getElementById('notfound-view').style.display = 'block';
+  document.title = '404 - Not Found';
+}
+
+async function submitAccessToken() {
+  const token = document.getElementById('prompt-token-input')?.value?.trim();
+  if (!token) {
+    document.getElementById('token-err').textContent = 'Please enter an access token.';
+    return;
+  }
+
+  const btn = document.getElementById('verify-token-btn');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+  btn.disabled = true;
+
+  const isValid = await verifyAccessToken(token);
+  if (!isValid) {
+    document.getElementById('token-err').textContent = 'Invalid token. Access denied.';
+    btn.innerHTML = '<i class="fas fa-unlock"></i> Verify Token';
+    btn.disabled = false;
+    return;
+  }
+
+  sessionStorage.setItem('admin_access_token', token);
+  showLoginGate(token);
+}
+
 function showLoginGate(accessToken) {
+  const existingBox = document.querySelector('.gate-box');
+  if (existingBox) existingBox.remove();
+
   document.getElementById('notfound-view').style.display = 'none';
   document.title = 'Admin Login';
 
@@ -211,7 +284,12 @@ function showLoginGate(accessToken) {
   document.getElementById('gate-screen').appendChild(gateBox);
 
   document.addEventListener('keydown', e => {
-    if (e.key === 'Enter') gateLogin(accessToken);
+    if (e.key === 'Enter') {
+      const emailInput = document.getElementById('gate-email');
+      if (emailInput && (document.activeElement === emailInput || document.activeElement === document.getElementById('gate-pass'))) {
+        gateLogin(accessToken);
+      }
+    }
   });
 }
 

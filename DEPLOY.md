@@ -38,17 +38,18 @@ In Vercel dashboard → Project → **Settings** → **Environment Variables**, 
 | Key | Value |
 |-----|-------|
 | `NODE_ENV` | `production` |
-| `JWT_SECRET` | `cyberforge_super_secret_key_2024` |
+| `JWT_SECRET` | *(generate a secure 64-character random string, e.g.: `openssl rand -base64 32`)* |
 | `JWT_EXPIRE` | `7d` |
-| `ADMIN_PANEL_TOKEN` | `cf_admin_x9k2m7p4q8r1s6t3` |
-| `RECAPTCHA_SECRET_KEY` | *(your reCAPTCHA secret)* |
-| `FIREBASE_PROJECT_ID` | `cyber-8af08` |
-| `FIREBASE_PRIVATE_KEY_ID` | `6b1d9bb2defc5c8e938404928ae821c26d37694c` |
-| `FIREBASE_CLIENT_EMAIL` | `firebase-adminsdk-fbsvc@cyber-8af08.iam.gserviceaccount.com` |
-| `FIREBASE_CLIENT_ID` | `cyber-8af08` |
+| `ADMIN_PANEL_TOKEN` | *(generate a strong random secret token, e.g.: `openssl rand -hex 16`)* |
+| `RECAPTCHA_SECRET_KEY` | *(your Google reCAPTCHA secret key)* |
+| `FIREBASE_PROJECT_ID` | `your-firebase-project-id` |
+| `FIREBASE_PRIVATE_KEY_ID` | `your-firebase-private-key-id` |
+| `FIREBASE_CLIENT_EMAIL` | `firebase-adminsdk-...@your-project-id.iam.gserviceaccount.com` |
+| `FIREBASE_CLIENT_ID` | `your-firebase-client-id` |
 | `FIREBASE_PRIVATE_KEY` | *(paste full private key including `-----BEGIN...END-----`)* |
 
-> ⚠️ For `FIREBASE_PRIVATE_KEY` paste the full multi-line key. Vercel handles newlines automatically.
+> ⚠️ **Security Notice**: Never commit concrete private keys, JWT secrets, or administrative tokens into Git repositories.
+> For `FIREBASE_PRIVATE_KEY` paste the full multi-line key. Vercel handles newlines automatically.
 
 ---
 

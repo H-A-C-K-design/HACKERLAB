@@ -1,8 +1,34 @@
 const express = require('express');
 const router = express.Router();
+const rateLimit = require('express-rate-limit');
 const { db } = require('../config/firebase');
 const { protect, adminOnly } = require('../middleware/auth');
 const admin = require('firebase-admin');
+
+const taskSubmitLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  max: 20,
+  message: { success: false, message: 'Too many task submissions. Please wait 5 minutes before trying again.' }
+});
+
+function verifyTaskCode(taskTitle, code) {
+  if (!code || typeof code !== 'string' || code.trim().length < 30) return false;
+  const lower = code.toLowerCase();
+  const title = (taskTitle || '').toLowerCase();
+  if (title.includes('scanner') || title.includes('port')) {
+    return lower.includes('socket') && (lower.includes('connect') || lower.includes('port'));
+  }
+  if (title.includes('keylogger')) {
+    return lower.includes('pynput') || lower.includes('keyboard') || lower.includes('key') || lower.includes('log');
+  }
+  if (title.includes('packet') || title.includes('sniffer')) {
+    return lower.includes('scapy') || lower.includes('socket') || lower.includes('sniff');
+  }
+  if (title.includes('hash') || title.includes('password')) {
+    return lower.includes('hashlib') || lower.includes('md5') || lower.includes('sha') || lower.includes('wordlist');
+  }
+  return lower.includes('def ') || lower.includes('import ') || lower.includes('for ') || lower.includes('while ');
+}
 
 function calcRank(xp) {
   const ranks = [
@@ -77,8 +103,18 @@ router.post('/seed/all', protect, adminOnly, async (req, res) => {
   }
 });
 
-router.post('/:id/submit', protect, async (req, res) => {
+router.post('/:id/submit', protect, taskSubmitLimiter, async (req, res) => {
   try {
+    const { code, solution } = req.body || {};
+    const userCode = typeof code === 'string' ? code.trim() : (typeof solution === 'string' ? solution.trim() : '');
+
+    if (!userCode || userCode.length < 25) {
+      return res.status(400).json({
+        success: false,
+        message: 'Solution code is missing or too short. Please submit your implementation.'
+      });
+    }
+
     let task = null;
     try {
       const taskDoc = await db.collection('tasks').doc(req.params.id).get();
@@ -92,6 +128,15 @@ router.post('/:id/submit', protect, async (req, res) => {
       } else {
         task = seedTasks.find(t => t.title === req.params.id || t._id === req.params.id) || seedTasks[0];
       }
+    }
+
+    // Verify submitted code
+    const isVerified = verifyTaskCode(task?.title || '', userCode);
+    if (!isVerified) {
+      return res.status(400).json({
+        success: false,
+        message: 'Solution verification failed: Your code did not meet the task requirements. Please check your logic and try again.'
+      });
     }
 
     let user = { xp: 0, completedTasks: [] };
@@ -120,7 +165,8 @@ router.post('/:id/submit', protect, async (req, res) => {
 
     res.json({ success: true, message: '✅ Python Kali Tool Solution Submitted & Verified!', xpEarned: points });
   } catch (err) {
-    res.json({ success: true, message: '✅ Solution Verified!', xpEarned: 100 });
+    console.error('Task submit error:', err);
+    res.status(500).json({ success: false, message: 'Failed to process task verification' });
   }
 });
 

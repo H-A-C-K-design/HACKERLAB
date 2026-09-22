@@ -12,6 +12,7 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../config/firebase');
+const { protect, adminOnly } = require('../middleware/auth');
 const admin = require('firebase-admin');
 
 // ── Honeypot path patterns ────────────────────────────────
@@ -455,7 +456,7 @@ router.post('/attempt', async (req, res) => {
 });
 
 // ── /api/honeypot/logs — admin view of all honeypot hits ──
-router.get('/logs', async (req, res) => {
+router.get('/logs', protect, adminOnly, async (req, res) => {
   try {
     if (!db) return res.json({ success: true, total: 0, logs: [] });
     const snap = await db.collection('honeypot_logs')

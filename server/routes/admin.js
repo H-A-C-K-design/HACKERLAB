@@ -105,12 +105,26 @@ router.get('/challenges', async (req, res) => {
 
 router.post('/challenges', async (req, res) => {
   try {
+    const { title, description, category, difficulty, points, hints, tags, flag } = req.body;
+    if (!title || !description || !flag) {
+      return res.status(400).json({ success: false, message: 'title, description, and flag are required' });
+    }
+    const challengeData = {};
+    if (title !== undefined)       challengeData.title       = String(title).slice(0, 200);
+    if (description !== undefined) challengeData.description = String(description).slice(0, 5000);
+    if (category !== undefined)    challengeData.category    = String(category);
+    if (difficulty !== undefined)  challengeData.difficulty  = String(difficulty);
+    if (points !== undefined)      challengeData.points      = Number(points);
+    if (hints !== undefined)       challengeData.hints       = Array.isArray(hints) ? hints : [];
+    if (tags !== undefined)        challengeData.tags        = Array.isArray(tags) ? tags : [];
+    if (flag !== undefined)        challengeData.flag        = String(flag);
     const ref = db.collection('challenges').doc();
-    await ref.set({ ...req.body, solvedBy: [], solveCount: 0, isActive: true, createdAt: admin.firestore.FieldValue.serverTimestamp() });
+    await ref.set({ ...challengeData, solvedBy: [], solveCount: 0, isActive: true, createdAt: admin.firestore.FieldValue.serverTimestamp() });
     const doc = await ref.get();
-    res.status(201).json({ success: true, challenge: { id: doc.id, ...doc.data() } });
+    const { flag: _f, ...rest } = doc.data();
+    res.status(201).json({ success: true, challenge: { id: doc.id, ...rest } });
   } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
+    res.status(400).json({ success: false, message: 'Failed to create challenge' });
   }
 });
 
@@ -160,12 +174,29 @@ router.get('/labs', async (req, res) => {
 
 router.post('/labs', async (req, res) => {
   try {
+    const { title, description, category, difficulty, duration, xpReward, tools, objectives, steps, video, downloadFile, downloadFileName } = req.body;
+    if (!title || !description) {
+      return res.status(400).json({ success: false, message: 'title and description are required' });
+    }
+    const labData = {};
+    if (title !== undefined)            labData.title            = String(title).slice(0, 200);
+    if (description !== undefined)      labData.description      = String(description).slice(0, 5000);
+    if (category !== undefined)         labData.category         = String(category);
+    if (difficulty !== undefined)       labData.difficulty       = String(difficulty);
+    if (duration !== undefined)         labData.duration         = String(duration).slice(0, 50);
+    if (xpReward !== undefined)         labData.xpReward         = Number(xpReward);
+    if (tools !== undefined)            labData.tools            = Array.isArray(tools) ? tools : [];
+    if (objectives !== undefined)       labData.objectives       = Array.isArray(objectives) ? objectives : [];
+    if (steps !== undefined)            labData.steps            = Array.isArray(steps) ? steps : [];
+    if (video !== undefined)            labData.video            = String(video).slice(0, 500);
+    if (downloadFile !== undefined)     labData.downloadFile     = String(downloadFile).slice(0, 500);
+    if (downloadFileName !== undefined) labData.downloadFileName = String(downloadFileName).slice(0, 200);
     const ref = db.collection('labs').doc();
-    await ref.set({ ...req.body, isActive: true, createdAt: admin.firestore.FieldValue.serverTimestamp() });
+    await ref.set({ ...labData, isActive: true, createdAt: admin.firestore.FieldValue.serverTimestamp() });
     const doc = await ref.get();
     res.status(201).json({ success: true, lab: { id: doc.id, ...doc.data() } });
   } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
+    res.status(400).json({ success: false, message: 'Failed to create lab' });
   }
 });
 
@@ -191,12 +222,26 @@ router.get('/tasks', async (req, res) => {
 
 router.post('/tasks', async (req, res) => {
   try {
+    const { title, description, type, difficulty, points, starterCode, solution, hints, tags } = req.body;
+    if (!title || !description) {
+      return res.status(400).json({ success: false, message: 'title and description are required' });
+    }
+    const taskData = {};
+    if (title !== undefined)       taskData.title       = String(title).slice(0, 200);
+    if (description !== undefined) taskData.description = String(description).slice(0, 5000);
+    if (type !== undefined)        taskData.type        = String(type);
+    if (difficulty !== undefined)  taskData.difficulty  = String(difficulty);
+    if (points !== undefined)      taskData.points      = Number(points);
+    if (starterCode !== undefined) taskData.starterCode = String(starterCode).slice(0, 10000);
+    if (solution !== undefined)    taskData.solution    = String(solution).slice(0, 10000);
+    if (hints !== undefined)       taskData.hints       = Array.isArray(hints) ? hints : [];
+    if (tags !== undefined)        taskData.tags        = Array.isArray(tags) ? tags : [];
     const ref = db.collection('tasks').doc();
-    await ref.set({ ...req.body, isActive: true, createdAt: admin.firestore.FieldValue.serverTimestamp() });
+    await ref.set({ ...taskData, isActive: true, createdAt: admin.firestore.FieldValue.serverTimestamp() });
     const doc = await ref.get();
     res.status(201).json({ success: true, task: { id: doc.id, ...doc.data() } });
   } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
+    res.status(400).json({ success: false, message: 'Failed to create task' });
   }
 });
 
@@ -213,16 +258,34 @@ router.delete('/tasks/:id', async (req, res) => {
 router.post('/announce', async (req, res) => {
   try {
     const { message } = req.body;
-    if (!message) return res.status(400).json({ success: false, message: 'Message required' });
-    global.announcement = { message, postedAt: new Date(), postedBy: req.user.username };
-    res.json({ success: true, message: 'Announcement posted' });
+    if (!message || typeof message !== 'string' || !message.trim()) {
+      return res.status(400).json({ success: false, message: 'Message required' });
+    }
+    const cleanMessage = message.trim().slice(0, 1000);
+    const announcementData = {
+      message: cleanMessage,
+      postedAt: new Date().toISOString(),
+      postedBy: req.user.username
+    };
+
+    if (!db) {
+      return res.status(503).json({ success: false, message: 'Database not available' });
+    }
+    await db.collection('system_config').doc('announcement').set(announcementData);
+    res.json({ success: true, message: 'Announcement posted', announcement: announcementData });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    res.status(500).json({ success: false, message: 'Failed to post announcement' });
   }
 });
 
 router.get('/announcement', async (req, res) => {
-  res.json({ success: true, announcement: global.announcement || null });
+  try {
+    if (!db) return res.json({ success: true, announcement: null });
+    const doc = await db.collection('system_config').doc('announcement').get();
+    res.json({ success: true, announcement: doc.exists ? doc.data() : null });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Failed to retrieve announcement' });
+  }
 });
 
 module.exports = router;

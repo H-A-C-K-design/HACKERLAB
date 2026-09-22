@@ -375,13 +375,6 @@ function animateAllCounters(statElements) {
 // HOME PAGE — CyberSpace Devil Theme
 // =========================================================
 function renderHomePage(modal) {
-  const feats = [
-    {icon:'🏆', title:'CHAKRAVYUH CTF Event', desc:'Upcoming live CTF event on September 5th! Organized by CyberForge. Team up and compete.'},
-    {icon:'🧪', title:'Hacking Labs',   desc:'Step-by-step guided labs. Kali basics to advanced exploitation.'},
-    {icon:'💻', title:'Live Terminal',  desc:'Simulate Kali Linux in-browser. Practice safely with real commands.'},
-    {icon:'📚', title:'Learn & Master', desc:'Structured courses from beginner to advanced. Theory meets practice.'},
-    {icon:'⚡', title:'Coding Tasks',   desc:'Python, Bash & JS security tools. XP for every solution.'},
-  ];
   return `
   <div style="min-height:100vh;background:var(--bg);position:relative;z-index:1">
     <div class="event-banner">
@@ -524,20 +517,86 @@ function renderHomePage(modal) {
       </div>
     </section>
 
-    <!-- FEATURES -->
-    <section class="features-section">
-      <div class="section-head">
-        <div class="section-tag">Platform Features</div>
-        <div class="section-title">Everything you need to <span>hack & learn</span></div>
-        <div class="section-sub">A complete cybersecurity learning environment, zero cost.</div>
-      </div>
-      <div class="features-grid">
-        ${feats.map(f=>`
-          <div class="feat-card">
-            <div class="feat-icon">${f.icon}</div>
-            <div class="feat-title">${f.title}</div>
-            <div class="feat-desc">${f.desc}</div>
-          </div>`).join('')}
+    <!-- ARSENAL SECTION (replaces old features grid) -->
+    <section class="arsenal-section" id="arsenal-section">
+      <div class="arsenal-bg-grid"></div>
+      <div class="arsenal-container">
+        <div class="arsenal-head">
+          <div class="arsenal-eyebrow"><span class="arsenal-eyebrow-dot"></span>Platform Arsenal</div>
+          <h2 class="arsenal-title">Everything you need to <span class="arsenal-title-grad">hack & learn</span></h2>
+          <p class="arsenal-sub">A complete adversarial training environment, built for real-world impact.</p>
+        </div>
+        <div class="arsenal-bento">
+          <!-- Large card: CTF Event -->
+          <div class="ab-card ab-wide" data-glow="purple" onclick="showAuthModal('register')">
+            <div class="ab-glow-orb" style="background:rgba(139,92,246,0.35)"></div>
+            <div class="ab-scan"></div>
+            <div class="ab-corner tl"></div><div class="ab-corner tr"></div><div class="ab-corner bl"></div><div class="ab-corner br"></div>
+            <div class="ab-live-badge"><span class="ab-live-dot"></span>LIVE EVENT</div>
+            <div class="ab-icon-wrap" style="--glow:#7c3aed">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <h3 class="ab-title">CHAKRAVYUH CTF Event</h3>
+            <p class="ab-desc">Upcoming live CTF on September 5th. Organized by CyberForge — team up and capture the flag against rivals worldwide.</p>
+            <div class="ab-cta">Register Now <i class="fas fa-arrow-right" style="font-size:.75rem"></i></div>
+            <div class="ab-meta-row"><span><i class="fas fa-users" style="margin-right:.4rem"></i>840 Registered</span><span><i class="fas fa-clock" style="margin-right:.4rem"></i>Sep 5, 2026</span></div>
+          </div>
+          <!-- Hacking Labs -->
+          <div class="ab-card" data-glow="cyan" onclick="showAuthModal('login')">
+            <div class="ab-glow-orb" style="background:rgba(34,211,238,0.3)"></div>
+            <div class="ab-scan"></div>
+            <div class="ab-corner tl"></div><div class="ab-corner tr"></div><div class="ab-corner bl"></div><div class="ab-corner br"></div>
+            <div class="ab-icon-wrap" style="--glow:#06b6d4">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+            </div>
+            <h3 class="ab-title">Hacking Labs</h3>
+            <p class="ab-desc">Step-by-step guided labs. From Kali basics to advanced exploitation with real vulnerable environments.</p>
+            <div class="ab-pill-row"><span class="ab-pill" style="--pc:#06b6d4">100+ Labs</span><span class="ab-pill" style="--pc:#06b6d4">All Levels</span></div>
+          </div>
+          <!-- Live Terminal -->
+          <div class="ab-card" data-glow="emerald" onclick="showAuthModal('login')">
+            <div class="ab-glow-orb" style="background:rgba(52,211,153,0.3)"></div>
+            <div class="ab-scan"></div>
+            <div class="ab-corner tl"></div><div class="ab-corner tr"></div><div class="ab-corner bl"></div><div class="ab-corner br"></div>
+            <div class="ab-icon-wrap" style="--glow:#10b981">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            </div>
+            <h3 class="ab-title">Live Terminal</h3>
+            <p class="ab-desc">Full Kali Linux in-browser. Practice real commands safely with no setup required.</p>
+            <div class="ab-terminal-preview">
+              <span style="color:#7c3aed">$</span> <span style="color:#fff">nmap -sV 10.10.14.5</span><span class="ab-cursor"></span>
+            </div>
+          </div>
+          <!-- Learn & Master -->
+          <div class="ab-card" data-glow="amber" onclick="showAuthModal('login')">
+            <div class="ab-glow-orb" style="background:rgba(245,158,11,0.3)"></div>
+            <div class="ab-scan"></div>
+            <div class="ab-corner tl"></div><div class="ab-corner tr"></div><div class="ab-corner bl"></div><div class="ab-corner br"></div>
+            <div class="ab-icon-wrap" style="--glow:#f59e0b">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <h3 class="ab-title">Learn & Master</h3>
+            <p class="ab-desc">Structured courses from beginner to advanced. Theory meets hands-on CTF practice.</p>
+            <div class="ab-progress-bar"><div class="ab-progress-fill" style="width:72%;--pc:#f59e0b"></div></div>
+            <div style="font-size:.72rem;color:var(--text-dim);margin-top:.4rem">72% avg completion rate</div>
+          </div>
+          <!-- Coding Tasks — wide card -->
+          <div class="ab-card ab-wide" data-glow="pink" onclick="showAuthModal('login')">
+            <div class="ab-glow-orb" style="background:rgba(236,72,153,0.3)"></div>
+            <div class="ab-scan"></div>
+            <div class="ab-corner tl"></div><div class="ab-corner tr"></div><div class="ab-corner bl"></div><div class="ab-corner br"></div>
+            <div class="ab-icon-wrap" style="--glow:#ec4899">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <h3 class="ab-title">Coding Tasks</h3>
+            <p class="ab-desc">Python, Bash & JS security tools — earn XP for every working exploit, script, or automation solution you submit.</p>
+            <div class="ab-code-strip">
+              <span style="color:#ec4899">def</span> <span style="color:#a78bfa">exploit</span><span style="color:#fff">(target):</span><br/>
+              &nbsp;&nbsp;<span style="color:#94a3b8">"""Auto-exploit CVE-2024-XXXX"""</span><br/>
+              &nbsp;&nbsp;<span style="color:#34d399">return</span> <span style="color:#fb923c">shell</span><span style="color:#fff">(target, </span><span style="color:#f59e0b">port</span><span style="color:#fff">=4444)</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 

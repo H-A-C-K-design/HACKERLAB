@@ -13,9 +13,10 @@ const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expires
 
 // @route GET /api/auth/recaptcha-config
 router.get('/recaptcha-config', (req, res) => {
+  const siteKey = process.env.RECAPTCHA_SITE_KEY || null;
   res.json({
-    enabled: !!process.env.RECAPTCHA_SITE_KEY,
-    siteKey: process.env.RECAPTCHA_SITE_KEY || '6LfHlq8tAAAAADQYY-nAJXz4SNcLnrojg48Y6qSM'
+    enabled: !!siteKey,
+    siteKey
   });
 });
 
@@ -210,7 +211,10 @@ router.post('/google', async (req, res) => {
     const { idToken, username, photoURL } = req.body;
     if (!idToken || typeof idToken !== 'string') return res.status(400).json({ success: false, message: 'ID token required' });
 
-    const decoded = await getAdminAuth().verifyIdToken(idToken);
+    const adminAuth = getAdminAuth();
+    if (!adminAuth) return res.status(503).json({ success: false, message: 'Firebase Auth not initialized. Please set Firebase environment variables.' });
+
+    const decoded = await adminAuth.verifyIdToken(idToken);
     const uid = decoded.uid;
     // Trust verified email claim directly from verified Google ID token
     const verifiedEmail = (decoded.email || '').toLowerCase();

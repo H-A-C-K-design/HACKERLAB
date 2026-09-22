@@ -1,8 +1,16 @@
 const express = require('express');
 const router = express.Router();
+const crypto = require('crypto');
+const rateLimit = require('express-rate-limit');
 const { db } = require('../config/firebase');
 const { protect, adminOnly } = require('../middleware/auth');
 const admin = require('firebase-admin');
+
+const flagLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  max: 30,
+  message: { success: false, message: 'Too many flag submissions. Please slow down and try again after 5 minutes.' }
+});
 
 // Rank calculation helper
 function calcRank(xp) {
@@ -57,9 +65,13 @@ router.get('/:id', protect, async (req, res) => {
 });
 
 // POST submit flag
-router.post('/:id/submit', protect, async (req, res) => {
+router.post('/:id/submit', protect, flagLimiter, async (req, res) => {
   try {
     const { flag } = req.body;
+    if (!flag || typeof flag !== 'string') {
+      return res.status(400).json({ success: false, message: 'Flag must be a valid non-empty string' });
+    }
+
     const challengeDoc = await db.collection('challenges').doc(req.params.id).get();
     if (!challengeDoc.exists) return res.status(404).json({ success: false, message: 'Challenge not found' });
 
@@ -71,7 +83,11 @@ router.post('/:id/submit', protect, async (req, res) => {
     if (completed.includes(req.params.id))
       return res.status(400).json({ success: false, message: 'Already solved!' });
 
-    if (flag.trim() !== challenge.flag)
+    const submittedBuf = Buffer.from(flag.trim());
+    const actualBuf = Buffer.from(String(challenge.flag || ''));
+    const isMatch = submittedBuf.length === actualBuf.length && crypto.timingSafeEqual(submittedBuf, actualBuf);
+
+    if (!isMatch)
       return res.json({ success: false, message: '❌ Wrong flag! Keep trying...' });
 
     const newXP = (user.xp || 0) + challenge.points;

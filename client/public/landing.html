@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CyberForge Academy | Master Ethical Hacking &amp; CTF Security</title>
+  <meta name="description" content="CyberForge Academy: live, hands-on CTF challenges, structured learning paths, and expert mentorship for aspiring cybersecurity professionals." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0d1117;color:#c9d1d9;font-family:"Plus Jakarta Sans",sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:#0d1117}::-webkit-scrollbar-thumb{background:#30363d;border-radius:4px}::-webkit-scrollbar-thumb:hover{background:#8b5cf6}
+    .nav-glass{background:rgba(13,17,23,.9);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(48,54,61,.6)}
+    .syne{font-family:"Syne",sans-serif}
+    .text-grad{background:linear-gradient(135deg,#a78bfa 0%,#22d3ee 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .card-hov{transition:border-color .25s,box-shadow .25s,transform .25s}
+    .card-hov:hover{border-color:rgba(139,92,246,.5)!important;box-shadow:0 0 0 1px rgba(139,92,246,.15),0 8px 40px rgba(139,92,246,.12);transform:translateY(-2px)}
+    .reveal{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    .d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}
+    .ticker-wrap{overflow:hidden}
+    .ticker-track{display:flex;width:max-content;animation:ticker 38s linear infinite}
+    @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .cursor-blink::after{content:"_";animation:blink 1s step-end infinite;color:#8b5cf6}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+    .hero-frame{border-radius:16px;overflow:hidden;border:1px solid rgba(139,92,246,.25);box-shadow:0 0 0 1px rgba(139,92,246,.1),0 32px 80px rgba(0,0,0,.6)}
+    .term-win{background:#161b22;border:1px solid #30363d;border-radius:12px;overflow:hidden}
+    .term-bar{background:#21262d;padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #30363d}
+    .dot{width:10px;height:10px;border-radius:50%}
+    #mob-menu{transition:max-height .35s ease,opacity .35s ease;max-height:0;opacity:0;overflow:hidden}
+    #mob-menu.open{max-height:400px;opacity:1}
+    .avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;flex-shrink:0;color:#fff}
+    .stat-num{font-family:"Syne",sans-serif;font-weight:800}
+    .faq-ans{max-height:0;overflow:hidden;transition:max-height .4s ease}
+    .faq-item.open .faq-ans{max-height:400px}
+    .faq-icon{transition:transform .3s ease}
+    .faq-item.open .faq-icon{transform:rotate(45deg)}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<header id="navbar" class="fixed top-0 left-0 right-0 z-50 nav-glass">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <a href="landing.html" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#7c3aed,#06b6d4)">
+          <i class="fas fa-shield-halved text-white text-sm"></i>
+        </div>
+        <span class="syne font-extrabold text-white text-lg tracking-tight hidden sm:block">Cyber<span class="text-grad">Forge</span></span>
+      </a>
+      <nav class="hidden md:flex items-center gap-1">
+        <a href="#services" class="text-sm text-[#8b949e] hover:text-white px-3 py-2 rounded-md transition-colors hover:bg-white/5">Courses</a>
+        <a href="#about" class="text-sm text-[#8b949e] hover:text-white px-3 py-2 rounded-md transition-colors hover:bg-white/5">About</a>
+        <a href="#testimonials" class="text-sm text-[#8b949e] hover:text-white px-3 py-2 rounded-md transition-colors hover:bg-white/5">Community</a>
+        <a href="#faq" class="text-sm text-[#8b949e] hover:text-white px-3 py-2 rounded-md transition-colors hover:bg-white/5">FAQ</a>
+      </nav>
+      <div class="hidden md:flex items-center gap-3">
+        <a href="index.html" class="text-sm text-[#8b949e] hover:text-white transition-colors">Sign In</a>
+        <a href="index.html" class="inline-flex items-center gap-2 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all hover:shadow-lg hover:-translate-y-0.5" style="background:#7c3aed">
+          <i class="fas fa-terminal text-xs"></i> Start Hacking Free
+        </a>
+      </div>
+      <button id="hamburger" class="md:hidden text-[#8b949e] hover:text-white p-2 rounded-md transition-colors">
+        <i id="ham-icon" class="fas fa-bars text-lg"></i>
+      </button>
+    </div>
+  </div>
+  <div id="mob-menu" class="md:hidden border-t border-[#30363d]">
+    <div class="px-4 py-4 flex flex-col gap-1">
+      <a href="#services" class="text-sm text-[#8b949e] hover:text-white px-3 py-2.5 rounded-md hover:bg-white/5 transition-colors">Courses</a>
+      <a href="#about" class="text-sm text-[#8b949e] hover:text-white px-3 py-2.5 rounded-md hover:bg-white/5 transition-colors">About</a>
+      <a href="#testimonials" class="text-sm text-[#8b949e] hover:text-white px-3 py-2.5 rounded-md hover:bg-white/5 transition-colors">Community</a>
+      <a href="#faq" class="text-sm text-[#8b949e] hover:text-white px-3 py-2.5 rounded-md hover:bg-white/5 transition-colors">FAQ</a>
+      <div class="border-t border-[#30363d] mt-2 pt-3 flex flex-col gap-2">
+        <a href="index.html" class="text-sm text-[#8b949e] px-3 py-2">Sign In</a>
+        <a href="index.html" class="inline-flex items-center justify-center gap-2 text-white text-sm font-semibold px-4 py-2.5 rounded-lg" style="background:#7c3aed">
+          <i class="fas fa-terminal text-xs"></i> Start Hacking Free
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section id="hero" class="relative min-h-screen flex items-center pt-16 overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(139,92,246,.12),transparent 70%)"></div>
+  <div class="absolute top-1/4 left-1/2 w-96 h-96 rounded-full pointer-events-none -translate-x-1/2" style="background:rgba(139,92,246,.05);filter:blur(120px)"></div>
+  <div class="absolute bottom-0 right-0 w-80 h-80 rounded-full pointer-events-none" style="background:rgba(34,211,238,.05);filter:blur(100px)"></div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 w-full">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <!-- Left -->
+      <div class="order-2 lg:order-1">
+        <div class="inline-flex items-center gap-2 border text-xs font-medium px-3 py-1.5 rounded-full mb-6 reveal" style="border-color:rgba(139,92,246,.3);background:rgba(139,92,246,.1);color:#a78bfa">
+          <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background:#a78bfa"></span>
+          Live CTF Challenges &middot; 24/7 Lab Access
+        </div>
+        <h1 class="syne text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.07] mb-6 reveal d1">
+          Master the Art of<br /><span class="text-grad">Ethical Hacking</span><br />In Real Environments.
+        </h1>
+        <p class="text-[#8b949e] text-lg leading-relaxed mb-8 max-w-xl reveal d2">
+          CyberForge Academy gives you live, hands-on CTF battlegrounds, structured learning paths, and expert mentorship &mdash; everything you need to go from curious to certified.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 mb-10 reveal d3">
+          <a href="index.html" class="inline-flex items-center justify-center gap-2.5 text-white font-semibold px-6 py-3.5 rounded-xl transition-all hover:-translate-y-0.5 group" style="background:#7c3aed">
+            <i class="fas fa-terminal text-sm"></i> Start Free &mdash; No Credit Card
+          </a>
+          <a href="#services" class="inline-flex items-center justify-center gap-2.5 border border-[#30363d] text-[#c9d1d9] hover:text-white font-medium px-6 py-3.5 rounded-xl transition-all hover:bg-white/5 group">
+            Explore Challenges <i class="fas fa-arrow-right text-sm transition-transform group-hover:translate-x-1"></i>
+          </a>
+        </div>
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-[#8b949e] reveal d4">
+          <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full animate-pulse" style="background:#34d399"></span><span><strong class="text-white">1,240+</strong> students online</span></div>
+          <div class="hidden sm:block w-px h-4 bg-[#30363d]"></div>
+          <div class="flex items-center gap-2"><i class="fas fa-flag text-violet-400 text-xs"></i><span><strong class="text-white">380</strong> flags captured today</span></div>
+          <div class="hidden sm:block w-px h-4 bg-[#30363d]"></div>
+          <div class="flex items-center gap-2"><i class="fas fa-star text-amber-400 text-xs"></i><span><strong class="text-white">4.9/5</strong> student rating</span></div>
+        </div>
+      </div>
+      <!-- Right -->
+      <div class="order-1 lg:order-2 reveal d2">
+        <div class="hero-frame">
+          <img src="hero_cyber.jpg" alt="CyberForge Academy platform showing live CTF challenges and terminal environment" class="w-full block" loading="eager" />
+        </div>
+        <div class="term-win mt-4">
+          <div class="term-bar">
+            <div class="dot" style="background:#ef4444"></div>
+            <div class="dot" style="background:#eab308"></div>
+            <div class="dot" style="background:#22c55e"></div>
+            <span class="text-[#8b949e] text-xs ml-2" style="font-family:'JetBrains Mono',monospace">cyberforge ~ challenge_01</span>
+          </div>
+          <div class="p-4 text-xs leading-loose" style="font-family:'JetBrains Mono',monospace">
+            <p><span class="text-violet-400">$</span> <span class="text-white">nmap -sV -p- 10.10.14.22</span></p>
+            <p class="text-[#8b949e]">Starting Nmap 7.94 scan&hellip;</p>
+            <p><span class="text-emerald-400">PORT </span> <span class="text-cyan-400">STATE SERVICE  VERSION</span></p>
+            <p class="text-white">22/tcp open  ssh      OpenSSH 8.2</p>
+            <p class="text-white">80/tcp open  http     nginx 1.18.0</p>
+            <p><span class="text-violet-400">$</span> <span class="cursor-blink"></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[#30363d] animate-bounce">
+    <span class="text-xs tracking-widest" style="font-family:'JetBrains Mono',monospace">SCROLL</span>
+    <i class="fas fa-chevron-down text-xs"></i>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<section class="py-14 border-y border-[#21262d]">
+  <div class="max-w-7xl mx-auto px-4 mb-8">
+    <p class="text-center text-xs tracking-[.2em] text-[#484f58] uppercase reveal" style="font-family:'JetBrains Mono',monospace">Featured in &amp; trusted by professionals from</p>
+  </div>
+  <div class="ticker-wrap">
+    <div class="ticker-track items-center flex gap-16">
+      <div class="flex items-center gap-16 opacity-40">
+        <div class="flex items-center gap-2.5"><i class="fas fa-building text-2xl text-[#8b949e]"></i><span class="syne font-bold text-lg text-[#8b949e] whitespace-nowrap">SANS Institute</span></div>
+        <div class="flex items-center gap-2.5"><i class="fas fa-shield-virus text-2xl text-[#8b949e]"></i><span class="syne font-bold text-lg text-[#8b949e] whitespace-nowrap">Offensive Security</span></div>
+        <div class="flex items-center gap-2.5"><i class="fas fa-flag text-2xl text-[#8b949e]"></i><span class="syne font-bold text-lg text-[#8b949e] whitespace-nowrap">HackTheBox</span></div>
+        <div class="flex items-center gap-2.5"><i class="fas fa-network-wired text-2xl text-[#8b949e]"></i><span class="syne font-bold text-lg text-[#8b949e] whitespace-nowrap">TryHackMe</span></div>
+        <div class="flex items-center gap-2.5"><i class="fas fa-newspaper text-2xl text-[#8b949e]"></i><span class="syne font-bold text-lg text-[#8b949e] whitespace-nowrap">Dark Reading</span></div>
+        <div class="flex items-center gap-2.5"><i class="fas fa-lock text-2xl text-[#8b949e]"></i><span class="syne font-bold text-lg text-[#8b949e] whitespace-nowrap">Krebs on Security</span></div>
+        <div class="flex items-center gap-2.5"><i class="fas fa-graduation-cap text-2xl text-[#8b949e]"></i><span class="syne font-bold text-lg text-[#8b949e] whitespace-nowrap">EC-Council</span></div>
+      </div>
+      <div class="flex items-center gap-16 opacity-40">
+        <div class="flex items-center gap-2.5"><i class="fas fa-building text-2xl text-[#8b949e]"></i><span class="syne font-bold text-lg text-[#8b949e] whitespace-nowrap">SANS Institute</span></div>
+        <div class="flex items-center gap-2.5"><i class="fas fa-shield-virus text-2xl text-[#8b949e]"></i><span class="syne font-bold text-lg text-[#8b949e] whitespace-nowrap">Offensive Security</span></div>
+        <div class="flex items-center gap-2.5"><i class="fas fa-flag text-2xl text-[#8b949e]"></i><span class="syne font-bold text-lg text-[#8b949e] whitespace-nowrap">HackTheBox</span></div>
+        <div class="flex items-center gap-2.5"><i class="fas fa-network-wired text-2xl text-[#8b949e]"></i><span class="syne font-bold text-lg text-[#8b949e] whitespace-nowrap">TryHackMe</span></div>
+        <div class="flex items-center gap-2.5"><i class="fas fa-newspaper text-2xl text-[#8b949e]"></i><span class="syne font-bold text-lg text-[#8b949e] whitespace-nowrap">Dark Reading</span></div>
+        <div class="flex items-center gap-2.5"><i class="fas fa-lock text-2xl text-[#8b949e]"></i><span class="syne font-bold text-lg text-[#8b949e] whitespace-nowrap">Krebs on Security</span></div>
+        <div class="flex items-center gap-2.5"><i class="fas fa-graduation-cap text-2xl text-[#8b949e]"></i><span class="syne font-bold text-lg text-[#8b949e] whitespace-nowrap">EC-Council</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" class="py-24 relative">
+  <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse 50% 60% at 100% 50%,rgba(34,211,238,.06),transparent 70%)"></div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="max-w-2xl mb-16">
+      <p class="text-violet-400 text-xs tracking-[.2em] uppercase mb-3 reveal" style="font-family:'JetBrains Mono',monospace">Core Disciplines</p>
+      <h2 class="syne text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight mb-4 reveal d1">Every Attack Vector.<br /><span class="text-grad">Every Defense Layer.</span></h2>
+      <p class="text-[#8b949e] text-base leading-relaxed reveal d2">Structured learning paths built by active security practitioners &mdash; from network recon to advanced exploit development.</p>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <article class="card-hov bg-[#161b22] border border-[#30363d] rounded-2xl p-6 cursor-pointer reveal">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style="background:rgba(139,92,246,.15)"><i class="fas fa-globe text-violet-400"></i></div>
+        <h3 class="syne font-bold text-white text-lg mb-2">Web App Pentesting</h3>
+        <p class="text-[#8b949e] text-sm leading-relaxed mb-5">SQL injection, XSS, SSRF, IDOR &mdash; master OWASP Top 10 in live vulnerable apps mirroring real targets.</p>
+        <div class="flex items-center justify-between text-xs text-[#484f58]"><span><i class="fas fa-layer-group mr-1"></i>42 Challenges</span><span><i class="fas fa-signal mr-1"></i>Beginner &rarr; Advanced</span></div>
+        <div class="mt-4 pt-4 border-t border-[#21262d] flex items-center gap-2 text-xs text-violet-400 font-semibold"><span>Enter Lab</span><i class="fas fa-arrow-right text-[10px]"></i></div>
+      </article>
+      <article class="card-hov bg-[#161b22] border border-[#30363d] rounded-2xl p-6 cursor-pointer reveal d1">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style="background:rgba(34,211,238,.12)"><i class="fas fa-network-wired text-cyan-400"></i></div>
+        <h3 class="syne font-bold text-white text-lg mb-2">Network Security</h3>
+        <p class="text-[#8b949e] text-sm leading-relaxed mb-5">Packet capture, MITM, firewall evasion &amp; VPN pivoting &mdash; hands-on with Wireshark, Nmap, and Metasploit.</p>
+        <div class="flex items-center justify-between text-xs text-[#484f58]"><span><i class="fas fa-layer-group mr-1"></i>35 Challenges</span><span><i class="fas fa-signal mr-1"></i>Intermediate</span></div>
+        <div class="mt-4 pt-4 border-t border-[#21262d] flex items-center gap-2 text-xs text-cyan-400 font-semibold"><span>Enter Lab</span><i class="fas fa-arrow-right text-[10px]"></i></div>
+      </article>
+      <article class="card-hov bg-[#161b22] border border-[#30363d] rounded-2xl p-6 cursor-pointer reveal d2">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style="background:rgba(236,72,153,.12)"><i class="fas fa-microchip text-pink-400"></i></div>
+        <h3 class="syne font-bold text-white text-lg mb-2">Reverse Engineering</h3>
+        <p class="text-[#8b949e] text-sm leading-relaxed mb-5">Binary analysis, disassembly &amp; malware unpacking. x64 assembly with Ghidra and IDA &mdash; crack real executables.</p>
+        <div class="flex items-center justify-between text-xs text-[#484f58]"><span><i class="fas fa-layer-group mr-1"></i>28 Challenges</span><span><i class="fas fa-signal mr-1"></i>Advanced</span></div>
+        <div class="mt-4 pt-4 border-t border-[#21262d] flex items-center gap-2 text-xs text-pink-400 font-semibold"><span>Enter Lab</span><i class="fas fa-arrow-right text-[10px]"></i></div>
+      </article>
+      <article class="card-hov bg-[#161b22] border border-[#30363d] rounded-2xl p-6 cursor-pointer reveal d1">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style="background:rgba(245,158,11,.12)"><i class="fas fa-lock text-amber-400"></i></div>
+        <h3 class="syne font-bold text-white text-lg mb-2">Cryptography &amp; Forensics</h3>
+        <p class="text-[#8b949e] text-sm leading-relaxed mb-5">AES, RSA, hash cracking, steganography &amp; memory forensics &mdash; decode encrypted comms and recover disk artifacts.</p>
+        <div class="flex items-center justify-between text-xs text-[#484f58]"><span><i class="fas fa-layer-group mr-1"></i>31 Challenges</span><span><i class="fas fa-signal mr-1"></i>Beginner &rarr; Inter.</span></div>
+        <div class="mt-4 pt-4 border-t border-[#21262d] flex items-center gap-2 text-xs text-amber-400 font-semibold"><span>Enter Lab</span><i class="fas fa-arrow-right text-[10px]"></i></div>
+      </article>
+      <article class="card-hov bg-[#161b22] border border-[#30363d] rounded-2xl p-6 cursor-pointer reveal d2">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style="background:rgba(16,185,129,.12)"><i class="fas fa-binoculars text-emerald-400"></i></div>
+        <h3 class="syne font-bold text-white text-lg mb-2">OSINT &amp; Recon</h3>
+        <p class="text-[#8b949e] text-sm leading-relaxed mb-5">Passive recon, social engineering intelligence, Shodan, Maltego &amp; advanced Google dorks in structured missions.</p>
+        <div class="flex items-center justify-between text-xs text-[#484f58]"><span><i class="fas fa-layer-group mr-1"></i>24 Challenges</span><span><i class="fas fa-signal mr-1"></i>All Levels</span></div>
+        <div class="mt-4 pt-4 border-t border-[#21262d] flex items-center gap-2 text-xs text-emerald-400 font-semibold"><span>Enter Lab</span><i class="fas fa-arrow-right text-[10px]"></i></div>
+      </article>
+      <article class="card-hov border rounded-2xl p-6 cursor-pointer reveal d3" style="background:linear-gradient(135deg,rgba(109,40,217,.25),rgba(8,145,178,.12));border-color:rgba(139,92,246,.3)">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-5" style="background:rgba(139,92,246,.2)"><i class="fas fa-trophy text-violet-300"></i></div>
+        <h3 class="syne font-bold text-white text-lg mb-2">Live CTF Competitions</h3>
+        <p class="text-[#8b949e] text-sm leading-relaxed mb-5">Compete globally in weekly ranked competitions. Earn XP, climb leaderboards &amp; win certifications and prizes.</p>
+        <div class="flex items-center justify-between text-xs text-[#484f58]"><span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background:#34d399"></span>Live this weekend</span><span><i class="fas fa-users mr-1"></i>840 registered</span></div>
+        <div class="mt-4 pt-4 flex items-center gap-2 text-xs text-violet-300 font-semibold" style="border-top:1px solid rgba(139,92,246,.2)"><span>Register Now</span><i class="fas fa-arrow-right text-[10px]"></i></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="py-24 border-t border-[#21262d] relative overflow-hidden">
+  <div class="absolute left-0 top-0 w-96 h-96 rounded-full pointer-events-none" style="background:rgba(139,92,246,.05);filter:blur(120px)"></div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+      <div class="lg:col-span-4 space-y-5 reveal">
+        <div class="border border-[#30363d] rounded-2xl p-6 bg-[#161b22]">
+          <div class="stat-num text-5xl text-white mb-2" data-target="18400" id="stat-students">0</div>
+          <p class="text-[#8b949e] text-sm">Hackers trained worldwide since 2022</p>
+        </div>
+        <div class="border border-[#30363d] rounded-2xl p-6 bg-[#161b22]">
+          <div class="stat-num text-5xl text-grad mb-2" data-target="960" id="stat-challenges">0</div>
+          <p class="text-[#8b949e] text-sm">Active CTF challenges across 6 domains</p>
+        </div>
+        <div class="border border-[#30363d] rounded-2xl p-6 bg-[#161b22]">
+          <div class="stat-num text-5xl text-white mb-2">94<span class="text-2xl text-violet-400">%</span></div>
+          <p class="text-[#8b949e] text-sm">Job placement rate within 12 months</p>
+        </div>
+        <div class="border border-[#30363d] rounded-2xl p-6 bg-[#161b22]">
+          <div class="stat-num text-5xl text-grad mb-2">48h</div>
+          <p class="text-[#8b949e] text-sm">Average time to first flag for new learners</p>
+        </div>
+      </div>
+      <div class="lg:col-span-8">
+        <p class="text-violet-400 text-xs tracking-[.2em] uppercase mb-3 reveal" style="font-family:'JetBrains Mono',monospace">Our Mission</p>
+        <h2 class="syne text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight mb-6 reveal d1">Built by Hackers.<br />Designed for <span class="text-grad">Defenders</span>.</h2>
+        <div class="space-y-4 text-[#8b949e] leading-relaxed reveal d2">
+          <p>CyberForge Academy was born in 2022 from a single frustration: every cybersecurity course taught theory in isolation from the tools, environments, and adversarial thinking that real practitioners use daily.</p>
+          <p>Our founders &mdash; active red teamers and incident responders &mdash; built the platform they wished existed. Every challenge mirrors a real-world intrusion scenario, CVE, or forensic case pulled from our consulting engagements and disclosed breach reports.</p>
+          <p>We're not a MOOC. We're an <strong class="text-white font-semibold">adversarial simulation platform</strong> layered with structured learning paths, peer mentorship, and a community of 18,000+ practitioners.</p>
+        </div>
+        <div class="flex flex-wrap gap-2 mt-8 reveal d3">
+          <span class="inline-flex items-center gap-1.5 border border-[#30363d] text-[#8b949e] text-xs px-3 py-1.5 rounded-full"><i class="fas fa-check text-emerald-400 text-[10px]"></i> No prior experience needed</span>
+          <span class="inline-flex items-center gap-1.5 border border-[#30363d] text-[#8b949e] text-xs px-3 py-1.5 rounded-full"><i class="fas fa-check text-emerald-400 text-[10px]"></i> Browser-based labs, no local setup</span>
+          <span class="inline-flex items-center gap-1.5 border border-[#30363d] text-[#8b949e] text-xs px-3 py-1.5 rounded-full"><i class="fas fa-check text-emerald-400 text-[10px]"></i> CEH / OSCP prep aligned</span>
+          <span class="inline-flex items-center gap-1.5 border border-[#30363d] text-[#8b949e] text-xs px-3 py-1.5 rounded-full"><i class="fas fa-check text-emerald-400 text-[10px]"></i> Expert mentor office hours</span>
+          <span class="inline-flex items-center gap-1.5 border border-[#30363d] text-[#8b949e] text-xs px-3 py-1.5 rounded-full"><i class="fas fa-check text-emerald-400 text-[10px]"></i> Verified completion certificates</span>
+        </div>
+        <div class="mt-10 pt-8 border-t border-[#21262d] reveal d4">
+          <p class="text-xs text-[#484f58] tracking-widest uppercase mb-5" style="font-family:'JetBrains Mono',monospace">Leadership Team</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div class="flex items-center gap-3"><div class="avatar" style="background:linear-gradient(135deg,#7c3aed,#06b6d4)">AK</div><div><p class="text-white text-sm font-semibold">Aryan Kapoor</p><p class="text-[#8b949e] text-xs">Founder &middot; OSCP</p></div></div>
+            <div class="flex items-center gap-3"><div class="avatar" style="background:linear-gradient(135deg,#d946ef,#f59e0b)">SR</div><div><p class="text-white text-sm font-semibold">Sara Reyes</p><p class="text-[#8b949e] text-xs">Head of Curriculum</p></div></div>
+            <div class="flex items-center gap-3"><div class="avatar" style="background:linear-gradient(135deg,#059669,#3b82f6)">JC</div><div><p class="text-white text-sm font-semibold">James Chen</p><p class="text-[#8b949e] text-xs">Lead Red Teamer</p></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials" class="py-24 border-t border-[#21262d] relative">
+  <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse 60% 40% at 50% 100%,rgba(139,92,246,.07),transparent 70%)"></div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="text-center mb-16">
+      <p class="text-violet-400 text-xs tracking-[.2em] uppercase mb-3 reveal" style="font-family:'JetBrains Mono',monospace">Community Voices</p>
+      <h2 class="syne text-3xl sm:text-4xl font-extrabold text-white reveal d1">From Zero Flags to <span class="text-grad">Full Offers.</span></h2>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div class="card-hov bg-[#161b22] border border-[#30363d] rounded-2xl p-6 flex flex-col gap-5 reveal">
+        <div class="flex gap-1"><i class="fas fa-star text-amber-400 text-xs"></i><i class="fas fa-star text-amber-400 text-xs"></i><i class="fas fa-star text-amber-400 text-xs"></i><i class="fas fa-star text-amber-400 text-xs"></i><i class="fas fa-star text-amber-400 text-xs"></i></div>
+        <blockquote class="text-[#c9d1d9] text-sm leading-relaxed flex-1">"I went from zero Linux knowledge to a junior penetration tester role at a security firm in 9 months. The CTF labs are brutally realistic and the Discord community is always there at 3am."</blockquote>
+        <div class="flex items-center gap-3 pt-4 border-t border-[#21262d]"><div class="avatar" style="background:linear-gradient(135deg,#7c3aed,#06b6d4)">MP</div><div><p class="text-white text-sm font-semibold">Marcus P.</p><p class="text-[#484f58] text-xs">Jr. Penetration Tester &middot; London</p></div></div>
+      </div>
+      <div class="card-hov bg-[#161b22] border border-[#30363d] rounded-2xl p-6 flex flex-col gap-5 reveal d1">
+        <div class="flex gap-1"><i class="fas fa-star text-amber-400 text-xs"></i><i class="fas fa-star text-amber-400 text-xs"></i><i class="fas fa-star text-amber-400 text-xs"></i><i class="fas fa-star text-amber-400 text-xs"></i><i class="fas fa-star text-amber-400 text-xs"></i></div>
+        <blockquote class="text-[#c9d1d9] text-sm leading-relaxed flex-1">"The learning path kept me on track and difficulty scaling is perfect. I passed my CEH on the first attempt after 4 months. The cryptography module alone is worth the subscription."</blockquote>
+        <div class="flex items-center gap-3 pt-4 border-t border-[#21262d]"><div class="avatar" style="background:linear-gradient(135deg,#d946ef,#f59e0b)">NJ</div><div><p class="text-white text-sm font-semibold">Nadia J.</p><p class="text-[#484f58] text-xs">SOC Analyst &middot; Toronto</p></div></div>
+      </div>
+      <div class="card-hov bg-[#161b22] border border-[#30363d] rounded-2xl p-6 flex flex-col gap-5 reveal d2">
+        <div class="flex gap-1"><i class="fas fa-star text-amber-400 text-xs"></i><i class="fas fa-star text-amber-400 text-xs"></i><i class="fas fa-star text-amber-400 text-xs"></i><i class="fas fa-star text-amber-400 text-xs"></i><i class="fas fa-star text-amber-400 text-xs"></i></div>
+        <blockquote class="text-[#c9d1d9] text-sm leading-relaxed flex-1">"As a sysadmin transitioning to red teaming I needed something hands-on. CyberForge's network lab is exceptional &mdash; real enterprise networks with AD, LDAP, and Kerberoasting scenarios."</blockquote>
+        <div class="flex items-center gap-3 pt-4 border-t border-[#21262d]"><div class="avatar" style="background:linear-gradient(135deg,#059669,#3b82f6)">RK</div><div><p class="text-white text-sm font-semibold">Raj K.</p><p class="text-[#484f58] text-xs">Red Team Operator &middot; Bangalore</p></div></div>
+      </div>
+    </div>
+    <div class="mt-12 grid sm:grid-cols-3 gap-4 reveal d3">
+      <div class="bg-[#161b22] border border-[#30363d] rounded-xl px-6 py-4 text-center"><p class="syne text-2xl font-bold text-white">18,400+</p><p class="text-xs text-[#8b949e] mt-1">Community Members</p></div>
+      <div class="bg-[#161b22] border border-[#30363d] rounded-xl px-6 py-4 text-center"><p class="syne text-2xl font-bold text-grad">4.9 / 5.0</p><p class="text-xs text-[#8b949e] mt-1">Avg Rating (2,100+ reviews)</p></div>
+      <div class="bg-[#161b22] border border-[#30363d] rounded-xl px-6 py-4 text-center"><p class="syne text-2xl font-bold text-white">94%</p><p class="text-xs text-[#8b949e] mt-1">Report career advancement</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="py-24 border-t border-[#21262d]">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-14">
+      <p class="text-violet-400 text-xs tracking-[.2em] uppercase mb-3 reveal" style="font-family:'JetBrains Mono',monospace">FAQ</p>
+      <h2 class="syne text-3xl sm:text-4xl font-extrabold text-white reveal d1">Common Questions</h2>
+    </div>
+    <div class="space-y-3">
+      <div class="faq-item bg-[#161b22] border border-[#30363d] rounded-2xl overflow-hidden reveal">
+        <button class="faq-trigger w-full flex items-center justify-between text-left px-6 py-5 gap-4 hover:bg-white/5 transition-colors" aria-expanded="false">
+          <span class="text-white font-semibold text-sm sm:text-base leading-snug">Is CyberForge suitable for complete beginners with no IT background?</span>
+          <i class="faq-icon fas fa-plus text-violet-400 text-sm flex-shrink-0"></i>
+        </button>
+        <div class="faq-ans"><div class="px-6 pb-5 text-[#8b949e] text-sm leading-relaxed">Absolutely. Our "Zero to Hacker" path starts from absolute fundamentals &mdash; Linux CLI, networking, and basic scripting &mdash; before advancing. You only need curiosity and persistence.</div></div>
+      </div>
+      <div class="faq-item bg-[#161b22] border border-[#30363d] rounded-2xl overflow-hidden reveal d1">
+        <button class="faq-trigger w-full flex items-center justify-between text-left px-6 py-5 gap-4 hover:bg-white/5 transition-colors" aria-expanded="false">
+          <span class="text-white font-semibold text-sm sm:text-base leading-snug">Do I need to install any software or VMs to access the labs?</span>
+          <i class="faq-icon fas fa-plus text-violet-400 text-sm flex-shrink-0"></i>
+        </button>
+        <div class="faq-ans"><div class="px-6 pb-5 text-[#8b949e] text-sm leading-relaxed">No installation required. All labs run in your browser via our cloud-hosted environment. You get a full Kali Linux terminal, network topology, and targets in under 60 seconds. Just a modern browser and internet connection.</div></div>
+      </div>
+      <div class="faq-item bg-[#161b22] border border-[#30363d] rounded-2xl overflow-hidden reveal d2">
+        <button class="faq-trigger w-full flex items-center justify-between text-left px-6 py-5 gap-4 hover:bg-white/5 transition-colors" aria-expanded="false">
+          <span class="text-white font-semibold text-sm sm:text-base leading-snug">What certifications does CyberForge prepare me for?</span>
+          <i class="faq-icon fas fa-plus text-violet-400 text-sm flex-shrink-0"></i>
+        </button>
+        <div class="faq-ans"><div class="px-6 pb-5 text-[#8b949e] text-sm leading-relaxed">Our curriculum aligns with CompTIA Security+, CEH, OSCP, and eJPT. We also issue CyberForge verified certificates recognized by our 200+ hiring partner security firms globally.</div></div>
+      </div>
+      <div class="faq-item bg-[#161b22] border border-[#30363d] rounded-2xl overflow-hidden reveal d3">
+        <button class="faq-trigger w-full flex items-center justify-between text-left px-6 py-5 gap-4 hover:bg-white/5 transition-colors" aria-expanded="false">
+          <span class="text-white font-semibold text-sm sm:text-base leading-snug">What does the free plan include and when should I upgrade?</span>
+          <i class="faq-icon fas fa-plus text-violet-400 text-sm flex-shrink-0"></i>
+        </button>
+        <div class="faq-ans"><div class="px-6 pb-5 text-[#8b949e] text-sm leading-relaxed">Free: 60+ beginner challenges, community forums, weekly public CTF. Pro (&#8377;599/mo): all 960+ challenges, mentor office hours, certificate issuance, AI hints, and priority lab spin-up. Students get 50% off with a .edu email.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-20 border-t border-[#21262d] relative overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none" style="background:radial-gradient(ellipse 60% 80% at 50% 50%,rgba(139,92,246,.12),transparent 70%)"></div>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+    <div class="inline-flex items-center gap-2 border text-xs font-medium px-3 py-1.5 rounded-full mb-6 reveal" style="border-color:rgba(139,92,246,.3);background:rgba(139,92,246,.1);color:#a78bfa">
+      <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background:#34d399"></span>
+      Platform Status: Operational &middot; 99.97% uptime
+    </div>
+    <h2 class="syne text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight mb-5 reveal d1">Your First Flag is<br /><span class="text-grad">Waiting.</span></h2>
+    <p class="text-[#8b949e] text-base mb-8 max-w-xl mx-auto reveal d2">Join 18,000+ hackers leveling up on real-world adversarial challenges. No theory. No setup. Just you, a terminal, and a challenge.</p>
+    <div class="flex flex-col sm:flex-row gap-3 justify-center reveal d3">
+      <a href="index.html" class="inline-flex items-center justify-center gap-2.5 text-white font-semibold px-8 py-4 rounded-xl transition-all hover:-translate-y-0.5 text-sm" style="background:#7c3aed"><i class="fas fa-terminal text-xs"></i> Create Free Account</a>
+      <a href="index.html" class="inline-flex items-center justify-center gap-2.5 border border-[#30363d] hover:border-violet-500/50 text-[#c9d1d9] hover:text-white font-medium px-8 py-4 rounded-xl hover:bg-white/5 transition-all text-sm group">View Live Leaderboard <i class="fas fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="border-t border-[#21262d] bg-[#0d1117]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
+      <div class="lg:col-span-2">
+        <div class="flex items-center gap-2.5 mb-4"><div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#7c3aed,#06b6d4)"><i class="fas fa-shield-halved text-white text-sm"></i></div><span class="syne font-bold text-white text-lg">Cyber<span class="text-grad">Forge</span></span></div>
+        <p class="text-[#8b949e] text-sm leading-relaxed mb-6 max-w-xs">The live adversarial training platform for the next generation of cybersecurity professionals.</p>
+        <div>
+          <p class="text-white text-xs font-semibold mb-3 tracking-wide uppercase">Threat Intel Newsletter</p>
+          <form id="newsletter-form" class="flex gap-2">
+            <label for="newsletter-email" class="sr-only">Email address</label>
+            <input id="newsletter-email" type="email" placeholder="you@example.com" required class="flex-1 bg-[#161b22] border border-[#30363d] text-white text-sm px-3 py-2.5 rounded-lg placeholder-[#484f58] focus:outline-none focus:border-violet-500 transition-colors" />
+            <button type="submit" class="text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition-colors whitespace-nowrap" style="background:#7c3aed" id="sub-btn">Subscribe</button>
+          </form>
+          <p class="text-[#484f58] text-xs mt-2">Weekly digest. No spam. Unsubscribe any time.</p>
+        </div>
+      </div>
+      <div>
+        <p class="text-white text-xs font-semibold mb-4 tracking-wide uppercase">Learn</p>
+        <ul class="space-y-2.5">
+          <li><a href="#services" class="text-[#8b949e] hover:text-white text-sm transition-colors">Web App Pentesting</a></li>
+          <li><a href="#services" class="text-[#8b949e] hover:text-white text-sm transition-colors">Network Security</a></li>
+          <li><a href="#services" class="text-[#8b949e] hover:text-white text-sm transition-colors">Reverse Engineering</a></li>
+          <li><a href="#services" class="text-[#8b949e] hover:text-white text-sm transition-colors">Cryptography &amp; Forensics</a></li>
+          <li><a href="#services" class="text-[#8b949e] hover:text-white text-sm transition-colors">OSINT &amp; Recon</a></li>
+          <li><a href="#services" class="text-[#8b949e] hover:text-white text-sm transition-colors">Live CTF Competitions</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="text-white text-xs font-semibold mb-4 tracking-wide uppercase">Platform</p>
+        <ul class="space-y-2.5">
+          <li><a href="index.html" class="text-[#8b949e] hover:text-white text-sm transition-colors">Dashboard</a></li>
+          <li><a href="index.html" class="text-[#8b949e] hover:text-white text-sm transition-colors">Leaderboard</a></li>
+          <li><a href="index.html" class="text-[#8b949e] hover:text-white text-sm transition-colors">Writeups</a></li>
+          <li><a href="index.html" class="text-[#8b949e] hover:text-white text-sm transition-colors">Community Discord</a></li>
+          <li><a href="index.html" class="text-[#8b949e] hover:text-white text-sm transition-colors">API Access</a></li>
+          <li><a href="admin.html" class="text-[#8b949e] hover:text-white text-sm transition-colors">Admin Portal</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="text-white text-xs font-semibold mb-4 tracking-wide uppercase">Company</p>
+        <ul class="space-y-2.5">
+          <li><a href="#about" class="text-[#8b949e] hover:text-white text-sm transition-colors">About</a></li>
+          <li><a href="#" class="text-[#8b949e] hover:text-white text-sm transition-colors">Blog</a></li>
+          <li><a href="#" class="text-[#8b949e] hover:text-white text-sm transition-colors">Careers</a></li>
+          <li><a href="#" class="text-[#8b949e] hover:text-white text-sm transition-colors">Privacy Policy</a></li>
+          <li><a href="#" class="text-[#8b949e] hover:text-white text-sm transition-colors">Terms of Service</a></li>
+          <li><a href="#" class="text-[#8b949e] hover:text-white text-sm transition-colors">Responsible Disclosure</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-[#21262d] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-[#484f58] text-xs">&copy; 2024 CyberForge Academy. All rights reserved. Hacking within the platform is <strong class="text-[#8b949e]">legal and encouraged</strong>.</p>
+      <div class="flex items-center gap-4">
+        <a href="#" aria-label="Twitter" class="text-[#484f58] hover:text-violet-400 transition-colors"><i class="fab fa-x-twitter text-base"></i></a>
+        <a href="#" aria-label="GitHub" class="text-[#484f58] hover:text-violet-400 transition-colors"><i class="fab fa-github text-base"></i></a>
+        <a href="#" aria-label="Discord" class="text-[#484f58] hover:text-violet-400 transition-colors"><i class="fab fa-discord text-base"></i></a>
+        <a href="#" aria-label="LinkedIn" class="text-[#484f58] hover:text-violet-400 transition-colors"><i class="fab fa-linkedin text-base"></i></a>
+        <a href="#" aria-label="YouTube" class="text-[#484f58] hover:text-violet-400 transition-colors"><i class="fab fa-youtube text-base"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const hamburger=document.getElementById('hamburger'),mobMenu=document.getElementById('mob-menu'),hamIcon=document.getElementById('ham-icon');
+  let mOpen=false;
+  hamburger.addEventListener('click',()=>{mOpen=!mOpen;mobMenu.classList.toggle('open',mOpen);hamIcon.className=mOpen?'fas fa-xmark text-lg':'fas fa-bars text-lg';});
+  mobMenu.querySelectorAll('a').forEach(l=>l.addEventListener('click',()=>{mOpen=false;mobMenu.classList.remove('open');hamIcon.className='fas fa-bars text-lg';}));
+  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}}),{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+  document.querySelectorAll('.faq-trigger').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const item=btn.closest('.faq-item'),isOpen=item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(i=>{i.classList.remove('open');i.querySelector('.faq-trigger').setAttribute('aria-expanded','false');});
+      if(!isOpen){item.classList.add('open');btn.setAttribute('aria-expanded','true');}
+    });
+  });
+  function animCount(el,target,dur=1800){let s=null;const step=ts=>{if(!s)s=ts;const p=Math.min((ts-s)/dur,1),e=1-Math.pow(1-p,3);el.textContent=Math.floor(e*target).toLocaleString();if(p<1)requestAnimationFrame(step);};requestAnimationFrame(step);}
+  const sObs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){const el=e.target;animCount(el,parseInt(el.dataset.target));sObs.unobserve(el);}}),{threshold:.5});
+  document.querySelectorAll('[data-target]').forEach(el=>sObs.observe(el));
+  document.getElementById('newsletter-form').addEventListener('submit',e=>{
+    e.preventDefault();
+    const btn=document.getElementById('sub-btn');
+    btn.textContent='Subscribed!';btn.style.background='#059669';
+    document.getElementById('newsletter-email').value='';
+    document.getElementById('newsletter-email').disabled=true;btn.disabled=true;
+  });
+  window.addEventListener('scroll',()=>{document.getElementById('navbar').style.borderBottomColor=window.scrollY>20?'rgba(48,54,61,.95)':'rgba(48,54,61,.6)';},{passive:true});
+</script>
+</body>
+</html>

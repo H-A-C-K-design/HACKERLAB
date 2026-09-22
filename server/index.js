@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const crypto = require('crypto');
 const http = require('http');
 const path = require('path');
 const fs = require('fs');
@@ -22,11 +23,20 @@ const server = http.createServer(app);
 const rawOrigins = process.env.ALLOWED_ORIGINS || 'https://hackerlab-rho.vercel.app,http://localhost:3000,http://localhost:5000';
 const ALLOWED_ORIGINS = rawOrigins.split(',').map(o => o.trim()).filter(Boolean);
 
+const isLocalhostOrigin = (origin) => {
+  try {
+    const url = new URL(origin);
+    return (url.hostname === 'localhost' || url.hostname === '127.0.0.1') && (url.protocol === 'http:' || url.protocol === 'https:');
+  } catch {
+    return false;
+  }
+};
+
 const corsOptions = {
   origin: (origin, callback) => {
     // Allow non-browser requests with no origin header
     if (!origin) return callback(null, true);
-    if (ALLOWED_ORIGINS.includes(origin) || (process.env.NODE_ENV !== 'production' && (origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')))) {
+    if (ALLOWED_ORIGINS.includes(origin) || (process.env.NODE_ENV !== 'production' && isLocalhostOrigin(origin))) {
       return callback(null, true);
     }
     return callback(new Error('CORS request rejected: Origin not allowed'), false);
@@ -43,11 +53,20 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://www.google.com', 'https://www.gstatic.com', 'https://cdn.jsdelivr.net', 'https://cdnjs.cloudflare.com'],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'https://www.google.com', 'https://www.gstatic.com', 'https://cdn.jsdelivr.net', 'https://cdnjs.cloudflare.com'],
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com'],
       fontSrc: ["'self'", 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com'],
       imgSrc: ["'self'", 'data:', 'https:'],
-      connectSrc: ["'self'", 'https://identitytoolkit.googleapis.com', 'https://securetoken.googleapis.com', 'ws:', 'wss:', 'http:', 'https:'],
+      connectSrc: [
+        "'self'",
+        'https://identitytoolkit.googleapis.com',
+        'https://securetoken.googleapis.com',
+        'https://*.googleapis.com',
+        'https://*.firebaseio.com',
+        'https://d4k2eekwuskedyx5.public.blob.vercel-storage.com',
+        'ws:',
+        'wss:'
+      ],
       frameSrc: ["'self'", 'https://www.google.com', 'https://*.firebaseapp.com'],
       mediaSrc: ["'self'", 'https:', 'blob:', 'data:'],
       objectSrc: ["'none'"],
@@ -79,6 +98,14 @@ const authLimiter = rateLimit({
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
 
+// Rate limit on admin access token verification (prevents brute-force of ADMIN_PANEL_TOKEN)
+const adminAccessLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { success: false, message: 'Too many admin access attempts. Please try again after 15 minutes.' }
+});
+app.use('/api/admin-access/verify', adminAccessLimiter);
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/challenges', require('./routes/challenges'));
@@ -97,8 +124,13 @@ app.use('/api/event-sessions', require('./routes/eventSessions'));
 app.get('/api/admin-access/verify', (req, res) => {
   const authHeader = req.headers.authorization || '';
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
-  if (token && token === process.env.ADMIN_PANEL_TOKEN) {
-    return res.json({ success: true });
+  const expected = process.env.ADMIN_PANEL_TOKEN || '';
+  if (token && expected) {
+    const tokenBuf = Buffer.from(token);
+    const expectedBuf = Buffer.from(expected);
+    if (tokenBuf.length === expectedBuf.length && crypto.timingSafeEqual(tokenBuf, expectedBuf)) {
+      return res.json({ success: true });
+    }
   }
   res.status(403).json({ success: false, message: 'Forbidden' });
 });
@@ -128,11 +160,39 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Socket.io JWT authentication middleware
+const jwt = require('jsonwebtoken');
+io.use((socket, next) => {
+  const token = socket.handshake.auth?.token || socket.handshake.headers?.authorization?.split(' ')[1];
+  if (!token) return next(new Error('Authentication required: No token provided'));
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    socket.userId = decoded.id;
+    next();
+  } catch (err) {
+    next(new Error('Authentication required: Invalid or expired token'));
+  }
+});
+
 // Socket.io for real-time terminal simulation
 io.on('connection', (socket) => {
   console.log('🔌 User connected:', socket.id);
 
+  // Per-socket rate limit: max 30 terminal commands per minute
+  let cmdCount = 0;
+  let cmdWindowStart = Date.now();
+
   socket.on('terminal-command', (data) => {
+    const now = Date.now();
+    if (now - cmdWindowStart > 60 * 1000) {
+      cmdCount = 0;
+      cmdWindowStart = now;
+    }
+    cmdCount++;
+    if (cmdCount > 30) {
+      socket.emit('terminal-output', { output: '⚠️  Rate limit exceeded. Please slow down.', command: data.command });
+      return;
+    }
     const output = simulateTerminal(data.command, data.context);
     socket.emit('terminal-output', { output, command: data.command });
   });

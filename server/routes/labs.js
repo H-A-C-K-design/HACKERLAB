@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../config/firebase');
-const { protect } = require('../middleware/auth');
+const { protect, adminOnly } = require('../middleware/auth');
 const admin = require('firebase-admin');
 
 function calcRank(xp) {
@@ -93,7 +93,7 @@ router.post('/:id/complete', protect, async (req, res) => {
   }
 });
 
-router.post('/seed/all', async (req, res) => {
+router.post('/seed/all', protect, adminOnly, async (req, res) => {
   try {
     const batch = db.batch();
     seedLabs.forEach(lab => {

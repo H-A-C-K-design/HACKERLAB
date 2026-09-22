@@ -8,7 +8,10 @@ router.get('/profile/:id', protect, async (req, res) => {
     const userDoc = await db.collection('users').doc(req.params.id).get();
     if (!userDoc.exists) return res.status(404).json({ success: false, message: 'User not found' });
     const user = { id: userDoc.id, ...userDoc.data() };
+    // Strip sensitive fields — never expose to other users
     delete user.password;
+    delete user.failedAttempts;
+    delete user.lockoutUntil;
     res.json({ success: true, user });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
