@@ -385,15 +385,7 @@ function renderHomePage(modal) {
     <nav class="home-nav">
       <img src="cyberforge-logo.svg" style="height:34px;width:auto;vertical-align:middle;margin-right:8px;filter:drop-shadow(0 0 8px rgba(124,58,237,0.5));" alt="CyberForge Logo"/>
       <span class="home-logo" onclick="navigate('home')">CYBERFORGE</span>
-      <div class="home-nav-links">
-        <button class="home-nav-link active">HOME</button>
-        <button class="home-nav-link" onclick="showAuthModal('login')">EVENTS</button>
-        <button class="home-nav-link" onclick="showAuthModal('login')">CHALLENGES</button>
-        <button class="home-nav-link" onclick="showAuthModal('login')">LABS</button>
-        <button class="home-nav-link" onclick="showAuthModal('login')">WORKSHOPS</button>
-        <button class="home-nav-link" onclick="showAuthModal('login')">FEATURES</button>
-        <button class="home-nav-link" onclick="showAuthModal('login')">TERMINAL</button>
-      </div>
+
       <div class="home-nav-right">
         <button class="ctrl-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
           <i class="fas ${currentTheme==='dark'?'fa-sun':'fa-moon'}"></i> <span class="hide-mobile">${currentTheme==='dark'?'Light':'Dark'}</span>
