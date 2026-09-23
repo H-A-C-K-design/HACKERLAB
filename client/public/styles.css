@@ -1456,15 +1456,16 @@ body::before {
 /* ── Hero Banner ── */
 .dh-hero {
   position: relative;
-  background: linear-gradient(135deg, #1a0a3c 0%, #0d1b3e 40%, #0b1f2e 100%);
+  background: var(--bg-card);
   border-radius: 16px;
   overflow: hidden;
   margin-bottom: 1.5rem;
-  border: 1px solid rgba(124,58,237,0.25);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 24px rgba(124,58,237,0.08);
 }
 [data-theme="dark"] .dh-hero {
-  background: linear-gradient(135deg, #130826 0%, #0a1628 40%, #071520 100%);
-  border-color: rgba(167,139,250,0.2);
+  background: var(--bg-card);
+  border-color: var(--border);
 }
 .dh-hero-bg-grid {
   position: absolute; inset: 0; pointer-events: none;
@@ -1516,12 +1517,12 @@ body::before {
 .dh-greeting {
   font-family: 'Orbitron', monospace;
   font-size: clamp(1.3rem, 3vw, 2rem);
-  font-weight: 800; color: #f9fafb;
+  font-weight: 800; color: var(--text);
   margin-bottom: 0.4rem; line-height: 1.2;
 }
-.dh-uname { color: #a78bfa; }
+.dh-uname { color: var(--purple); }
 .dh-sub {
-  font-size: 0.95rem; color: rgba(255,255,255,0.55);
+  font-size: 0.95rem; color: var(--text-dim);
   margin-bottom: 1.2rem; font-family: 'Inter', sans-serif;
 }
 
@@ -1531,20 +1532,21 @@ body::before {
   font-size: 0.88rem; margin-bottom: 0.5rem;
   font-family: 'Inter', sans-serif;
 }
-.dh-xp-sep { color: rgba(255,255,255,0.3); margin: 0 0.1rem; }
+.dh-xp-sep { color: var(--text-dim); margin: 0 0.1rem; }
 .dh-xp-track {
-  height: 6px; background: rgba(255,255,255,0.1);
+  height: 6px; background: var(--bg2);
+  border: 1px solid var(--border);
   border-radius: 99px; overflow: hidden; width: 100%; max-width: 320px;
   margin-bottom: 0.3rem;
 }
 .dh-xp-fill {
   height: 100%;
-  background: linear-gradient(90deg, #7c3aed, #38bdf8);
+  background: linear-gradient(90deg, var(--purple-d), var(--cyan));
   border-radius: 99px;
-  box-shadow: 0 0 8px rgba(124,58,237,0.6);
+  box-shadow: var(--glow-p);
   transition: width 1s ease;
 }
-.dh-xp-caption { font-size: 0.72rem; color: rgba(255,255,255,0.38); font-family: 'Inter', sans-serif; }
+.dh-xp-caption { font-size: 0.72rem; color: var(--text-dim); font-family: 'Inter', sans-serif; }
 
 .dh-hero-btns { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 .dh-btn-primary {
@@ -1559,13 +1561,13 @@ body::before {
 .dh-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(124,58,237,0.5); }
 .dh-btn-outline {
   display: inline-flex; align-items: center; gap: 0.5rem;
-  background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8);
-  border: 1px solid rgba(255,255,255,0.18); border-radius: 10px;
+  background: var(--bg2); color: var(--text-mid);
+  border: 1px solid var(--border); border-radius: 10px;
   padding: 0.6rem 1.3rem; font-size: 0.88rem; font-weight: 600;
   cursor: pointer; font-family: 'Inter', sans-serif;
   transition: all 0.25s;
 }
-.dh-btn-outline:hover { background: rgba(255,255,255,0.1); border-color: rgba(124,58,237,0.5); color: #fff; }
+.dh-btn-outline:hover { background: rgba(124,58,237,0.08); border-color: var(--purple); color: var(--purple); }
 
 /* ── Animated Shield Scene ── */
 .dh-hero-right {
@@ -1612,22 +1614,22 @@ body::before {
 .dh-stat-pills {
   position: relative; z-index: 1;
   display: flex; gap: 0; flex-wrap: wrap;
-  border-top: 1px solid rgba(255,255,255,0.08);
+  border-top: 1px solid var(--border);
 }
 .dh-stat-pill {
   flex: 1; min-width: 100px;
   display: flex; align-items: center; gap: 0.5rem;
   padding: 0.85rem 1.4rem;
-  border-right: 1px solid rgba(255,255,255,0.07);
+  border-right: 1px solid var(--border);
   transition: background 0.2s;
 }
 .dh-stat-pill:last-child { border-right: none; }
-.dh-stat-pill:hover { background: rgba(255,255,255,0.04); }
+.dh-stat-pill:hover { background: var(--bg2); }
 .dh-pill-val {
   font-family: 'Orbitron', monospace;
-  font-size: 1rem; font-weight: 700; color: #f9fafb;
+  font-size: 1rem; font-weight: 700; color: var(--text);
 }
-.dh-pill-lbl { font-size: 0.75rem; color: rgba(255,255,255,0.4); font-family: 'Inter', sans-serif; }
+.dh-pill-lbl { font-size: 0.75rem; color: var(--text-dim); font-family: 'Inter', sans-serif; }
 
 /* ── Body Layout ── */
 .dh-body {
@@ -1773,29 +1775,29 @@ body::before {
 
 /* ── Intel Terminal Box ── */
 .dh-intel-box {
-  background: #0b0f1a;
-  border: 1px solid rgba(124,58,237,0.25);
+  background: var(--bg2);
+  border: 1px solid var(--border);
   border-radius: 12px; overflow: hidden;
 }
-[data-theme="dark"] .dh-intel-box { background: #060a12; }
+[data-theme="dark"] .dh-intel-box { background: #0b0f1a; border-color: rgba(124,58,237,0.2); }
 .dh-intel-prompt {
   display: flex; align-items: center; gap: 0.6rem;
   padding: 0.7rem 1rem;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid var(--border);
   font-family: 'Share Tech Mono', monospace; font-size: 0.85rem;
 }
-.dh-prompt-sym { color: #a78bfa; font-weight: 700; }
-.dh-intel-text { color: rgba(255,255,255,0.7); }
+.dh-prompt-sym { color: var(--purple); font-weight: 700; }
+.dh-intel-text { color: var(--text-mid); }
 .dh-blink-cursor {
   display: inline-block; width: 8px; height: 1em;
-  background: #a78bfa; vertical-align: text-bottom;
+  background: var(--purple); vertical-align: text-bottom;
   animation: dh-blink 1s step-start infinite;
 }
 @keyframes dh-blink { 0%,100%{opacity:1} 50%{opacity:0} }
 .dh-intel-output {
   padding: 1rem;
   font-family: 'Share Tech Mono', monospace;
-  font-size: 0.85rem; color: #34d399;
+  font-size: 0.85rem; color: var(--green);
   line-height: 1.8; min-height: 56px;
 }
 
