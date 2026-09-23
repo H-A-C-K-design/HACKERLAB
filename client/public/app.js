@@ -157,18 +157,7 @@ function renderNavbar() {
       <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div class="logo" onclick="navigate('home')">CYBER<span>FORGE</span> <small class="hide-mobile" style="font-size:0.6rem;color:var(--text-dim);font-family:Rajdhani">ACADEMY</small></div>
     </div>
-    <div class="nav-links">
-      <button class="nav-btn ${state.page==='home'?'active':''}" onclick="navigate('home')"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
-      <button class="nav-btn ${state.page==='challenges'?'active':''}" onclick="navigate('challenges')"><i class="fas fa-flag"></i> Challenges</button>
-      <button class="nav-btn ${state.page==='events'?'active':''}" onclick="navigate('events')"><i class="fas fa-trophy"></i> Events</button>
-      <button class="nav-btn ${state.page==='eventSessions'?'active':''}" onclick="navigate('eventSessions')"><i class="fas fa-calendar-check"></i> Sessions</button>
-      <button class="nav-btn ${state.page==='labs'?'active':''}" onclick="navigate('labs')"><i class="fas fa-flask"></i> Labs</button>
-      <button class="nav-btn ${state.page==='workshops'?'active':''}" onclick="navigate('workshops')"><i class="fas fa-laptop-code"></i> Workshops</button>
-      <button class="nav-btn ${state.page==='tools'?'active':''}" onclick="navigate('tools')"><i class="fas fa-tools"></i> Tools</button>
-      <button class="nav-btn ${state.page==='learning'?'active':''}" onclick="navigate('learning')"><i class="fas fa-book"></i> Learn</button>
-      <button class="nav-btn ${state.page==='terminal'?'active':''}" onclick="navigate('terminal')"><i class="fas fa-terminal"></i> Terminal</button>
-      <button class="nav-btn ${state.page==='tasks'?'active':''}" onclick="navigate('tasks')"><i class="fas fa-code"></i> Tasks</button>
-    </div>
+
     <div class="nav-user">
       <button class="ctrl-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
         <i class="fas ${currentTheme==='dark'?'fa-sun':'fa-moon'}"></i> <span class="hide-mobile">${currentTheme==='dark'?'Light':'Dark'}</span>
