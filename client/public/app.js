@@ -199,13 +199,19 @@ function renderSidebar() {
   const u = state.user || {};
   const username = u.username && !u.username.includes('@') ? u.username : (u.username||'').split('@')[0];
   
-  return `<div class="sidebar">${items.map(i => `<div class="sidebar-item ${state.page===i.page?'active':''}" onclick="navigate('${i.page}')"><i class="fas ${i.icon}"></i> ${i.label}</div>`).join('')}
-    <div class="sidebar-profile-card">
-      <div class="profile-header">
-        <div class="profile-avatar"><i class="fas fa-user-shield"></i></div>
-        <div class="profile-meta">
-          <div class="profile-label">LOGGED IN AS</div>
-          <div class="profile-name" title="${u.username||''}">${username}</div>
+  return `<div class="sidebar">
+    <div class="sidebar-nav">
+      ${items.map(i => `<div class="sidebar-item ${state.page===i.page?'active':''}" onclick="navigate('${i.page}')"><i class="fas ${i.icon}"></i> ${i.label}</div>`).join('')}
+    </div>
+    <div class="sidebar-bottom">
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-profile-card">
+        <div class="profile-header">
+          <div class="profile-avatar"><i class="fas fa-user-shield"></i></div>
+          <div class="profile-meta">
+            <div class="profile-label">LOGGED IN AS</div>
+            <div class="profile-name" title="${u.username||''}">${username}</div>
+          </div>
         </div>
       </div>
     </div>

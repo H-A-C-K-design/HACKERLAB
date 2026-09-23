@@ -1003,8 +1003,22 @@ body::before {
   display: flex;
   flex-direction: column;
 }
+.sidebar-nav {
+  flex: 0 0 auto;
+  padding: 0.4rem 0;
+}
+.sidebar-bottom {
+  flex: 0 0 auto;
+  padding: 0 0 0.5rem;
+}
+.sidebar-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.5rem 1rem 0.8rem;
+  opacity: 0.6;
+}
 .sidebar-profile-card {
-  margin-top: auto;
+  margin-top: 0;
   margin-left: 12px;
   margin-right: 12px;
   margin-bottom: 12px;
