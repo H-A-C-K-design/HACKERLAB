@@ -395,7 +395,6 @@ function renderHomePage(modal) {
         <button class="home-nav-link" onclick="showAuthModal('login')">TERMINAL</button>
       </div>
       <div class="home-nav-right">
-        <button class="home-nav-link active" onclick="navigate('home')" title="Go to Home" style="margin-right:0.25rem"><i class="fas fa-home" style="margin-right:0.35rem"></i>Home</button>
         <button class="ctrl-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
           <i class="fas ${currentTheme==='dark'?'fa-sun':'fa-moon'}"></i> <span class="hide-mobile">${currentTheme==='dark'?'Light':'Dark'}</span>
         </button>
