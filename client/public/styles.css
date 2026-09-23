@@ -1066,7 +1066,7 @@ body::before {
   font-family: 'Inter', sans-serif;
 }
 
-.content-area { margin-left:225px; flex:1; padding:1.8rem; padding-top:calc(58px + 1.8rem); }
+.content-area { margin-left:0; flex:1; padding:1.8rem; padding-top:calc(58px + 1.8rem); max-width:1200px; margin-right:auto; }
 .page-header { margin-bottom:1.8rem; }
 .page-title { font-family:'Orbitron',monospace; font-size:1.4rem; font-weight:700; }
 .page-title span { background:var(--grad-main); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }

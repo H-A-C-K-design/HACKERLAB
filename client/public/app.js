@@ -214,7 +214,6 @@ function renderDashboardLayout(content) {
       <button onclick="navigate('events')" class="banner-btn">VIEW CHAKRAVYUH ↗</button>
     </div>
     ${renderNavbar()}
-    ${renderSidebar()}
     <div class="content-area fade-in">${content}</div>
   `;
 }
