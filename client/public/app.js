@@ -349,7 +349,6 @@ function renderDashboard() {
             <div class="dh-mission-card" onclick="navigate('${m.page}')" style="--ac:${m.accent};--gw:${m.glow}">
               <div class="dh-mc-glow"></div>
               <div class="dh-mc-top">
-                <span class="dh-mc-emoji">${m.emoji}</span>
                 <i class="fas fa-arrow-right dh-mc-arrow"></i>
               </div>
               <div class="dh-mc-title">${m.title}</div>
