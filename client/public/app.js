@@ -2372,6 +2372,8 @@ function navigate(page) {
   state.selectedLab = null;
   state.selectedTool = null;
   state.selectedModule = null;
+  // Push to browser history so back button works
+  history.pushState({ page }, '', '#' + page);
   const s = document.querySelector('.sidebar');
   if(s && s.classList.contains('open')) toggleSidebar();
   render();
@@ -2971,3 +2973,23 @@ window.renderEventSessionsPage = renderEventSessionsPage;
 window.loadEventSessions = loadEventSessions;
 window.registerForSession = registerForSession;
 
+// ---- BROWSER BACK/FORWARD SUPPORT ----
+window.addEventListener('popstate', function(e) {
+  const page = (e.state && e.state.page) || 'home';
+  state.page = page;
+  state.selectedChallenge = null;
+  state.selectedLab = null;
+  state.selectedTool = null;
+  state.selectedModule = null;
+  render();
+});
+
+// On first load, read hash if present and set initial history state
+(function initFromHash() {
+  const hash = window.location.hash.replace('#', '');
+  const validPages = ['home','challenges','events','eventSessions','labs','workshops','tools','learning','terminal','tasks'];
+  if (hash && validPages.includes(hash)) {
+    state.page = hash;
+  }
+  history.replaceState({ page: state.page }, '', '#' + state.page);
+})();
