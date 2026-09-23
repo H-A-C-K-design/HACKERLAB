@@ -227,43 +227,160 @@ function renderDashboardLayout(content) {
 // ---- DASHBOARD ----
 function renderDashboard() {
   const u = state.user || {};
-  const xpToNext = ((Math.floor((u.xp||0)/500)+1)*500);
-  const pct = Math.min(100, ((u.xp||0) % 500) / 500 * 100);
-  return `<div class="page-header">
-    <div class="page-title">Welcome back, <span>${u.username||'Hacker'}</span> 👋</div>
-    <div class="page-sub">Your cybersecurity journey continues. Keep hacking!</div>
+  const xp = u.xp || 0;
+  const level = u.level || 1;
+  const pct = Math.min(100, (xp % 500) / 500 * 100);
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const rank = u.rank || 'Script Kiddie';
+
+  return `
+  <!-- ═══ HERO WELCOME BANNER ═══ -->
+  <div class="dh-hero">
+    <div class="dh-hero-bg-grid"></div>
+    <div class="dh-hero-glow-1"></div>
+    <div class="dh-hero-glow-2"></div>
+    <div class="dh-hero-inner">
+      <div class="dh-hero-left">
+        <div class="dh-rank-pill"><span class="dh-rank-dot"></span>${rank}</div>
+        <h2 class="dh-greeting">${greeting}, <span class="dh-uname">${u.username||'Hacker'}</span> 👾</h2>
+        <p class="dh-sub">Your ops are live. Stay in the fight.</p>
+        <div class="dh-xp-row">
+          <div class="dh-xp-info">
+            <i class="fas fa-bolt" style="color:#ffcc00;margin-right:0.3rem"></i>
+            <strong style="color:var(--text)">${xp} XP</strong>
+            <span class="dh-xp-sep">·</span>
+            <span style="color:var(--text-dim)">Level ${level}</span>
+          </div>
+          <div class="dh-xp-track">
+            <div class="dh-xp-fill" style="width:${pct}%"></div>
+          </div>
+          <div class="dh-xp-caption">${xp % 500} / 500 to Level ${level + 1}</div>
+        </div>
+        <div class="dh-hero-btns">
+          <button class="dh-btn-primary" onclick="navigate('challenges')"><i class="fas fa-flag"></i> New Mission</button>
+          <button class="dh-btn-outline" onclick="navigate('labs')"><i class="fas fa-flask"></i> Enter Lab</button>
+        </div>
+      </div>
+      <div class="dh-hero-right">
+        <div class="dh-shield-scene">
+          <div class="dh-orbit dh-orbit-1"><div class="dh-orb dh-orb-cyan"></div></div>
+          <div class="dh-orbit dh-orbit-2"><div class="dh-orb dh-orb-pink"></div></div>
+          <div class="dh-orbit dh-orbit-3"><div class="dh-orb dh-orb-purple"></div></div>
+          <div class="dh-shield-core">
+            <i class="fas fa-shield-halved"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Stat Pills -->
+    <div class="dh-stat-pills">
+      <div class="dh-stat-pill">
+        <i class="fas fa-flag" style="color:var(--purple)"></i>
+        <span class="dh-pill-val" id="dash-challenges">—</span>
+        <span class="dh-pill-lbl">Challenges</span>
+      </div>
+      <div class="dh-stat-pill">
+        <i class="fas fa-flask" style="color:var(--cyan)"></i>
+        <span class="dh-pill-val" id="dash-labs">—</span>
+        <span class="dh-pill-lbl">Labs Done</span>
+      </div>
+      <div class="dh-stat-pill">
+        <i class="fas fa-star" style="color:#ffcc00"></i>
+        <span class="dh-pill-val">${xp}</span>
+        <span class="dh-pill-lbl">Total XP</span>
+      </div>
+      <div class="dh-stat-pill">
+        <i class="fas fa-layer-group" style="color:var(--green)"></i>
+        <span class="dh-pill-val">Lv ${level}</span>
+        <span class="dh-pill-lbl">Rank Level</span>
+      </div>
+    </div>
   </div>
-  <div class="dashboard-grid">
-    <div class="stat-card cyan"><div class="big-num">${u.xp||0}</div><div class="stat-label">Total XP</div>
-      <div class="xp-bar-container"><div class="xp-bar" style="width:${pct}%"></div></div>
-      <div style="font-size:0.75rem;color:var(--text-dim);margin-top:0.3rem">${(u.xp||0)%500}/${500} to next level</div>
-    </div>
-    <div class="stat-card green"><div class="big-num">${u.level||1}</div><div class="stat-label">Level</div></div>
-    <div class="stat-card red"><div class="big-num" id="dash-challenges">-</div><div class="stat-label">Challenges Solved</div></div>
-    <div class="stat-card purple"><div class="big-num" id="dash-labs">-</div><div class="stat-label">Labs Completed</div></div>
-  </div>
-  <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-      <h3 style="font-family:Orbitron,monospace;font-size:1.1rem;color:var(--purple)"><i class="fas fa-rocket"></i> Quick Start</h3>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;">
-      ${[
-        {icon:'🎯',title:'Start a Challenge',sub:'Test your skills with CTF challenges',page:'challenges',color:'var(--purple)'},
-        {icon:'🧪',title:'Enter a Lab',sub:'Guided hands-on hacking labs',page:'labs',color:'var(--cyan)'},
-        {icon:'📚',title:'Learn Concepts',sub:'Theory and techniques explained',page:'learning',color:'var(--green)'},
-        {icon:'💻',title:'Open Terminal',sub:'Simulate Kali Linux commands',page:'terminal',color:'var(--orange)'},
-      ].map(q => `<div onclick="navigate('${q.page}')" style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1.2rem;cursor:pointer;transition:all 0.3s;border-left:3px solid ${q.color}" onmouseover="this.style.background='rgba(124,58,237,.05)';this.style.borderColor='${q.color}'" onmouseout="this.style.background='var(--bg2)';this.style.borderColor='var(--border)'">
-        <div style="font-size:1.5rem;margin-bottom:0.5rem">${q.icon}</div>
-        <div style="font-weight:700;margin-bottom:0.25rem;color:var(--text)">${q.title}</div>
-        <div style="font-size:0.85rem;color:var(--text-dim)">${q.sub}</div>
-      </div>`).join('')}
-    </div>
-  </div>
-  <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;">
-    <h3 style="font-family:Orbitron,monospace;font-size:1.1rem;color:var(--purple);margin-bottom:1rem"><i class="fas fa-bolt"></i> Platform Tip</h3>
-    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1rem;font-family:'Share Tech Mono',monospace;font-size:0.85rem;color:var(--text-mid);line-height:1.8" id="tip-box">
-    Loading tip...
-    </div>
+
+  <!-- ═══ BODY: LEFT PANEL + MAIN CONTENT ═══ -->
+  <div class="dh-body">
+
+    <!-- Left "Today" Panel -->
+    <aside class="dh-aside">
+      <div class="dh-aside-title">Today</div>
+      <nav class="dh-aside-nav">
+        <div class="dh-aside-item dh-aside-active">
+          <i class="fas fa-house-chimney"></i> Home
+        </div>
+        <div class="dh-aside-item" onclick="navigate('challenges')">
+          <i class="fas fa-crosshairs"></i> My Challenges
+        </div>
+        <div class="dh-aside-item" onclick="navigate('labs')">
+          <i class="fas fa-flask"></i> Active Labs
+        </div>
+        <div class="dh-aside-item" onclick="navigate('learning')">
+          <i class="fas fa-book-open"></i> Learning Path
+        </div>
+        <div class="dh-aside-item" onclick="navigate('events')">
+          <i class="fas fa-trophy"></i> CTF Events
+        </div>
+        <div class="dh-aside-item" onclick="navigate('tasks')">
+          <i class="fas fa-code"></i> Coding Tasks
+        </div>
+        <div class="dh-aside-item" onclick="navigate('terminal')">
+          <i class="fas fa-terminal"></i> Terminal
+        </div>
+      </nav>
+      <div class="dh-aside-tip-box">
+        <div class="dh-aside-tip-label"><i class="fas fa-lightbulb"></i> Hacker Tip</div>
+        <div class="dh-aside-tip-text" id="tip-box">Loading...</div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="dh-main">
+
+      <!-- Mission Launcher -->
+      <div class="dh-section">
+        <div class="dh-section-hd">
+          <h3 class="dh-section-title"><i class="fas fa-rocket"></i> Mission Control</h3>
+          <span class="dh-section-sub">Pick your next operation</span>
+        </div>
+        <div class="dh-mission-grid">
+          ${[
+            {emoji:'🎯', title:'CTF Challenges', desc:'Flag capture. Real-world attack scenarios.', page:'challenges', accent:'#7c3aed', glow:'rgba(124,58,237,0.18)'},
+            {emoji:'🧪', title:'Hacking Labs',   desc:'Guided exploitation. Hands-on environment.', page:'labs',       accent:'#0891b2', glow:'rgba(8,145,178,0.18)'},
+            {emoji:'📚', title:'Learn & Master', desc:'Concepts, techniques, and theory — structured.', page:'learning',  accent:'#059669', glow:'rgba(5,150,105,0.18)'},
+            {emoji:'💻', title:'Live Terminal',  desc:'Kali Linux in your browser. No install needed.', page:'terminal',  accent:'#d97706', glow:'rgba(217,119,6,0.18)'},
+            {emoji:'🏆', title:'CTF Events',     desc:'Compete in team events. Earn leaderboard glory.', page:'events',    accent:'#db2777', glow:'rgba(219,39,119,0.18)'},
+            {emoji:'⚒️', title:'Workshops',      desc:'One-session power sessions. Deep skill dives.', page:'workshops', accent:'#7c3aed', glow:'rgba(124,58,237,0.12)'},
+          ].map(m => `
+            <div class="dh-mission-card" onclick="navigate('${m.page}')" style="--ac:${m.accent};--gw:${m.glow}">
+              <div class="dh-mc-glow"></div>
+              <div class="dh-mc-top">
+                <span class="dh-mc-emoji">${m.emoji}</span>
+                <i class="fas fa-arrow-right dh-mc-arrow"></i>
+              </div>
+              <div class="dh-mc-title">${m.title}</div>
+              <div class="dh-mc-desc">${m.desc}</div>
+              <div class="dh-mc-bar"></div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Activity / Recent Section -->
+      <div class="dh-section">
+        <div class="dh-section-hd">
+          <h3 class="dh-section-title"><i class="fas fa-terminal"></i> Platform Intel</h3>
+        </div>
+        <div class="dh-intel-box">
+          <div class="dh-intel-prompt">
+            <span class="dh-prompt-sym">$</span>
+            <span class="dh-intel-text" id="tip-box-intel">cyberforge --tip</span>
+            <span class="dh-blink-cursor"></span>
+          </div>
+          <div class="dh-intel-output" id="tip-box">Loading tip...</div>
+        </div>
+      </div>
+
+    </main>
   </div>`;
 }
 
