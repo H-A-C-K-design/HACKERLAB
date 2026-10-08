@@ -338,12 +338,12 @@ function renderDashboard() {
         </div>
         <div class="dh-mission-grid">
           ${[
-            {emoji:'🎯', title:'CTF Challenges', desc:'Flag capture. Real-world attack scenarios.', page:'challenges', accent:'#7c3aed', glow:'rgba(124,58,237,0.18)'},
-            {emoji:'🧪', title:'Hacking Labs',   desc:'Guided exploitation. Hands-on environment.', page:'labs',       accent:'#0891b2', glow:'rgba(8,145,178,0.18)'},
+            {emoji:'🎯', title:'CTF Challenges', desc:'Flag capture. Real-world attack scenarios.', page:'challenges', accent:'#10b981', glow:'rgba(16,185,129,0.18)'},
+            {emoji:'🧪', title:'Hacking Labs',   desc:'Guided exploitation. Hands-on environment.', page:'labs',       accent:'#6b7280', glow:'rgba(107,114,128,0.18)'},
             {emoji:'📚', title:'Learn & Master', desc:'Concepts, techniques, and theory — structured.', page:'learning',  accent:'#059669', glow:'rgba(5,150,105,0.18)'},
             {emoji:'💻', title:'Live Terminal',  desc:'Kali Linux in your browser. No install needed.', page:'terminal',  accent:'#d97706', glow:'rgba(217,119,6,0.18)'},
-            {emoji:'🏆', title:'CTF Events',     desc:'Compete in team events. Earn leaderboard glory.', page:'events',    accent:'#db2777', glow:'rgba(219,39,119,0.18)'},
-            {emoji:'⚒️', title:'Workshops',      desc:'One-session power sessions. Deep skill dives.', page:'workshops', accent:'#7c3aed', glow:'rgba(124,58,237,0.12)'},
+            {emoji:'🏆', title:'CTF Events',     desc:'Compete in team events. Earn leaderboard glory.', page:'events',    accent:'#6b7280', glow:'rgba(107,114,128,0.18)'},
+            {emoji:'⚒️', title:'Workshops',      desc:'One-session power sessions. Deep skill dives.', page:'workshops', accent:'#10b981', glow:'rgba(16,185,129,0.12)'},
           ].map(m => `
             <div class="dh-mission-card" onclick="navigate('${m.page}')" style="--ac:${m.accent};--gw:${m.glow}">
               <div class="dh-mc-glow"></div>
@@ -493,7 +493,7 @@ function renderHomePage(modal) {
     </div>
     <!-- NAVBAR -->
     <nav class="home-nav">
-      <img src="cyberforge-logo.svg" style="height:34px;width:auto;vertical-align:middle;margin-right:8px;filter:drop-shadow(0 0 8px rgba(124,58,237,0.5));" alt="CyberForge Logo"/>
+      <img src="cyberforge-logo.svg" style="height:34px;width:auto;vertical-align:middle;margin-right:8px;filter:drop-shadow(0 0 8px rgba(16,185,129,0.5));" alt="CyberForge Logo"/>
       <span class="home-logo" onclick="navigate('home')">CYBERFORGE</span>
 
       <div class="home-nav-right">
@@ -558,66 +558,23 @@ function renderHomePage(modal) {
         </div>
 
         <!-- Floating HUD Status Cards Orbiting the 3D Rings -->
-        <div class="floating-hud-card hud-card-1" style="position:absolute;top:6%;left:2%;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(124,58,237,0.15);z-index:10;">
+        <div class="floating-hud-card hud-card-1" style="position:absolute;top:6%;left:2%;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(16,185,129,0.15);z-index:10;">
           <div style="color:var(--green);font-weight:700;font-size:0.8rem;">● SYSTEM ONLINE</div>
           <div style="color:var(--text);font-weight:600;font-size:0.85rem;">Security Labs</div>
           <div style="color:var(--text-dim);font-size:0.75rem;">99.9% Operational</div>
         </div>
-        <div class="floating-hud-card hud-card-2" style="position:absolute;top:58%;right:0%;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(124,58,237,0.15);z-index:10;">
+        <div class="floating-hud-card hud-card-2" style="position:absolute;top:58%;right:0%;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(16,185,129,0.15);z-index:10;">
           <div style="color:var(--pink);font-weight:700;font-size:0.8rem;">⚡ ACTIVE CHALLENGE</div>
           <div style="color:var(--text);font-weight:600;font-size:0.85rem;">Web Exploitation</div>
           <div style="color:var(--text-dim);font-size:0.75rem;">Difficulty: Medium</div>
         </div>
-        <div class="floating-hud-card hud-card-3" style="position:absolute;bottom:4%;left:8%;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(124,58,237,0.15);z-index:10;">
+        <div class="floating-hud-card hud-card-3" style="position:absolute;bottom:4%;left:8%;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;box-shadow:0 8px 25px rgba(16,185,129,0.15);z-index:10;">
           <div style="color:var(--purple-l);font-weight:700;font-size:0.9rem;">👥 1,284</div>
           <div style="color:var(--text-dim);font-size:0.75rem;">Students Online</div>
         </div>
       </div>
     </section>
 
-    <!-- STATS SECTION -->
-    <section class="stats-section" id="stats-section">
-      <div class="stats-container">
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon-wrapper">
-              <i class="fa-solid fa-user-shield stat-icon"></i>
-            </div>
-            <div class="stat-content">
-              <div class="stat-number" data-target="10000" data-format="10K+">0</div>
-              <div class="stat-label">Students</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon-wrapper">
-              <i class="fa-solid fa-flag stat-icon"></i>
-            </div>
-            <div class="stat-content">
-              <div class="stat-number" data-target="500" data-format="500+">0</div>
-              <div class="stat-label">CTF Challenges</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon-wrapper">
-              <i class="fa-solid fa-terminal stat-icon"></i>
-            </div>
-            <div class="stat-content">
-              <div class="stat-number" data-target="100" data-format="100+">0</div>
-              <div class="stat-label">Hacking Labs</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon-wrapper">
-              <i class="fa-solid fa-trophy stat-icon"></i>
-            </div>
-            <div class="stat-content">
-              <div class="stat-number" data-target="25" data-format="25+">0</div>
-              <div class="stat-label">CTF Events</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <!-- ARSENAL SECTION (replaces old features grid) -->
     <section class="arsenal-section" id="arsenal-section">
@@ -631,11 +588,11 @@ function renderHomePage(modal) {
         <div class="arsenal-bento">
           <!-- Large card: CTF Event -->
           <div class="ab-card ab-wide" data-glow="purple" onclick="showAuthModal('register')">
-            <div class="ab-glow-orb" style="background:rgba(139,92,246,0.35)"></div>
+            <div class="ab-glow-orb" style="background:rgba(52,211,153,0.35)"></div>
             <div class="ab-scan"></div>
             <div class="ab-corner tl"></div><div class="ab-corner tr"></div><div class="ab-corner bl"></div><div class="ab-corner br"></div>
             <div class="ab-live-badge"><span class="ab-live-dot"></span>LIVE EVENT</div>
-            <div class="ab-icon-wrap" style="--glow:#7c3aed">
+            <div class="ab-icon-wrap" style="--glow:#10b981">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             </div>
             <h3 class="ab-title">CHAKRAVYUH CTF Event</h3>
@@ -645,15 +602,15 @@ function renderHomePage(modal) {
           </div>
           <!-- Hacking Labs -->
           <div class="ab-card" data-glow="cyan" onclick="showAuthModal('login')">
-            <div class="ab-glow-orb" style="background:rgba(34,211,238,0.3)"></div>
+            <div class="ab-glow-orb" style="background:rgba(209,213,219,0.3)"></div>
             <div class="ab-scan"></div>
             <div class="ab-corner tl"></div><div class="ab-corner tr"></div><div class="ab-corner bl"></div><div class="ab-corner br"></div>
-            <div class="ab-icon-wrap" style="--glow:#06b6d4">
+            <div class="ab-icon-wrap" style="--glow:#9ca3af">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
             </div>
             <h3 class="ab-title">Hacking Labs</h3>
             <p class="ab-desc">Step-by-step guided labs. From Kali basics to advanced exploitation with real vulnerable environments.</p>
-            <div class="ab-pill-row"><span class="ab-pill" style="--pc:#06b6d4">100+ Labs</span><span class="ab-pill" style="--pc:#06b6d4">All Levels</span></div>
+            <div class="ab-pill-row"><span class="ab-pill" style="--pc:#9ca3af">100+ Labs</span><span class="ab-pill" style="--pc:#9ca3af">All Levels</span></div>
           </div>
           <!-- Live Terminal -->
           <div class="ab-card" data-glow="emerald" onclick="showAuthModal('login')">
@@ -666,7 +623,7 @@ function renderHomePage(modal) {
             <h3 class="ab-title">Live Terminal</h3>
             <p class="ab-desc">Full Kali Linux in-browser. Practice real commands safely with no setup required.</p>
             <div class="ab-terminal-preview">
-              <span style="color:#7c3aed">$</span> <span style="color:#fff">nmap -sV 10.10.14.5</span><span class="ab-cursor"></span>
+              <span style="color:#10b981">$</span> <span style="color:#fff">nmap -sV 10.10.14.5</span><span class="ab-cursor"></span>
             </div>
           </div>
           <!-- Learn & Master -->
@@ -684,7 +641,7 @@ function renderHomePage(modal) {
           </div>
           <!-- Coding Tasks — wide card -->
           <div class="ab-card ab-wide" data-glow="pink" onclick="showAuthModal('login')">
-            <div class="ab-glow-orb" style="background:rgba(236,72,153,0.3)"></div>
+            <div class="ab-glow-orb" style="background:rgba(156,163,175,0.3)"></div>
             <div class="ab-scan"></div>
             <div class="ab-corner tl"></div><div class="ab-corner tr"></div><div class="ab-corner bl"></div><div class="ab-corner br"></div>
             <div class="ab-icon-wrap" style="--glow:#ec4899">
@@ -693,7 +650,7 @@ function renderHomePage(modal) {
             <h3 class="ab-title">Coding Tasks</h3>
             <p class="ab-desc">Python, Bash & JS security tools — earn XP for every working exploit, script, or automation solution you submit.</p>
             <div class="ab-code-strip">
-              <span style="color:#ec4899">def</span> <span style="color:#a78bfa">exploit</span><span style="color:#fff">(target):</span><br/>
+              <span style="color:#ec4899">def</span> <span style="color:#6ee7b7">exploit</span><span style="color:#fff">(target):</span><br/>
               &nbsp;&nbsp;<span style="color:#94a3b8">"""Auto-exploit CVE-2024-XXXX"""</span><br/>
               &nbsp;&nbsp;<span style="color:#34d399">return</span> <span style="color:#fb923c">shell</span><span style="color:#fff">(target, </span><span style="color:#f59e0b">port</span><span style="color:#fff">=4444)</span>
             </div>
@@ -829,7 +786,7 @@ function showMsg(id, msg, type) {
 
 async function doGoogleLogin() {
   const msgEl = $('auth-msg');
-  if (msgEl) msgEl.innerHTML = '<div class="alert" style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);color:var(--purple)"><i class="fas fa-spinner fa-spin"></i> Redirecting to Google sign-in...</div>';
+  if (msgEl) msgEl.innerHTML = '<div class="alert" style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);color:var(--purple)"><i class="fas fa-spinner fa-spin"></i> Redirecting to Google sign-in...</div>';
 
   if (!window.firebaseAuth || !window.googleProvider) {
     if (msgEl) msgEl.innerHTML = '<div class="alert alert-error">Firebase not ready. Please add your Firebase web config to index.html.</div>';
@@ -1028,7 +985,7 @@ async function openLab(id) {
           <p style="color:var(--text-dim);margin-top:0.5rem">${l.description}</p>
         </div>
         <div style="display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap">
-          ${l.downloadFile?`<div style="text-align:center;background:linear-gradient(135deg,rgba(124,58,237,0.1),rgba(168,85,247,0.1));border:1px solid rgba(124,58,237,0.3);padding:1rem 1.5rem;border-radius:12px;cursor:pointer;transition:all 0.3s" onclick="downloadLabFile('${l.downloadFile}','${l.downloadFileName||'module.docx'}')" onmouseover="this.style.borderColor='rgba(124,58,237,0.6)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 15px rgba(124,58,237,0.2)'" onmouseout="this.style.borderColor='rgba(124,58,237,0.3)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+          ${l.downloadFile?`<div style="text-align:center;background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(52,211,153,0.1));border:1px solid rgba(16,185,129,0.3);padding:1rem 1.5rem;border-radius:12px;cursor:pointer;transition:all 0.3s" onclick="downloadLabFile('${l.downloadFile}','${l.downloadFileName||'module.docx'}')" onmouseover="this.style.borderColor='rgba(16,185,129,0.6)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 15px rgba(16,185,129,0.2)'" onmouseout="this.style.borderColor='rgba(16,185,129,0.3)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
             <div style="font-size:1.8rem;margin-bottom:0.4rem"><i class="fas fa-file-download" style="color:var(--purple)"></i></div>
             <div style="font-size:0.75rem;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:1px">Download</div>
             <div style="font-size:0.65rem;color:var(--text-dim);margin-top:0.2rem">${l.downloadFileName||'Module File'}</div>
@@ -2519,7 +2476,7 @@ async function loadWorkshops() {
     const isAudio = w.mediaType === 'audio' || /\.(mp3|wav|ogg|m4a|aac)(\?.*)?$/i.test(w.videoUrl || '');
     const tagHtml = (w.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
     const difficultyClass = `level-${w.difficulty.toLowerCase()}`;
-    const mediaBadge = isAudio ? `<span class="cat-badge" style="background:rgba(0,229,255,0.1); border-color:rgba(0,229,255,0.3); color:var(--cyan);"><i class="fas fa-headphones-alt"></i> AUDIO WORKSHOP</span>` : `<span class="cat-badge" style="background:rgba(168,85,247,0.1); border-color:rgba(168,85,247,0.3); color:var(--purple);"><i class="fas fa-video"></i> ${w.status.toUpperCase()}</span>`;
+    const mediaBadge = isAudio ? `<span class="cat-badge" style="background:rgba(0,229,255,0.1); border-color:rgba(0,229,255,0.3); color:var(--cyan);"><i class="fas fa-headphones-alt"></i> AUDIO WORKSHOP</span>` : `<span class="cat-badge" style="background:rgba(52,211,153,0.1); border-color:rgba(52,211,153,0.3); color:var(--purple);"><i class="fas fa-video"></i> ${w.status.toUpperCase()}</span>`;
     
     let actionBtnHtml = '';
     if (isRecorded) {
@@ -2574,16 +2531,16 @@ async function playWorkshop(id) {
   const isAudio = w.mediaType === 'audio' || /\.(mp3|wav|ogg|m4a|aac)(\?.*)?$/i.test(w.videoUrl || '');
   
   const mediaHtml = isAudio ? `
-    <div style="background:linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(26, 16, 48, 0.98)); border-radius:14px; border:1px solid rgba(124, 58, 237, 0.35); padding:2.5rem 2rem; margin-bottom:1.5rem; text-align:center; position:relative; overflow:hidden; box-shadow: inset 0 0 40px rgba(124,58,237,0.15);">
-      <div style="position:absolute; top:-30px; right:-30px; width:140px; height:140px; background:radial-gradient(circle, rgba(124,58,237,0.25) 0%, transparent 70%); border-radius:50%; pointer-events:none;"></div>
+    <div style="background:linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(26, 16, 48, 0.98)); border-radius:14px; border:1px solid rgba(16, 185, 129, 0.35); padding:2.5rem 2rem; margin-bottom:1.5rem; text-align:center; position:relative; overflow:hidden; box-shadow: inset 0 0 40px rgba(16,185,129,0.15);">
+      <div style="position:absolute; top:-30px; right:-30px; width:140px; height:140px; background:radial-gradient(circle, rgba(16,185,129,0.25) 0%, transparent 70%); border-radius:50%; pointer-events:none;"></div>
       <div style="position:absolute; bottom:-30px; left:-30px; width:140px; height:140px; background:radial-gradient(circle, rgba(0,229,255,0.2) 0%, transparent 70%); border-radius:50%; pointer-events:none;"></div>
       
-      <div style="display:inline-flex; align-items:center; justify-content:center; width:90px; height:90px; border-radius:50%; background:linear-gradient(135deg, rgba(124,58,237,0.35), rgba(0,229,255,0.25)); border:2px solid var(--purple); margin-bottom:1.2rem; box-shadow:0 0 30px rgba(124,58,237,0.4);">
+      <div style="display:inline-flex; align-items:center; justify-content:center; width:90px; height:90px; border-radius:50%; background:linear-gradient(135deg, rgba(16,185,129,0.35), rgba(0,229,255,0.25)); border:2px solid var(--purple); margin-bottom:1.2rem; box-shadow:0 0 30px rgba(16,185,129,0.4);">
         <i class="fas fa-podcast" style="font-size:2.6rem; color:var(--cyan);"></i>
       </div>
       
       <div style="margin-bottom:0.6rem;">
-        <span style="font-size:0.75rem; font-family:'Share Tech Mono',monospace; background:rgba(124,58,237,0.2); border:1px solid rgba(124,58,237,0.4); color:var(--purple); padding:3px 12px; border-radius:14px; font-weight:700; text-transform:uppercase;">
+        <span style="font-size:0.75rem; font-family:'Share Tech Mono',monospace; background:rgba(16,185,129,0.2); border:1px solid rgba(16,185,129,0.4); color:var(--purple); padding:3px 12px; border-radius:14px; font-weight:700; text-transform:uppercase;">
           <i class="fas fa-headphones-alt"></i> Masterclass Audio Workshop Session
         </span>
       </div>
@@ -2614,7 +2571,7 @@ async function playWorkshop(id) {
 
   playerContainer.innerHTML = `
     <button class="btn btn-outline" style="margin-bottom:1.5rem;" onclick="closeWorkshopPlayer()"><i class="fas fa-arrow-left"></i> Back to Workshops</button>
-    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:2rem; box-shadow:0 8px 30px rgba(0,0,0,0.3); background-image:linear-gradient(to bottom right, var(--bg-card), rgba(124,58,237,0.02));">
+    <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:2rem; box-shadow:0 8px 30px rgba(0,0,0,0.3); background-image:linear-gradient(to bottom right, var(--bg-card), rgba(16,185,129,0.02));">
       <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
         <div>
           <span class="module-level level-${w.difficulty.toLowerCase()}">${w.difficulty}</span>
@@ -2727,7 +2684,7 @@ async function loadEvents() {
 
     grid.innerHTML = events.map(e => `
       <div class="card event-card" style="background:var(--bg-card); border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.2); transition:transform 0.25s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
-        <div style="background:${e.bannerGradient || 'linear-gradient(135deg, #7c3aed, #db2777)'}; padding:2rem; color:#fff; position:relative;">
+        <div style="background:${e.bannerGradient || 'linear-gradient(135deg, #10b981, #6b7280)'}; padding:2rem; color:#fff; position:relative;">
           <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
             <div>
               <span style="background:rgba(255,255,255,0.2); backdrop-filter:blur(5px); color:#fff; padding:4px 12px; border-radius:20px; font-size:0.75rem; font-family:'Share Tech Mono',monospace; text-transform:uppercase; font-weight:700;"><i class="fas fa-signal"></i> ${e.status.toUpperCase()} EVENT</span>
@@ -2763,7 +2720,7 @@ async function loadEvents() {
           <div style="margin-bottom:1.5rem;">
             <div style="font-size:0.85rem; font-weight:700; color:var(--text); margin-bottom:0.6rem; text-transform:uppercase; letter-spacing:0.5px;">Categories</div>
             <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
-              ${(e.categories||[]).map(c => `<span class="tag" style="background:rgba(124,58,237,0.1); border-color:rgba(124,58,237,0.3); color:var(--purple); font-weight:600;">${c}</span>`).join('')}
+              ${(e.categories||[]).map(c => `<span class="tag" style="background:rgba(16,185,129,0.1); border-color:rgba(16,185,129,0.3); color:var(--purple); font-weight:600;">${c}</span>`).join('')}
             </div>
           </div>
 
@@ -2858,8 +2815,8 @@ async function loadEventSessions() {
       const statusIcon = isCompleted ? 'fa-check-circle' : 'fa-broadcast-tower';
 
       return `
-      <div class="card event-session-card" style="background:var(--bg-card); border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.15); transition:transform 0.25s, box-shadow 0.25s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 16px 40px rgba(124,58,237,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.15)'">
-        <div style="background:${s.bannerGradient || 'linear-gradient(135deg, #7c3aed, #2563eb)'}; padding:1.75rem; color:#fff; position:relative;">
+      <div class="card event-session-card" style="background:var(--bg-card); border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.15); transition:transform 0.25s, box-shadow 0.25s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 16px 40px rgba(16,185,129,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(0,0,0,0.15)'">
+        <div style="background:${s.bannerGradient || 'linear-gradient(135deg, #10b981, #2563eb)'}; padding:1.75rem; color:#fff; position:relative;">
           <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
             <div style="flex:1;">
               <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.6rem;">
@@ -2904,7 +2861,7 @@ async function loadEventSessions() {
 
           <div style="margin-bottom:1.25rem;">
             <div style="display:flex; flex-wrap:wrap; gap:0.4rem;">
-              ${(s.tags||[]).map(t => '<span class="tag" style="background:rgba(124,58,237,0.1); border-color:rgba(124,58,237,0.3); color:var(--purple); font-weight:600; font-size:0.75rem;">' + t + '</span>').join('')}
+              ${(s.tags||[]).map(t => '<span class="tag" style="background:rgba(16,185,129,0.1); border-color:rgba(16,185,129,0.3); color:var(--purple); font-weight:600; font-size:0.75rem;">' + t + '</span>').join('')}
             </div>
           </div>
 
