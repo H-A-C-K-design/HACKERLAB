@@ -250,10 +250,10 @@ body::before {
 
 /* ── Hero Section ── */
 .hero-wrap {
-  min-height: 100vh; display: flex; align-items: center;
+  min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center;
   padding: 80px 5% 4rem; position: relative; overflow: hidden;
 }
-.hero-left { flex: 1; max-width: 600px; z-index: 2; }
+.hero-left { flex: 1; max-width: 800px; z-index: 2; display: flex; flex-direction: column; align-items: center; }
 .hero-badge {
   display: inline-flex; align-items: center; gap: .5rem;
   padding: .3rem .9rem; border-radius: 20px; margin-bottom: 2rem;
@@ -268,21 +268,21 @@ body::before {
 @keyframes dotPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.7)} }
 .hero-title {
   font-family: 'Inter', sans-serif; line-height: 1.1;
-  font-weight: 800; margin-bottom: 1.5rem;
+  font-weight: 800; margin-bottom: 1.5rem; text-align: center;
 }
-.hero-t1 { display: block; font-size: clamp(2.2rem,4.5vw,3.5rem); color: var(--text); letter-spacing: -1px; }
+.hero-t1 { display: block; font-size: clamp(2.5rem,5.5vw,4.5rem); color: var(--text); letter-spacing: -1px; }
 .hero-t2 {
-  display: block; font-size: clamp(2.5rem,5.5vw,4.2rem);
+  display: block; font-size: clamp(3rem,6.5vw,5.5rem);
   background: var(--grad-main);
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -1px;
 }
 .hero-desc {
-  color: var(--text-mid); font-size: 1rem; line-height: 1.75;
-  max-width: 480px; margin-bottom: 2.5rem;
+  color: var(--text-mid); font-size: 1.1rem; line-height: 1.75;
+  max-width: 600px; margin-bottom: 2.5rem; text-align: center;
 }
-.hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+.hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
 .hero-btn-primary {
   display: flex; align-items: center; gap: .6rem;
   padding: .75rem 1.8rem; border: none; border-radius: 9px;
