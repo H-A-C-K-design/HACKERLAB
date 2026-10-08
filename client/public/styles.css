@@ -254,16 +254,19 @@ body::before {
   padding: 80px 5% 4rem; position: relative; overflow: hidden;
 }
 
-/* ── Hero Background Video Loop ── */
+/* ── Fixed Fullscreen Video Wallpaper for Homepage ── */
+.home-video-wallpaper-wrap,
 .hero-bg-video-wrap {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 0;
   pointer-events: none;
+  overflow: hidden;
 }
+.home-video-wallpaper,
 .hero-bg-video {
   position: absolute;
   top: 50%;
@@ -278,30 +281,35 @@ body::before {
   filter: brightness(0.72) contrast(1.1);
   transition: opacity 0.5s ease;
 }
+.home-video-wallpaper-overlay,
 .hero-bg-video-overlay {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  /* Cyber dark vignette overlay blending smoothly into section bottom */
+  /* Cyber dark vignette overlay so text across entire page remains crisp */
   background:
-    radial-gradient(ellipse at center, rgba(11, 15, 25, 0.42) 0%, rgba(11, 15, 25, 0.78) 75%, var(--bg) 100%),
-    linear-gradient(180deg, rgba(11, 15, 25, 0.4) 0%, transparent 40%, var(--bg) 100%);
+    radial-gradient(ellipse at center, rgba(11, 15, 25, 0.42) 0%, rgba(11, 15, 25, 0.76) 85%, rgba(11, 15, 25, 0.92) 100%),
+    linear-gradient(180deg, rgba(11, 15, 25, 0.45) 0%, rgba(11, 15, 25, 0.3) 50%, rgba(11, 15, 25, 0.75) 100%);
 }
+[data-theme="dark"] .home-video-wallpaper,
 [data-theme="dark"] .hero-bg-video {
   filter: brightness(0.68) contrast(1.12);
 }
+[data-theme="dark"] .home-video-wallpaper-overlay,
 [data-theme="dark"] .hero-bg-video-overlay {
   background:
-    radial-gradient(ellipse at center, rgba(11, 15, 25, 0.38) 0%, rgba(11, 15, 25, 0.8) 75%, #0b0f19 100%),
-    linear-gradient(180deg, rgba(11, 15, 25, 0.35) 0%, transparent 40%, #0b0f19 100%);
+    radial-gradient(ellipse at center, rgba(11, 15, 25, 0.38) 0%, rgba(11, 15, 25, 0.78) 85%, #0b0f19 100%),
+    linear-gradient(180deg, rgba(11, 15, 25, 0.4) 0%, rgba(11, 15, 25, 0.3) 50%, #0b0f19 100%);
 }
+:root:not([data-theme="dark"]) .home-video-wallpaper,
 :root:not([data-theme="dark"]) .hero-bg-video {
-  filter: brightness(0.88) contrast(1.05);
+  filter: brightness(0.85) contrast(1.08);
 }
+:root:not([data-theme="dark"]) .home-video-wallpaper-overlay,
 :root:not([data-theme="dark"]) .hero-bg-video-overlay {
   background:
-    radial-gradient(ellipse at center, rgba(255, 255, 255, 0.62) 0%, rgba(248, 249, 252, 0.85) 75%, #ffffff 100%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, transparent 35%, #ffffff 100%);
+    radial-gradient(ellipse at center, rgba(255, 255, 255, 0.58) 0%, rgba(248, 249, 252, 0.82) 85%, #ffffff 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.3) 50%, #ffffff 100%);
 }
 
 .hero-left {
@@ -714,7 +722,17 @@ body::before {
    ═══════════════════════════════════════ */
 .arsenal-section {
   position: relative; z-index: 2; padding: 6rem 5% 5rem; overflow: hidden;
-  background: var(--bg);
+  background: rgba(11, 15, 25, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+[data-theme="dark"] .arsenal-section {
+  background: rgba(11, 15, 25, 0.76);
+}
+:root:not([data-theme="dark"]) .arsenal-section {
+  background: rgba(255, 255, 255, 0.82);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 .arsenal-bg-grid {
   position: absolute; inset: 0; pointer-events: none;
@@ -1016,9 +1034,18 @@ body::before {
 
 /* ── Footer ── */
 .home-footer {
+  position: relative; z-index: 2;
   padding: 2rem 5%; border-top: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
-  background: var(--bg2);
+  background: rgba(11, 15, 25, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+[data-theme="dark"] .home-footer {
+  background: rgba(11, 15, 25, 0.88);
+}
+:root:not([data-theme="dark"]) .home-footer {
+  background: rgba(248, 249, 252, 0.88);
 }
 .home-footer-logo { font-family: 'Orbitron', monospace; font-size: .95rem; font-weight: 900; background: var(--grad-main); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 .home-footer-copy { font-size: .75rem; color: var(--text-dim); }

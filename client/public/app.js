@@ -487,7 +487,16 @@ function animateAllCounters(statElements) {
 // =========================================================
 function renderHomePage(modal) {
   return `
-  <div style="min-height:100vh;background:var(--bg);position:relative;z-index:1">
+  <div style="min-height:100vh;position:relative;z-index:1;overflow-x:hidden;">
+    <!-- ═══ FIXED BACKGROUND WALLPAPER FOR HOMEPAGE ═══ -->
+    <div class="home-video-wallpaper-wrap">
+      <video class="home-video-wallpaper hero-bg-video" autoplay loop muted playsinline preload="auto" poster="hero_cyber.jpg">
+        <source src="https://d4k2eekwuskedyx5.public.blob.vercel-storage.com/gemini_generated_video_e3cfd314.mp4" type="video/mp4"/>
+        <source src="videos/home-bg.mp4" type="video/mp4"/>
+      </video>
+      <div class="home-video-wallpaper-overlay"></div>
+    </div>
+
     <div class="event-banner">
       <span>🏆 NEXT CTF EVENT: <span style="color:#00e5ff">CHAKRAVYUH CTF</span> IS LIVE ON SEPTEMBER 5TH! ORGANIZED BY CYBERFORGE 🏁</span>
       <button onclick="showAuthModal('login')" class="banner-btn">REGISTER FOR CHAKRAVYUH ↗</button>
@@ -509,17 +518,8 @@ function renderHomePage(modal) {
       </div>
     </nav>
 
-    <!-- HERO SECTION (Centered with Looping Cyber Lab Video Background) -->
+    <!-- HERO SECTION (Centered over Fixed Video Wallpaper) -->
     <section class="hero-wrap">
-      <!-- ═══ Background Video Loop ═══ -->
-      <div class="hero-bg-video-wrap">
-        <video class="hero-bg-video" autoplay loop muted playsinline preload="auto" poster="hero_cyber.jpg">
-          <source src="https://d4k2eekwuskedyx5.public.blob.vercel-storage.com/gemini_generated_video_e3cfd314.mp4" type="video/mp4"/>
-          <source src="videos/home-bg.mp4" type="video/mp4"/>
-        </video>
-        <div class="hero-bg-video-overlay"></div>
-      </div>
-
       <div class="hero-left">
         <div class="hero-badge">
           <div class="hero-badge-dot"></div>
@@ -712,7 +712,7 @@ function closeAuthModal(e) {
 }
 
 function playHomeBgVideo() {
-  const vid = document.querySelector('.hero-bg-video');
+  const vid = document.querySelector('.home-video-wallpaper') || document.querySelector('.hero-bg-video');
   if (vid) {
     vid.muted = true;
     const playPromise = vid.play();
