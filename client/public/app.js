@@ -134,6 +134,7 @@ function render() {
     }
     attachAuthEvents();
     initStatsCounter();
+    playHomeBgVideo();
     return;
   }
 
@@ -508,15 +509,24 @@ function renderHomePage(modal) {
       </div>
     </nav>
 
-    <!-- HERO SECTION (48% Left / 52% Right Layout) -->
+    <!-- HERO SECTION (Centered with Looping Cyber Lab Video Background) -->
     <section class="hero-wrap">
+      <!-- ═══ Background Video Loop ═══ -->
+      <div class="hero-bg-video-wrap">
+        <video class="hero-bg-video" autoplay loop muted playsinline preload="auto" poster="hero_cyber.jpg">
+          <source src="https://d4k2eekwuskedyx5.public.blob.vercel-storage.com/gemini_generated_video_e3cfd314.mp4" type="video/mp4"/>
+          <source src="videos/home-bg.mp4" type="video/mp4"/>
+        </video>
+        <div class="hero-bg-video-overlay"></div>
+      </div>
+
       <div class="hero-left">
         <div class="hero-badge">
           <div class="hero-badge-dot"></div>
           ● LIVE CTF PLATFORM
         </div>
         <h1 class="hero-title">
-          Learn. Hack. Defend.<br/>
+          <span class="hero-t1">Learn. Hack. Defend.</span>
           <span class="hero-t2">CyberLab.</span>
         </h1>
         <p class="hero-desc">
@@ -532,8 +542,6 @@ function renderHomePage(modal) {
           </button>
         </div>
       </div>
-
-
     </section>
 
 
@@ -691,6 +699,7 @@ function showAuthModal(mode) {
   const app = document.getElementById('app');
   app.innerHTML = renderHomePage(mode);
   attachAuthEvents();
+  playHomeBgVideo();
 }
 
 function closeAuthModal(e) {
@@ -698,6 +707,26 @@ function closeAuthModal(e) {
     state._authModal = null;
     const app = document.getElementById('app');
     app.innerHTML = renderHomePage(null);
+    playHomeBgVideo();
+  }
+}
+
+function playHomeBgVideo() {
+  const vid = document.querySelector('.hero-bg-video');
+  if (vid) {
+    vid.muted = true;
+    const playPromise = vid.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        const resume = () => {
+          vid.play().catch(() => {});
+          window.removeEventListener('click', resume);
+          window.removeEventListener('touchstart', resume);
+        };
+        window.addEventListener('click', resume, { once: true });
+        window.addEventListener('touchstart', resume, { once: true });
+      });
+    }
   }
 }
 
