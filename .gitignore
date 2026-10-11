@@ -4,3 +4,4 @@ node_modules
 # Large media files — tracked via Git LFS
 CYBER VEDIOES/
 client/public/videos/kali-linux-setup.mp4
+temp_profile/

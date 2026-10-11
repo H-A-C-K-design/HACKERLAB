@@ -39,16 +39,18 @@ async function api(endpoint, method='GET', body=null) {
 // ---- THEME & AUDIO SOUND SYSTEM ----
 let audioCtx = null;
 let isMuted = localStorage.getItem('cf_muted') === 'true';
-let currentTheme = localStorage.getItem('cf_theme') || 'light';
+let currentTheme = localStorage.getItem('cf_theme') || 'dark';
 
 function initTheme() {
-  currentTheme = localStorage.getItem('cf_theme') || 'light';
-  if (currentTheme === 'dark') {
-    document.body.setAttribute('data-theme', 'dark');
-  } else {
-    document.body.removeAttribute('data-theme');
+  currentTheme = localStorage.getItem('cf_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  if (document.body) {
+    document.body.setAttribute('data-theme', currentTheme);
   }
 }
+
+// Apply theme immediately on script execution
+initTheme();
 
 function toggleTheme() {
   playFx('click');
@@ -160,8 +162,8 @@ function renderNavbar() {
     </div>
 
     <div class="nav-user">
-      <button class="ctrl-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-        <i class="fas ${currentTheme==='dark'?'fa-sun':'fa-moon'}"></i> <span class="hide-mobile">${currentTheme==='dark'?'Light':'Dark'}</span>
+      <button class="ctrl-btn theme-toggle-btn" onclick="toggleTheme()" title="Switch to ${currentTheme==='dark'?'Light':'Dark'} Mode">
+        <i class="fas ${currentTheme==='dark'?'fa-sun':'fa-moon'}" style="color:${currentTheme==='dark'?'#fbbf24':'#10b981'}"></i> <span class="hide-mobile">${currentTheme==='dark'?'Light':'Dark'}</span>
       </button>
       <button class="ctrl-btn" onclick="toggleMute()" title="Toggle Sound FX">
         <i class="fas ${isMuted?'fa-volume-xmark':'fa-volume-high'}"></i>
@@ -211,7 +213,7 @@ function renderSidebar() {
 function renderDashboardLayout(content) {
   return `
     <div class="event-banner">
-      <span>🏆 NEXT CTF EVENT: <span style="color:#00e5ff">CHAKRAVYUH CTF</span> IS LIVE ON SEPTEMBER 5TH! ORGANIZED BY CYBERFORGE 🏁</span>
+      <span>🏆 NEXT CTF EVENT: <span class="event-banner-highlight">CHAKRAVYUH CTF</span> IS LIVE ON SEPTEMBER 5TH! ORGANIZED BY CYBERFORGE 🏁</span>
       <button onclick="navigate('events')" class="banner-btn">VIEW CHAKRAVYUH ↗</button>
     </div>
     ${renderNavbar()}
@@ -498,7 +500,7 @@ function renderHomePage(modal) {
     </div>
 
     <div class="event-banner">
-      <span>🏆 NEXT CTF EVENT: <span style="color:#00e5ff">CHAKRAVYUH CTF</span> IS LIVE ON SEPTEMBER 5TH! ORGANIZED BY CYBERFORGE 🏁</span>
+      <span>🏆 NEXT CTF EVENT: <span class="event-banner-highlight">CHAKRAVYUH CTF</span> IS LIVE ON SEPTEMBER 5TH! ORGANIZED BY CYBERFORGE 🏁</span>
       <button onclick="showAuthModal('login')" class="banner-btn">REGISTER FOR CHAKRAVYUH ↗</button>
     </div>
     <!-- NAVBAR -->
@@ -507,8 +509,8 @@ function renderHomePage(modal) {
       <span class="home-logo" onclick="navigate('home')">CYBERFORGE</span>
 
       <div class="home-nav-right">
-        <button class="ctrl-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
-          <i class="fas ${currentTheme==='dark'?'fa-sun':'fa-moon'}"></i> <span class="hide-mobile">${currentTheme==='dark'?'Light':'Dark'}</span>
+        <button class="ctrl-btn theme-toggle-btn" onclick="toggleTheme()" title="Switch to ${currentTheme==='dark'?'Light':'Dark'} Mode">
+          <i class="fas ${currentTheme==='dark'?'fa-sun':'fa-moon'}" style="color:${currentTheme==='dark'?'#fbbf24':'#10b981'}"></i> <span class="hide-mobile">${currentTheme==='dark'?'Light':'Dark'}</span>
         </button>
         <button class="ctrl-btn" onclick="toggleMute()" title="Toggle Sound FX">
           <i class="fas ${isMuted?'fa-volume-xmark':'fa-volume-high'}"></i>
@@ -592,7 +594,7 @@ function renderHomePage(modal) {
             <h3 class="ab-title">Live Terminal</h3>
             <p class="ab-desc">Full Kali Linux in-browser. Practice real commands safely with no setup required.</p>
             <div class="ab-terminal-preview">
-              <span style="color:#10b981">$</span> <span style="color:#fff">nmap -sV 10.10.14.5</span><span class="ab-cursor"></span>
+              <span style="color:#10b981">$</span> <span style="color:#f1f5f9">nmap -sV 10.10.14.5</span><span class="ab-cursor"></span>
             </div>
           </div>
           <!-- Learn & Master -->
@@ -619,9 +621,9 @@ function renderHomePage(modal) {
             <h3 class="ab-title">Coding Tasks</h3>
             <p class="ab-desc">Python, Bash & JS security tools — earn XP for every working exploit, script, or automation solution you submit.</p>
             <div class="ab-code-strip">
-              <span style="color:#ec4899">def</span> <span style="color:#6ee7b7">exploit</span><span style="color:#fff">(target):</span><br/>
+              <span style="color:#f472b6">def</span> <span style="color:#34d399">exploit</span><span style="color:#f1f5f9">(target):</span><br/>
               &nbsp;&nbsp;<span style="color:#94a3b8">"""Auto-exploit CVE-2024-XXXX"""</span><br/>
-              &nbsp;&nbsp;<span style="color:#34d399">return</span> <span style="color:#fb923c">shell</span><span style="color:#fff">(target, </span><span style="color:#f59e0b">port</span><span style="color:#fff">=4444)</span>
+              &nbsp;&nbsp;<span style="color:#34d399">return</span> <span style="color:#fb923c">shell</span><span style="color:#f1f5f9">(target, </span><span style="color:#f59e0b">port</span><span style="color:#f1f5f9">=4444)</span>
             </div>
           </div>
         </div>
@@ -1068,12 +1070,12 @@ function initLabVideoXpTracker(labId) {
     const data = await api('/learning/1/video-complete', 'POST');
     xpAwarded = true;
     if (data.alreadyAwarded) {
-      if (msgEl) msgEl.innerHTML = `<div style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);color:#00e5ff;padding:0.6rem 1rem;border-radius:8px;font-size:0.85rem"><i class="fas fa-check-circle"></i> You already earned XP for this video.</div>`;
+      if (msgEl) msgEl.innerHTML = `<div style="background:rgba(2,132,199,0.1);border:1px solid rgba(2,132,199,0.3);color:var(--cyan);padding:0.6rem 1rem;border-radius:8px;font-size:0.85rem"><i class="fas fa-check-circle"></i> You already earned XP for this video.</div>`;
       return;
     }
     if (data.success) {
       if (state.user) { state.user.xp = data.newXp; state.user.level = data.newLevel; state.user.rank = data.newRank; localStorage.setItem('cf_user', JSON.stringify(state.user)); }
-      if (msgEl) msgEl.innerHTML = `<div style="background:rgba(0,255,102,0.1);border:1px solid rgba(0,255,102,0.4);color:#00ff66;padding:0.75rem 1rem;border-radius:8px;font-size:0.95rem;font-weight:700"><i class="fas fa-star" style="color:#ffcc00"></i> +100 XP Awarded! Great job watching the full video! 🎉<br><span style="font-size:0.8rem;opacity:0.8">Total XP: ${data.newXp} | Rank: ${data.newRank}</span></div>`;
+      if (msgEl) msgEl.innerHTML = `<div style="background:rgba(5,150,105,0.12);border:1px solid rgba(5,150,105,0.4);color:var(--purple);padding:0.75rem 1rem;border-radius:8px;font-size:0.95rem;font-weight:700"><i class="fas fa-star" style="color:#ffcc00"></i> +100 XP Awarded! Great job watching the full video! 🎉<br><span style="font-size:0.8rem;opacity:0.8">Total XP: ${data.newXp} | Rank: ${data.newRank}</span></div>`;
     }
   });
 }
@@ -1255,9 +1257,9 @@ function renderTerminalPage() {
     <div class="page-title">💻 Live <span>Terminal</span></div>
     <div class="page-sub">Interactive Kali Linux Terminal — Real-time tools, git cloning, nmap scanning & live hacking</div>
   </div>
-  <div style="background:rgba(0,229,255,0.06);border:1px solid rgba(0,229,255,0.25);border-radius:8px;padding:0.75rem 1rem;margin-bottom:1.5rem;font-size:0.85rem;color:#00e5ff;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem">
+  <div style="background:rgba(2,132,199,0.08);border:1px solid var(--border-hi);border-radius:8px;padding:0.75rem 1rem;margin-bottom:1.5rem;font-size:0.85rem;color:var(--cyan);display:flex;align-items:center;justify-content:space-between;flex-wrap:gap:0.5rem">
     <div><i class="fas fa-terminal"></i> <strong>Kali Linux Real-time Terminal Engine</strong> — Practice real hacking tools, VFS commands, git repo installs, and target scans in real-time.</div>
-    <button onclick="resetVFSDialog()" class="btn btn-outline" style="padding:0.25rem 0.65rem;font-size:0.75rem;border-color:rgba(0,229,255,0.4);color:#00e5ff"><i class="fas fa-undo"></i> Reset VFS</button>
+    <button onclick="resetVFSDialog()" class="btn btn-outline" style="padding:0.25rem 0.65rem;font-size:0.75rem;border-color:var(--border-hi);color:var(--cyan)"><i class="fas fa-undo"></i> Reset VFS</button>
   </div>
   <div class="terminal-container">
     <div class="terminal-header">
@@ -2183,7 +2185,7 @@ function initVideoXpTracker(moduleId) {
     xpAwarded = true;
 
     if (data.alreadyAwarded) {
-      if (msgEl) msgEl.innerHTML = `<div style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);color:#00e5ff;padding:0.6rem 1rem;border-radius:8px;font-size:0.85rem"><i class="fas fa-check-circle"></i> You already earned XP for this video.</div>`;
+      if (msgEl) msgEl.innerHTML = `<div style="background:rgba(2,132,199,0.1);border:1px solid rgba(2,132,199,0.3);color:var(--cyan);padding:0.6rem 1rem;border-radius:8px;font-size:0.85rem"><i class="fas fa-check-circle"></i> You already earned XP for this video.</div>`;
       return;
     }
 
@@ -2195,7 +2197,7 @@ function initVideoXpTracker(moduleId) {
         state.user.rank = data.newRank;
         localStorage.setItem('cf_user', JSON.stringify(state.user));
       }
-      if (msgEl) msgEl.innerHTML = `<div style="background:rgba(0,255,102,0.1);border:1px solid rgba(0,255,102,0.4);color:#00ff66;padding:0.75rem 1rem;border-radius:8px;font-size:0.95rem;font-weight:700"><i class="fas fa-star" style="color:#ffcc00"></i> +100 XP Awarded! Great job watching the full video! 🎉<br><span style="font-size:0.8rem;opacity:0.8">Total XP: ${data.newXp} | Rank: ${data.newRank}</span></div>`;
+      if (msgEl) msgEl.innerHTML = `<div style="background:rgba(5,150,105,0.12);border:1px solid rgba(5,150,105,0.4);color:var(--purple);padding:0.75rem 1rem;border-radius:8px;font-size:0.95rem;font-weight:700"><i class="fas fa-star" style="color:#ffcc00"></i> +100 XP Awarded! Great job watching the full video! 🎉<br><span style="font-size:0.8rem;opacity:0.8">Total XP: ${data.newXp} | Rank: ${data.newRank}</span></div>`;
     } else {
       if (msgEl) msgEl.innerHTML = `<div style="color:#ff4060;font-size:0.85rem;padding:0.5rem"><i class="fas fa-exclamation-circle"></i> ${data.message}</div>`;
     }
@@ -2614,7 +2616,7 @@ async function completeWorkshop(id) {
   if (!msgEl) return;
   
   if (data.success) {
-    msgEl.innerHTML = `<div style="background:rgba(0,255,102,0.1); border:1px solid rgba(0,255,102,0.4); color:#00ff66; padding:0.75rem 1rem; border-radius:8px; font-size:0.95rem; font-weight:700;"><i class="fas fa-star" style="color:#ffcc00"></i> +${data.xpEarned} XP Earned! ${data.message} 🎉</div>`;
+    msgEl.innerHTML = `<div style="background:rgba(5,150,105,0.12); border:1px solid rgba(5,150,105,0.4); color:var(--purple); padding:0.75rem 1rem; border-radius:8px; font-size:0.95rem; font-weight:700;"><i class="fas fa-star" style="color:#ffcc00"></i> +${data.xpEarned} XP Earned! ${data.message} 🎉</div>`;
     state.user.xp = (state.user.xp || 0) + data.xpEarned;
     state.user.level = Math.floor(state.user.xp / 500) + 1;
     const ranks = [
@@ -2759,7 +2761,7 @@ async function registerForEvent(id) {
   const msgEl = $('event-msg-' + id);
   
   if (data.success) {
-    if (msgEl) msgEl.innerHTML = `<div style="background:rgba(0,255,102,0.1); border:1px solid rgba(0,255,102,0.4); color:#00ff66; padding:0.6rem 1rem; border-radius:8px; font-size:0.85rem; font-weight:700;"><i class="fas fa-check-circle"></i> ${data.message}</div>`;
+    if (msgEl) msgEl.innerHTML = `<div style="background:rgba(5,150,105,0.12); border:1px solid rgba(5,150,105,0.4); color:var(--purple); padding:0.6rem 1rem; border-radius:8px; font-size:0.85rem; font-weight:700;"><i class="fas fa-check-circle"></i> ${data.message}</div>`;
     loadEvents();
   } else {
     if (msgEl) msgEl.innerHTML = `<div style="background:rgba(255,0,64,0.1); border:1px solid rgba(255,0,64,0.4); color:#ff4060; padding:0.6rem 1rem; border-radius:8px; font-size:0.85rem;"><i class="fas fa-times-circle"></i> ${data.message}</div>`;
@@ -2896,7 +2898,7 @@ async function registerForSession(id) {
   const msgEl = $('session-msg-' + id);
 
   if (data.success) {
-    if (msgEl) msgEl.innerHTML = `<div style="background:rgba(0,255,102,0.1); border:1px solid rgba(0,255,102,0.4); color:#00ff66; padding:0.6rem 1rem; border-radius:8px; font-size:0.85rem; font-weight:700;"><i class="fas fa-check-circle"></i> ${data.message}</div>`;
+    if (msgEl) msgEl.innerHTML = `<div style="background:rgba(5,150,105,0.12); border:1px solid rgba(5,150,105,0.4); color:var(--purple); padding:0.6rem 1rem; border-radius:8px; font-size:0.85rem; font-weight:700;"><i class="fas fa-check-circle"></i> ${data.message}</div>`;
     loadEventSessions();
   } else {
     if (msgEl) msgEl.innerHTML = `<div style="background:rgba(255,0,64,0.1); border:1px solid rgba(255,0,64,0.4); color:#ff4060; padding:0.6rem 1rem; border-radius:8px; font-size:0.85rem;"><i class="fas fa-times-circle"></i> ${data.message}</div>`;
