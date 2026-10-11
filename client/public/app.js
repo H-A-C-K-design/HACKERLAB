@@ -39,25 +39,22 @@ async function api(endpoint, method='GET', body=null) {
 // ---- THEME & AUDIO SOUND SYSTEM ----
 let audioCtx = null;
 let isMuted = localStorage.getItem('cf_muted') === 'true';
-let currentTheme = localStorage.getItem('cf_theme') || 'dark';
+const currentTheme = 'dark';
 
 function initTheme() {
-  currentTheme = localStorage.getItem('cf_theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', currentTheme);
+  localStorage.setItem('cf_theme', 'dark');
+  document.documentElement.setAttribute('data-theme', 'dark');
   if (document.body) {
-    document.body.setAttribute('data-theme', currentTheme);
+    document.body.setAttribute('data-theme', 'dark');
   }
 }
 
-// Apply theme immediately on script execution
+// Enforce pure dark cyber theme immediately
 initTheme();
 
 function toggleTheme() {
-  playFx('click');
-  currentTheme = (currentTheme === 'dark') ? 'light' : 'dark';
-  localStorage.setItem('cf_theme', currentTheme);
+  // Pure dark theme only
   initTheme();
-  render();
 }
 
 function playFx(type = 'click') {
@@ -162,9 +159,6 @@ function renderNavbar() {
     </div>
 
     <div class="nav-user">
-      <button class="ctrl-btn theme-toggle-btn" onclick="toggleTheme()" title="Switch to ${currentTheme==='dark'?'Light':'Dark'} Mode">
-        <i class="fas ${currentTheme==='dark'?'fa-sun':'fa-moon'}" style="color:${currentTheme==='dark'?'#fbbf24':'#10b981'}"></i> <span class="hide-mobile">${currentTheme==='dark'?'Light':'Dark'}</span>
-      </button>
       <button class="ctrl-btn" onclick="toggleMute()" title="Toggle Sound FX">
         <i class="fas ${isMuted?'fa-volume-xmark':'fa-volume-high'}"></i>
       </button>
@@ -510,9 +504,6 @@ function renderHomePage(modal) {
         <span class="home-logo" onclick="navigate('home')">CYBERFORGE</span>
 
         <div class="home-nav-right">
-          <button class="ctrl-btn theme-toggle-btn" onclick="toggleTheme()" title="Switch to ${currentTheme==='dark'?'Light':'Dark'} Mode">
-            <i class="fas ${currentTheme==='dark'?'fa-sun':'fa-moon'}" style="color:${currentTheme==='dark'?'#fbbf24':'#10b981'}"></i> <span class="hide-mobile">${currentTheme==='dark'?'Light':'Dark'}</span>
-          </button>
           <button class="ctrl-btn" onclick="toggleMute()" title="Toggle Sound FX">
             <i class="fas ${isMuted?'fa-volume-xmark':'fa-volume-high'}"></i>
           </button>
