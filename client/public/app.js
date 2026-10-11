@@ -499,33 +499,35 @@ function renderHomePage(modal) {
       <div class="home-video-wallpaper-overlay"></div>
     </div>
 
-    <div class="event-banner">
-      <span>🏆 NEXT CTF EVENT: <span class="event-banner-highlight">CHAKRAVYUH CTF</span> IS LIVE ON SEPTEMBER 5TH! ORGANIZED BY CYBERFORGE 🏁</span>
-      <button onclick="showAuthModal('login')" class="banner-btn">REGISTER FOR CHAKRAVYUH ↗</button>
-    </div>
-    <!-- NAVBAR -->
-    <nav class="home-nav">
-      <img src="cyberforge-logo.svg" style="height:34px;width:auto;vertical-align:middle;margin-right:8px;filter:drop-shadow(0 0 8px rgba(16,185,129,0.5));" alt="CyberForge Logo"/>
-      <span class="home-logo" onclick="navigate('home')">CYBERFORGE</span>
-
-      <div class="home-nav-right">
-        <button class="ctrl-btn theme-toggle-btn" onclick="toggleTheme()" title="Switch to ${currentTheme==='dark'?'Light':'Dark'} Mode">
-          <i class="fas ${currentTheme==='dark'?'fa-sun':'fa-moon'}" style="color:${currentTheme==='dark'?'#fbbf24':'#10b981'}"></i> <span class="hide-mobile">${currentTheme==='dark'?'Light':'Dark'}</span>
-        </button>
-        <button class="ctrl-btn" onclick="toggleMute()" title="Toggle Sound FX">
-          <i class="fas ${isMuted?'fa-volume-xmark':'fa-volume-high'}"></i>
-        </button>
-        <button class="home-nav-btn-outline" onclick="showAuthModal('login')">Sign In</button>
-        <button class="home-nav-btn-fill"    onclick="showAuthModal('register')">Get Started →</button>
+    <header class="home-header-wrap">
+      <div class="event-banner">
+        <span>🏆 NEXT CTF EVENT: <span class="event-banner-highlight">CHAKRAVYUH CTF</span> IS LIVE ON SEPTEMBER 5TH! ORGANIZED BY CYBERFORGE 🏁</span>
+        <button onclick="showAuthModal('login')" class="banner-btn">REGISTER FOR CHAKRAVYUH ↗</button>
       </div>
-    </nav>
+      <!-- NAVBAR -->
+      <nav class="home-nav">
+        <img src="cyberforge-logo.svg" style="height:34px;width:auto;vertical-align:middle;margin-right:8px;filter:drop-shadow(0 0 8px rgba(16,185,129,0.5));" alt="CyberForge Logo"/>
+        <span class="home-logo" onclick="navigate('home')">CYBERFORGE</span>
+
+        <div class="home-nav-right">
+          <button class="ctrl-btn theme-toggle-btn" onclick="toggleTheme()" title="Switch to ${currentTheme==='dark'?'Light':'Dark'} Mode">
+            <i class="fas ${currentTheme==='dark'?'fa-sun':'fa-moon'}" style="color:${currentTheme==='dark'?'#fbbf24':'#10b981'}"></i> <span class="hide-mobile">${currentTheme==='dark'?'Light':'Dark'}</span>
+          </button>
+          <button class="ctrl-btn" onclick="toggleMute()" title="Toggle Sound FX">
+            <i class="fas ${isMuted?'fa-volume-xmark':'fa-volume-high'}"></i>
+          </button>
+          <button class="home-nav-btn-outline" onclick="showAuthModal('login')">Sign In</button>
+          <button class="home-nav-btn-fill"    onclick="showAuthModal('register')">Get Started →</button>
+        </div>
+      </nav>
+    </header>
 
     <!-- HERO SECTION (Centered over Fixed Video Wallpaper) -->
     <section class="hero-wrap">
       <div class="hero-left">
         <div class="hero-badge">
           <div class="hero-badge-dot"></div>
-          ● LIVE CTF PLATFORM
+          LIVE CTF PLATFORM
         </div>
         <h1 class="hero-title">
           <span class="hero-t1">Learn. Hack. Defend.</span>
@@ -534,7 +536,7 @@ function renderHomePage(modal) {
         <p class="hero-desc">
           Practice cybersecurity through realistic CTF challenges, interactive labs, team competitions, and hands-on security simulations.
         </p>
-        <div style="font-size:0.85rem;font-weight:700;color:var(--purple);letter-spacing:1px;margin-bottom:1.5rem;">LEARN • PRACTICE • COMPETE • DEFEND</div>
+        <div class="hero-pillars">LEARN • PRACTICE • COMPETE • DEFEND</div>
         <div class="hero-btns">
           <button class="hero-btn-primary" onclick="showAuthModal('register')">
             Start Hacking &nbsp;→
