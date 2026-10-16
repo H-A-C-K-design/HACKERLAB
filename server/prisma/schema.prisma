@@ -1,0 +1,488 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  TEACHER
+  STUDENT
+}
+
+enum TeacherStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  SUSPENDED
+}
+
+enum CourseLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  HIDDEN
+}
+
+enum LessonType {
+  VIDEO
+  LIVE_RECORDING
+  DOC
+}
+
+enum LessonVisibility {
+  COURSE_ONLY
+  PUBLIC_PREVIEW
+}
+
+enum LiveClassStatus {
+  SCHEDULED
+  LIVE
+  ENDED
+  CANCELLED
+}
+
+enum EnrollmentSource {
+  PAID
+  FREE
+}
+
+enum OrderStatus {
+  CREATED
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum LedgerType {
+  PAYMENT
+  REFUND
+  PAYOUT
+}
+
+enum LedgerStatus {
+  PENDING
+  SETTLED
+  REVERSED
+}
+
+enum PayoutStatus {
+  PENDING
+  PROCESSED
+  FAILED
+}
+
+enum RefundStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id               String    @id @default(uuid())
+  email            String    @unique
+  passwordHash     String
+  role             Role
+  emailVerified    Boolean   @default(false)
+  fullName         String
+  phone            String?
+  avatarUrl        String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  lastLoginAt      DateTime?
+  failedLoginCount Int       @default(0)
+  lockedUntil      DateTime?
+
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
+  refreshTokens           RefreshToken[]
+  teacherProfile          TeacherProfile?
+  studentProfile          StudentProfile?
+  enrollments             Enrollment[]
+  orders                  Order[]
+  liveAttendances         LiveAttendance[]
+  auditLogs               AuditLog[]               @relation("ActorAuditLogs")
+
+  @@index([email])
+  @@index([role])
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(uuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  userAgent String?
+  ip        String?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model TeacherProfile {
+  id              String        @id @default(uuid())
+  userId          String        @unique
+  headline        String?
+  bio             String?       @db.Text
+  city            String?
+  country         String?
+  languages       String[]      @default([])
+  experienceYears Int?
+  websiteUrl      String?
+  linkedinUrl     String?
+  githubUrl       String?
+  specializations String[]      @default([])
+  cvKey           String?
+  status          TeacherStatus @default(DRAFT)
+  approvedAt      DateTime?
+  approvedBy      String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  qualifications Qualification[]
+  bankAccounts  BankAccount[]
+  subscription  TeacherSubscription?
+  courses       Course[]
+  ledgerEntries LedgerEntry[]
+  payouts       Payout[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Qualification {
+  id               String   @id @default(uuid())
+  teacherProfileId String
+  title            String
+  organization     String
+  year             Int
+  certificateKey   String
+  verified         Boolean  @default(false)
+  createdAt        DateTime @default(now())
+
+  teacherProfile TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
+
+  @@index([teacherProfileId])
+}
+
+model BankAccount {
+  id                     String   @id @default(uuid())
+  teacherProfileId       String
+  razorpayLinkedAccountId String
+  accountHolderName      String
+  panLast4               String
+  accountLast4           String
+  ifsc                   String
+  bankName               String
+  upiLast4               String?
+  isActive               Boolean  @default(true)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  teacherProfile TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
+
+  @@index([teacherProfileId])
+  @@index([isActive])
+}
+
+model TeacherSubscription {
+  id                     String    @id @default(uuid())
+  teacherProfileId       String    @unique
+  razorpaySubscriptionId String    @unique
+  status                 String    @default("created")
+  currentPeriodEnd       DateTime?
+  graceUntil             DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  teacherProfile TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
+
+  @@index([teacherProfileId])
+  @@index([status])
+}
+
+model StudentProfile {
+  id              String      @id @default(uuid())
+  userId          String      @unique
+  experienceLevel CourseLevel @default(BEGINNER)
+  interests       String[]    @default([])
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Course {
+  id               String       @id @default(uuid())
+  teacherProfileId String
+  slug             String       @unique
+  title            String
+  description      String       @db.Text
+  level            CourseLevel  @default(BEGINNER)
+  category         String
+  language         String       @default("English")
+  priceInPaise     Int          @default(0)
+  thumbnailKey     String?
+  prerequisites    String[]     @default([])
+  ethicalCheck     Boolean      @default(true)
+  status           CourseStatus @default(DRAFT)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  teacherProfile TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
+  modules        Module[]
+  liveClasses    LiveClass[]
+  enrollments    Enrollment[]
+  orders         Order[]
+
+  @@index([teacherProfileId])
+  @@index([slug])
+  @@index([status])
+}
+
+model Module {
+  id        String   @id @default(uuid())
+  courseId  String
+  title     String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons Lesson[]
+
+  @@index([courseId])
+  @@index([order])
+}
+
+model Lesson {
+  id           String           @id @default(uuid())
+  moduleId     String
+  title        String
+  order        Int              @default(0)
+  type         LessonType       @default(VIDEO)
+  videoKey     String?
+  durationSec  Int              @default(0)
+  visibility   LessonVisibility @default(COURSE_ONLY)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  module         Module           @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  lessonProgress LessonProgress[]
+
+  @@index([moduleId])
+  @@index([order])
+}
+
+model LiveClass {
+  id              String          @id @default(uuid())
+  courseId        String
+  title           String
+  scheduledStart  DateTime
+  durationMin     Int             @default(60)
+  maxParticipants Int             @default(100)
+  status          LiveClassStatus @default(SCHEDULED)
+  livekitRoomName String          @unique
+  recordingKey    String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  course      Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  attendances LiveAttendance[]
+
+  @@index([courseId])
+  @@index([status])
+  @@index([scheduledStart])
+}
+
+model LiveAttendance {
+  id          String    @id @default(uuid())
+  liveClassId String
+  studentId   String
+  joinedAt    DateTime  @default(now())
+  leftAt      DateTime?
+
+  liveClass LiveClass @relation(fields: [liveClassId], references: [id], onDelete: Cascade)
+  student   User      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([liveClassId])
+  @@index([studentId])
+}
+
+model Enrollment {
+  id        String           @id @default(uuid())
+  studentId String
+  courseId  String
+  source    EnrollmentSource @default(PAID)
+  createdAt DateTime         @default(now())
+  revokedAt DateTime?
+
+  student  User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course   Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress LessonProgress[]
+
+  @@unique([studentId, courseId])
+  @@index([studentId])
+  @@index([courseId])
+}
+
+model LessonProgress {
+  id           String    @id @default(uuid())
+  enrollmentId String
+  lessonId     String
+  watchedSec   Int       @default(0)
+  completedAt  DateTime?
+  updatedAt    DateTime  @updatedAt
+
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  lesson     Lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([enrollmentId, lessonId])
+  @@index([enrollmentId])
+  @@index([lessonId])
+}
+
+model Order {
+  id                String      @id @default(uuid())
+  studentId         String
+  courseId          String
+  razorpayOrderId   String      @unique
+  razorpayPaymentId String?
+  amountInPaise     Int
+  currency          String      @default("INR")
+  status            OrderStatus @default(CREATED)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  student       User           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course        Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  ledgerEntries LedgerEntry[]
+  refundRequest RefundRequest?
+
+  @@index([studentId])
+  @@index([courseId])
+  @@index([razorpayOrderId])
+}
+
+model LedgerEntry {
+  id                 String       @id @default(uuid())
+  orderId            String?
+  teacherProfileId   String
+  grossInPaise       Int
+  platformFeeInPaise Int
+  teacherNetInPaise  Int
+  currency           String       @default("INR")
+  type               LedgerType   @default(PAYMENT)
+  status             LedgerStatus @default(SETTLED)
+  razorpayPaymentId  String?
+  createdAt          DateTime     @default(now())
+
+  order          Order?         @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  teacherProfile TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([teacherProfileId])
+  @@index([type])
+}
+
+model Payout {
+  id                 String       @id @default(uuid())
+  teacherProfileId   String
+  razorpayTransferId String       @unique
+  amountInPaise      Int
+  currency           String       @default("INR")
+  status             PayoutStatus @default(PENDING)
+  processedAt        DateTime?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  teacherProfile TeacherProfile @relation(fields: [teacherProfileId], references: [id], onDelete: Cascade)
+
+  @@index([teacherProfileId])
+  @@index([status])
+}
+
+model RefundRequest {
+  id          String       @id @default(uuid())
+  orderId     String       @unique
+  reason      String       @db.Text
+  status      RefundStatus @default(PENDING)
+  reviewedBy  String?
+  reviewedAt  DateTime?
+  rejectionReason String?  @db.Text
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([status])
+}
+
+model WebhookEvent {
+  id          String   @id @default(uuid())
+  eventId     String   @unique
+  type        String
+  payload     Json?
+  receivedAt  DateTime @default(now())
+  processedAt DateTime?
+
+  @@index([eventId])
+  @@index([type])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  actorUserId String?
+  action      String
+  entityType  String
+  entityId    String?
+  metadata    Json?
+  ip          String?
+  createdAt   DateTime @default(now())
+
+  actor User? @relation("ActorAuditLogs", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([actorUserId])
+  @@index([action])
+  @@index([entityType])
+}

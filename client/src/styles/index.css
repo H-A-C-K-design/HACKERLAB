@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#0A0F1C] text-[#E5E7EB] font-sans antialiased;
+    color-scheme: dark;
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0A0F1C;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1E293B;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #22D3EE;
+  }
+}
+
+@layer components {
+  /* Cybersecurity card styling per spec: 12px radius, 1px border rgba(34,211,238,0.15), subtle inner glow on hover */
+  .cyber-card {
+    @apply bg-[#151E32] rounded-[12px] border border-cyan-400/15 transition-all duration-300;
+  }
+  .cyber-card:hover {
+    @apply border-cyan-400/35 shadow-[0_0_20px_-5px_rgba(34,211,238,0.25)];
+  }
+
+  .cyber-card-active {
+    @apply bg-[#151E32] rounded-[12px] border border-cyan-400/50 shadow-[0_0_25px_-5px_rgba(34,211,238,0.3)];
+  }
+
+  /* Glass panel effect */
+  .glass-panel {
+    @apply bg-[#111827]/80 backdrop-blur-md border border-cyan-400/15;
+  }
+
+  /* Cyber button primary */
+  .cyber-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-[#0A0F1C] bg-cyan-400 hover:bg-cyan-300 active:scale-[0.98] transition-all shadow-[0_0_15px_-3px_rgba(34,211,238,0.4)] disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Cyber button secondary / outline */
+  .cyber-btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-cyan-400 bg-transparent border border-cyan-400/30 hover:border-cyan-400 hover:bg-cyan-400/10 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Cyber button ghost */
+  .cyber-btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium text-slate-300 hover:text-cyan-400 hover:bg-slate-800/60 transition-all;
+  }
+
+  /* Form inputs */
+  .cyber-input {
+    @apply w-full px-4 py-2.5 rounded-lg bg-[#0A0F1C] border border-cyan-400/20 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all text-sm;
+  }
+
+  .cyber-label {
+    @apply block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5;
+  }
+}

@@ -1,29 +1,31 @@
 {
   "name": "cyberforge-academy",
   "version": "1.0.0",
-  "description": "Cybersecurity Learning Platform for Students",
-  "main": "server/index.js",
-  "engines": {
-    "node": ">=18.x"
-  },
+  "description": "CyberForge Academy - Ethical Hacking & Cybersecurity Education Platform",
   "scripts": {
-    "start": "node server/index.js",
-    "dev": "nodemon server/index.js",
-    "build": "echo 'No build step required'"
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build:server": "npm --prefix server run build",
+    "build:client": "npm --prefix client run build",
+    "build": "npm run build:server && npm run build:client",
+    "prisma:generate": "npm --prefix server run prisma:generate",
+    "prisma:migrate": "npm --prefix server run prisma:migrate",
+    "prisma:deploy": "npm --prefix server run prisma:deploy",
+    "prisma:seed": "npm --prefix server run prisma:seed",
+    "teacher:approve": "npm --prefix server run teacher:approve --",
+    "teacher:suspend": "npm --prefix server run teacher:suspend --",
+    "refund:review": "npm --prefix server run refund:review --",
+    "payouts:sync": "npm --prefix server run payouts:sync",
+    "email:test": "npm --prefix server run email:test --",
+    "test": "npm --prefix server run test"
   },
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "express-rate-limit": "^7.1.5",
-    "firebase-admin": "^12.0.0",
-    "helmet": "^7.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.10.0",
-    "socket.io": "^4.6.2"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.2"
-  }
+  "keywords": [
+    "cybersecurity",
+    "ethical-hacking",
+    "learning-platform",
+    "livekit",
+    "razorpay"
+  ],
+  "author": "CyberForge Academy Team",
+  "license": "ISC"
 }
